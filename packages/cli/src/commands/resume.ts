@@ -8,7 +8,7 @@ import {
   isTerminal,
   type RunState,
   type RunStatus,
-} from "@strings77wzq/goalrun-core";
+} from "goalrun-core";
 
 export async function resumeCommand(
   runId: string,

@@ -4,7 +4,7 @@ import {
   mergeSummaries,
   generatePlanReport,
 } from "../src/report-harness.js";
-import { createError, createWarning, createInfo } from "@strings77wzq/goalrun-core";
+import { createError, createWarning, createInfo } from "goalrun-core";
 
 describe("summarizeDiagnostics", () => {
   it("counts diagnostic severities", () => {

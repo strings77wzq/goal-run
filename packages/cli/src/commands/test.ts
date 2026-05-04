@@ -2,8 +2,8 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
-import { parseSelectionTests } from "@strings77wzq/goalrun-core";
-import { runSelectionHarness } from "@strings77wzq/goalrun-harness";
+import { parseSelectionTests } from "goalrun-core";
+import { runSelectionHarness } from "goalrun-harness";
 
 export async function testCommand(opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();

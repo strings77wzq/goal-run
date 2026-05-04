@@ -1,5 +1,5 @@
 {
-  "name": "@strings77wzq/goalrun-harness",
+  "name": "goalrun-harness",
   "version": "0.1.0",
   "description": "Validation harnesses for GoalRun skills, goals, policies, and selection",
   "type": "module",
@@ -17,8 +17,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@strings77wzq/goalrun-core": "workspace:*",
-    "@strings77wzq/goalrun-security": "workspace:*"
+    "goalrun-core": "workspace:*",
+    "goalrun-security": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
@@ -28,9 +28,6 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/strings77wzq/goal-run.git",

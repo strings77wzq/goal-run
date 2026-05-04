@@ -4,16 +4,16 @@ import {
   type PolicyConfig,
   type GoalSpec,
   createError,
-} from "@strings77wzq/goalrun-core";
+} from "goalrun-core";
 import {
   validatePolicyConfig,
   checkGoalAgainstPolicy,
   checkSkillPermissions,
-} from "@strings77wzq/goalrun-security";
-import { scanForBlockedCommands } from "@strings77wzq/goalrun-security";
+} from "goalrun-security";
+import { scanForBlockedCommands } from "goalrun-security";
 import { readFileSync } from "node:fs";
 import { existsSync } from "node:fs";
-import { parseSkillMd } from "@strings77wzq/goalrun-core";
+import { parseSkillMd } from "goalrun-core";
 
 export interface PolicyHarnessInput {
   policyYamlPath: string;

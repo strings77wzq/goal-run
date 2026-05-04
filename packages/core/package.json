@@ -1,5 +1,5 @@
 {
-  "name": "@strings77wzq/goalrun-core",
+  "name": "goalrun-core",
   "version": "0.1.0",
   "description": "Core schemas, types, and utilities for GoalRun",
   "type": "module",
@@ -30,9 +30,6 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/strings77wzq/goal-run.git",

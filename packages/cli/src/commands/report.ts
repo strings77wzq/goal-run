@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
-import { type RunState } from "@strings77wzq/goalrun-core";
+import { type RunState } from "goalrun-core";
 
 export async function reportCommand(
   runIdOrLatest: string,

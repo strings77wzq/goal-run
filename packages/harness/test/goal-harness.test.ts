@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { runGoalHarness } from "../src/goal-harness.js";
-import { DEFAULT_POLICY } from "@strings77wzq/goalrun-core";
+import { DEFAULT_POLICY } from "goalrun-core";
 import { writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { resolve, join } from "node:path";

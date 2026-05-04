@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync } from "node:fs";
 import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
-import { compareRuns, type RunState } from "@strings77wzq/goalrun-core";
+import { compareRuns, type RunState } from "goalrun-core";
 
 export async function compareCommand(
   runIdA: string,

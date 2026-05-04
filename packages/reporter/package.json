@@ -1,5 +1,5 @@
 {
-  "name": "@strings77wzq/goalrun-reporter",
+  "name": "goalrun-reporter",
   "version": "0.1.0",
   "description": "Text and JSON output formatting for GoalRun",
   "type": "module",
@@ -17,7 +17,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@strings77wzq/goalrun-core": "workspace:*",
+    "goalrun-core": "workspace:*",
     "picocolors": "^1.1.0"
   },
   "devDependencies": {
@@ -28,9 +28,6 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/strings77wzq/goal-run.git",

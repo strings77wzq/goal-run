@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { runStaticHarness } from "../src/static-harness.js";
-import { DEFAULT_POLICY } from "@strings77wzq/goalrun-core";
+import { DEFAULT_POLICY } from "goalrun-core";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 

@@ -1,5 +1,5 @@
 {
-  "name": "@strings77wzq/goalrun-security",
+  "name": "goalrun-security",
   "version": "0.1.0",
   "description": "Policy validation, secret scanning, command blocking for GoalRun",
   "type": "module",
@@ -17,7 +17,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@strings77wzq/goalrun-core": "workspace:*"
+    "goalrun-core": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
@@ -27,9 +27,6 @@
   "files": [
     "dist"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/strings77wzq/goal-run.git",

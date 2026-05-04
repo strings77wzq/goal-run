@@ -7,10 +7,10 @@ import {
   runGoalHarness,
   runPolicyHarness,
   summarizeDiagnostics,
-} from "@strings77wzq/goalrun-harness";
-import { DEFAULT_POLICY, parsePolicyConfigSafe } from "@strings77wzq/goalrun-core";
-import type { Diagnostic } from "@strings77wzq/goalrun-core";
-import { formatText } from "@strings77wzq/goalrun-reporter";
+} from "goalrun-harness";
+import { DEFAULT_POLICY, parsePolicyConfigSafe } from "goalrun-core";
+import type { Diagnostic } from "goalrun-core";
+import { formatText } from "goalrun-reporter";
 import { globSync } from "fast-glob";
 
 export async function verifyCommand(

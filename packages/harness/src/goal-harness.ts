@@ -4,9 +4,9 @@ import {
   type GoalSpec,
   createError,
   createWarning,
-} from "@strings77wzq/goalrun-core";
-import { scanForBlockedCommands } from "@strings77wzq/goalrun-security";
-import type { PolicyConfig } from "@strings77wzq/goalrun-core";
+} from "goalrun-core";
+import { scanForBlockedCommands } from "goalrun-security";
+import type { PolicyConfig } from "goalrun-core";
 import { readFileSync } from "node:fs";
 import { existsSync } from "node:fs";
 import { checkCriteriaQuality } from "./criteria-harness.js";

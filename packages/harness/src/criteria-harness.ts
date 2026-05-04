@@ -1,4 +1,4 @@
-import { createWarning, createInfo, type Diagnostic } from "@strings77wzq/goalrun-core";
+import { createWarning, createInfo, type Diagnostic } from "goalrun-core";
 
 const AMBIGUOUS_TERMS = [
   "better",

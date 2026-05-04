@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { runSelectionHarness, matchSkill } from "../src/selection-harness.js";
-import { type SelectionTests, type SelectionTest } from "@strings77wzq/goalrun-core";
+import { type SelectionTests, type SelectionTest } from "goalrun-core";
 
 const AVAILABLE_SKILLS = ["implementation-strategy", "tdd-change", "code-review"];
 

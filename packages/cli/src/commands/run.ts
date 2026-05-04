@@ -6,13 +6,13 @@ import {
   runGoalHarness,
   runPolicyHarness,
   generatePlanReport,
-} from "@strings77wzq/goalrun-harness";
+} from "goalrun-harness";
 import {
   DEFAULT_POLICY,
   parsePolicyConfigSafe,
   createRunState,
   createCheckpoint,
-} from "@strings77wzq/goalrun-core";
+} from "goalrun-core";
 
 export async function runCommand(
   goalPath: string,

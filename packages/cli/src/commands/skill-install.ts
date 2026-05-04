@@ -8,7 +8,7 @@ import {
   createLockfile,
   addSkillToLockfile,
   computeSkillHash,
-} from "@strings77wzq/goalrun-core";
+} from "goalrun-core";
 
 const SAFE_NAME_RE = /^[a-zA-Z0-9_-]+$/;
 

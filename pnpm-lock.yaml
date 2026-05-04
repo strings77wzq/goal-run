@@ -29,24 +29,24 @@ importers:
 
   packages/cli:
     dependencies:
-      '@strings77wzq/goalrun-core':
-        specifier: workspace:*
-        version: link:../core
-      '@strings77wzq/goalrun-harness':
-        specifier: workspace:*
-        version: link:../harness
-      '@strings77wzq/goalrun-reporter':
-        specifier: workspace:*
-        version: link:../reporter
-      '@strings77wzq/goalrun-security':
-        specifier: workspace:*
-        version: link:../security
       commander:
         specifier: ^13.1.0
         version: 13.1.0
       fast-glob:
         specifier: ^3.3.0
         version: 3.3.3
+      goalrun-core:
+        specifier: workspace:*
+        version: link:../core
+      goalrun-harness:
+        specifier: workspace:*
+        version: link:../harness
+      goalrun-reporter:
+        specifier: workspace:*
+        version: link:../reporter
+      goalrun-security:
+        specifier: workspace:*
+        version: link:../security
       picocolors:
         specifier: ^1.1.0
         version: 1.1.1
@@ -94,10 +94,10 @@ importers:
 
   packages/harness:
     dependencies:
-      '@strings77wzq/goalrun-core':
+      goalrun-core:
         specifier: workspace:*
         version: link:../core
-      '@strings77wzq/goalrun-security':
+      goalrun-security:
         specifier: workspace:*
         version: link:../security
     devDependencies:
@@ -113,7 +113,7 @@ importers:
 
   packages/reporter:
     dependencies:
-      '@strings77wzq/goalrun-core':
+      goalrun-core:
         specifier: workspace:*
         version: link:../core
       picocolors:
@@ -132,7 +132,7 @@ importers:
 
   packages/security:
     dependencies:
-      '@strings77wzq/goalrun-core':
+      goalrun-core:
         specifier: workspace:*
         version: link:../core
     devDependencies:

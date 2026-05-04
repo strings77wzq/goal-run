@@ -6,9 +6,9 @@ import {
   runGoalHarness,
   runPolicyHarness,
   generatePlanReport,
-} from "@strings77wzq/goalrun-harness";
-import { formatText, formatJson } from "@strings77wzq/goalrun-reporter";
-import { DEFAULT_POLICY, parsePolicyConfigSafe } from "@strings77wzq/goalrun-core";
+} from "goalrun-harness";
+import { formatText, formatJson } from "goalrun-reporter";
+import { DEFAULT_POLICY, parsePolicyConfigSafe } from "goalrun-core";
 
 export async function planCommand(
   goalPath: string,
@@ -96,8 +96,8 @@ export async function planCommand(
 
 function buildRiskSummary(
   spec: { budget: { max_iterations: number; max_changed_files: number; max_runtime_minutes: number }; policy: { require_approval_for: string[] } },
-  goalDiags: import("@strings77wzq/goalrun-core").Diagnostic[],
-  policyDiags: import("@strings77wzq/goalrun-core").Diagnostic[],
+  goalDiags: import("goalrun-core").Diagnostic[],
+  policyDiags: import("goalrun-core").Diagnostic[],
 ): string[] {
   const risks: string[] = [];
 

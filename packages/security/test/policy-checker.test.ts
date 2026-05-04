@@ -4,7 +4,7 @@ import {
   checkGoalAgainstPolicy,
   checkSkillPermissions,
 } from "../src/policy-checker.js";
-import type { PolicyConfig } from "@strings77wzq/goalrun-core";
+import type { PolicyConfig } from "goalrun-core";
 
 const SAMPLE_POLICY: PolicyConfig = {
   blocked_commands: ["rm -rf", "npm publish", "terraform apply"],

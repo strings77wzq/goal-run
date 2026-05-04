@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from "node:fs";
 import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
-import { type RunState, allCriteriaPassed } from "@strings77wzq/goalrun-core";
+import { type RunState, allCriteriaPassed } from "goalrun-core";
 
 export async function auditCommand(
   runId: string,
