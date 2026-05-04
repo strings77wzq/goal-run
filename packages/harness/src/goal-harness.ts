@@ -4,12 +4,12 @@ import {
   type GoalSpec,
   createError,
   createWarning,
-} from "goalrun-core";
-import { scanForBlockedCommands } from "goalrun-security";
-import type { PolicyConfig } from "goalrun-core";
-import { readFileSync } from "node:fs";
-import { existsSync } from "node:fs";
-import { checkCriteriaQuality } from "./criteria-harness.js";
+} from 'goalrun-core';
+import { scanForBlockedCommands } from 'goalrun-security';
+import type { PolicyConfig } from 'goalrun-core';
+import { readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
+import { checkCriteriaQuality } from './criteria-harness.js';
 
 export interface GoalHarnessInput {
   goalYamlPath: string;
@@ -28,14 +28,14 @@ export function runGoalHarness(input: GoalHarnessInput): GoalHarnessOutput {
 
   if (!existsSync(input.goalYamlPath)) {
     diagnostics.push(
-      createError("GOAL_FILE_NOT_FOUND", `Goal file not found: ${input.goalYamlPath}`, {
+      createError('GOAL_FILE_NOT_FOUND', `Goal file not found: ${input.goalYamlPath}`, {
         file: input.goalYamlPath,
       }),
     );
     return { success: false, diagnostics };
   }
 
-  const content = readFileSync(input.goalYamlPath, "utf-8");
+  const content = readFileSync(input.goalYamlPath, 'utf-8');
   const parsed = parseGoalSpec(content, input.goalYamlPath);
 
   if (!parsed.success) {
@@ -49,7 +49,7 @@ export function runGoalHarness(input: GoalHarnessInput): GoalHarnessOutput {
     if (!input.availableSkills.includes(skill)) {
       diagnostics.push(
         createError(
-          "GOAL_MISSING_SKILL",
+          'GOAL_MISSING_SKILL',
           `Goal references skill "${skill}" which is not installed`,
           {
             file: input.goalYamlPath,
@@ -64,9 +64,9 @@ export function runGoalHarness(input: GoalHarnessInput): GoalHarnessOutput {
   if (spec.budget.max_iterations > 100) {
     diagnostics.push(
       createWarning(
-        "GOAL_HIGH_ITERATIONS",
+        'GOAL_HIGH_ITERATIONS',
         `max_iterations (${spec.budget.max_iterations}) seems high`,
-        { file: input.goalYamlPath, hint: "Consider reducing to prevent runaway loops" },
+        { file: input.goalYamlPath, hint: 'Consider reducing to prevent runaway loops' },
       ),
     );
   }
@@ -74,7 +74,7 @@ export function runGoalHarness(input: GoalHarnessInput): GoalHarnessOutput {
   if (spec.budget.max_changed_files > 500) {
     diagnostics.push(
       createWarning(
-        "GOAL_HIGH_CHANGED_FILES",
+        'GOAL_HIGH_CHANGED_FILES',
         `max_changed_files (${spec.budget.max_changed_files}) seems high`,
         { file: input.goalYamlPath },
       ),
@@ -83,10 +83,14 @@ export function runGoalHarness(input: GoalHarnessInput): GoalHarnessOutput {
 
   // Check goal text for dangerous instructions
   const dangerPatterns = [
-    { pattern: /rm\s+-rf/i, code: "GOAL_DANGEROUS_RM", msg: "Goal text contains rm -rf" },
-    { pattern: /curl\s+.*\|\s*(?:ba)?sh/i, code: "GOAL_DANGEROUS_CURL", msg: "Goal text contains curl pipe to shell" },
-    { pattern: /DROP\s+TABLE/i, code: "GOAL_DANGEROUS_SQL", msg: "Goal text contains DROP TABLE" },
-    { pattern: /chmod\s+777/i, code: "GOAL_DANGEROUS_PERM", msg: "Goal text contains chmod 777" },
+    { pattern: /rm\s+-rf/i, code: 'GOAL_DANGEROUS_RM', msg: 'Goal text contains rm -rf' },
+    {
+      pattern: /curl\s+.*\|\s*(?:ba)?sh/i,
+      code: 'GOAL_DANGEROUS_CURL',
+      msg: 'Goal text contains curl pipe to shell',
+    },
+    { pattern: /DROP\s+TABLE/i, code: 'GOAL_DANGEROUS_SQL', msg: 'Goal text contains DROP TABLE' },
+    { pattern: /chmod\s+777/i, code: 'GOAL_DANGEROUS_PERM', msg: 'Goal text contains chmod 777' },
   ];
 
   for (const dp of dangerPatterns) {
@@ -94,14 +98,14 @@ export function runGoalHarness(input: GoalHarnessInput): GoalHarnessOutput {
       diagnostics.push(
         createError(dp.code, dp.msg, {
           file: input.goalYamlPath,
-          hint: "Remove dangerous instructions from the goal specification",
+          hint: 'Remove dangerous instructions from the goal specification',
         }),
       );
     }
   }
 
   // Check verification commands don't contain blocked commands
-  const allVerificationCommands = spec.verification.commands.join("\n");
+  const allVerificationCommands = spec.verification.commands.join('\n');
   const blockedDiags = scanForBlockedCommands(
     allVerificationCommands,
     input.goalYamlPath,
@@ -113,6 +117,6 @@ export function runGoalHarness(input: GoalHarnessInput): GoalHarnessOutput {
   const criteriaDiags = checkCriteriaQuality(spec.criteria, input.goalYamlPath);
   diagnostics.push(...criteriaDiags);
 
-  const hasErrors = diagnostics.some((d) => d.severity === "error");
+  const hasErrors = diagnostics.some((d) => d.severity === 'error');
   return { success: !hasErrors, spec, diagnostics };
 }

@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-export const SeverityEnum = z.enum(["error", "warning", "info"]);
+export const SeverityEnum = z.enum(['error', 'warning', 'info']);
 
 export const DiagnosticSchema = z.object({
   code: z.string().min(1),
@@ -20,13 +20,13 @@ export interface DiagnosticOpts {
 }
 
 export function createError(code: string, message: string, opts?: DiagnosticOpts): Diagnostic {
-  return { code, severity: "error", message, ...opts };
+  return { code, severity: 'error', message, ...opts };
 }
 
 export function createWarning(code: string, message: string, opts?: DiagnosticOpts): Diagnostic {
-  return { code, severity: "warning", message, ...opts };
+  return { code, severity: 'warning', message, ...opts };
 }
 
 export function createInfo(code: string, message: string, opts?: DiagnosticOpts): Diagnostic {
-  return { code, severity: "info", message, ...opts };
+  return { code, severity: 'info', message, ...opts };
 }

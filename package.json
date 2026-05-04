@@ -1,6 +1,6 @@
 {
   "name": "goalrun",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "private": true,
   "description": "Goal-driven agent skills for software engineering",
   "type": "module",
@@ -28,6 +28,8 @@
   },
   "packageManager": "pnpm@10.24.0",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild"]
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

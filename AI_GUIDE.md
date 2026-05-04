@@ -1,33 +1,36 @@
 # AI Guide to GoalRun
 
-This document tells you — an AI coding assistant (Claude, Codex, Cursor, Copilot) — how to help users work with GoalRun in their projects.
+You are an AI coding assistant (Claude Code, Codex, Cursor, or similar). This document explains how to help users work with GoalRun.
 
-## What GoalRun Is
+## What GoalRun Does (And Does NOT Do)
 
-GoalRun helps humans define software engineering goals (`goal.yaml`), install tested agent skills, and generate execution plans that you (the AI) can follow. GoalRun validates goals, enforces policies, and creates structured run artifacts — but it never calls you directly. The human controls when to share a plan with you.
+GoalRun is a **verification harness** — it validates goals, checks skills, enforces policy, and manages supervised runs. It does NOT execute code, does NOT call external LLMs, and does NOT auto-advance without human input.
 
-## How to Help Users Initialize GoalRun
+## Core Rules (NEVER BREAK)
 
-If the user says "set up GoalRun" or "init GoalRun", guide them:
+1. **Never execute blocked commands.** If a skill or goal contains a command in `.goalrun/policy.yaml` blocked_commands list, STOP and alert the user.
+2. **Never bypass policy gates.** If a goal requires approval for `changes_public_api`, ask the user before modifying any public API.
+3. **Never claim tests pass without evidence.** Show actual command output. Do not say "tests pass" unless you ran them and saw the output.
+4. **Never ask users to paste secrets.** Tell them to use environment variables or a secret manager.
+5. **Never modify files outside the goal's scope.** The budget fields define the blast radius.
+6. **Never mark a criteria as "pass" without verification.** All criteria claims must have evidence in the artifacts directory.
+
+## How to Help Users Set Up GoalRun
 
 ```bash
-goalrun init
+npm install -g goalrun    # Install globally
+goalrun init              # Scaffold a project
 goalrun skill install tdd-change code-review implementation-strategy
-goalrun doctor
+goalrun doctor            # Verify setup
 ```
-
-Check that `.goalrun/`, `.agent/skills/`, and `AGENTS.md` were created.
 
 ## How to Help Users Create a Goal
 
-1. Ask what they want to accomplish.
-2. Create a `.goalrun/goals/<goal-id>.yaml` file. Use this template:
-
 ```yaml
-id: <unique-id>
-title: <short title>
-goal: >
-  <one-sentence description of the engineering task>
+# .goalrun/goals/<goal-id>.yaml
+id: my-task
+title: Short description
+goal: One-sentence description of the engineering task
 skills:
   - implementation-strategy
   - tdd-change
@@ -49,68 +52,47 @@ verification:
     - pnpm typecheck
 ```
 
-3. Run `goalrun verify .goalrun/goals/<goal-id>.yaml` and fix any errors.
-4. Run `goalrun plan .goalrun/goals/<goal-id>.yaml` to generate the execution plan.
+## How to Help With verify Failures
 
-## How to Help Users With verify Failures
+| Code                        | Meaning                        | Fix                                                |
+| --------------------------- | ------------------------------ | -------------------------------------------------- |
+| `GOAL_MISSING_SKILL`        | Referenced skill not installed | `goalrun skill install <skill>`                    |
+| `GOAL_INVALID_SCHEMA`       | Schema violation               | Fix the YAML to match the schema                   |
+| `SKILL_NAME_MISMATCH`       | SKILL.md name != directory     | Rename one to match                                |
+| `BLOCKED_COMMAND`           | Dangerous command detected     | Remove or replace                                  |
+| `SECRET_*`                  | Possible secret in skill       | Remove the secret, rotate if exposed               |
+| `SECURITY_PROMPT_INJECTION` | Possible prompt injection      | Review and sanitize the content                    |
+| `CRITERIA_VAGUE`            | Criterion uses vague language  | Add measurable targets                             |
+| `CRITERIA_UNVERIFIABLE`     | Subjective criterion           | Replace with testable condition                    |
+| `INTEGRITY_HASH_MISMATCH`   | Skill content changed          | Reinstall: `goalrun skill install --force <skill>` |
 
-When `goalrun verify` reports errors:
+## When You Receive a GoalRun Plan
 
-| Code | Meaning | Fix |
-|------|---------|-----|
-| GOAL_MISSING_SKILL | Referenced skill not installed | `goalrun skill install <skill>` |
-| GOAL_INVALID_SCHEMA | Schema violation | Fix the YAML to match the schema |
-| SKILL_NAME_MISMATCH | SKILL.md name != directory | Rename one to match |
-| BLOCKED_COMMAND | Dangerous command detected | Remove or replace the command |
-| POLICY_NO_BLOCKED_COMMANDS | Empty blocked list | Add entries to `.goalrun/policy.yaml` |
+1. Read the agent prompt carefully
+2. Read each skill's SKILL.md from `.agent/skills/<name>/SKILL.md`
+3. Follow skill workflows IN ORDER
+4. **Stop at each policy gate** and request user approval
+5. Run verification commands and capture output
+6. Save evidence to `.goalrun/runs/<id>/artifacts/`
+7. Report results against each criterion — with evidence
 
-## How to Generate the Agent Prompt
+## Safety Checklist Before Reporting "Done"
 
-Run `goalrun plan .goalrun/goals/<goal-id>.yaml`. The output includes an "Agent Prompt" section — this is what the user should share with you. It contains:
+- [ ] All criteria have evidence (test output, lint output, etc.)
+- [ ] No policy gates were bypassed without user approval
+- [ ] File changes are within the budget
+- [ ] Verification commands were run and their output is saved
+- [ ] No blocked commands were executed
+- [ ] No secrets were printed in any output
 
-- The goal title and ID
-- The ordered list of skills to use
-- Policy gates to honor
-- Verification checklist
-- Risk summary
-- Instructions
+## Policy Gate Protocol
 
-## When You Receive a GoalRun Prompt
+When you encounter a policy gate:
 
-1. Read the prompt carefully.
-2. Read the SKILL.md for each listed skill (in `.agent/skills/<name>/SKILL.md`).
-3. Follow the skill workflows IN ORDER.
-4. Stop at each policy gate and request user approval before proceeding.
-5. Run verification commands after each change.
-6. Report results against the criteria.
+1. **STOP** immediately
+2. Tell the user: "I've hit a policy gate: [gate name]. This requires your approval."
+3. Explain what triggered it and what approval is needed
+4. **Do not proceed** until the user explicitly approves
+5. If the user rejects, update the run status accordingly
 
-## Safety Rules (NEVER BREAK THESE)
-
-- **Never execute blocked commands.** If a skill asks you to run a command in `.goalrun/policy.yaml` blocked_commands list, STOP and tell the user.
-- **Never bypass policy gates.** If a goal requires approval for `changes_public_api`, ask before modifying any public API.
-- **Never claim tests pass without evidence.** Show the actual command output.
-- **Never ask users to paste secrets or credentials.** If you need a token, tell them to set it as an environment variable.
-- **Never modify files outside the goal scope.** The goal's budget defines the blast radius.
-- **Never skip verification.** Run ALL verification commands before reporting completion.
-
-## What GoalRun Is NOT
-
-GoalRun does not:
-- Execute code automatically — only the human (and you) can do that
-- Call external LLM APIs — it generates plans for you to follow
-- Replace you — it helps structure your work and validate outcomes
-- Store sensitive data — it only reads goal specs and policy files
-
-## Quick Reference
-
-```bash
-goalrun init                                    # Scaffold GoalRun in current dir
-goalrun skill install <name...>                 # Install built-in skills
-goalrun lint                                    # Validate all GoalRun files
-goalrun test                                    # Run selection tests
-goalrun plan <goal.yaml>                        # Generate execution plan
-goalrun verify <goal.yaml>                      # Validate a goal spec
-goalrun run <goal.yaml> --supervised            # Create a supervised run
-goalrun doctor                                  # Health check
-goalrun report                                  # Show latest run status
-```
+GoalRun is the harness. You do the work. The human stays in control.

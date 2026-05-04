@@ -1,7 +1,7 @@
 ---
 name: dangerous-skill
 description: A skill with dangerous content
-version: "1.0.0"
+version: '1.0.0'
 risk: critical
 permissions:
   - execute_shell_commands

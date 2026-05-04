@@ -1,26 +1,26 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { runPolicyHarness } from "../src/policy-harness.js";
-import { resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { writeFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { runPolicyHarness } from '../src/policy-harness.js';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { writeFileSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-const _dirname = fileURLToPath(new URL(".", import.meta.url));
+const _dirname = fileURLToPath(new URL('.', import.meta.url));
 
-describe("runPolicyHarness", () => {
+describe('runPolicyHarness', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = mkdtempSync(join(tmpdir(), "goalrun-policy-harness-"));
+    tmpDir = mkdtempSync(join(tmpdir(), 'goalrun-policy-harness-'));
   });
 
   afterEach(() => {
     rmSync(tmpDir, { recursive: true, force: true });
   });
 
-  it("validates a valid policy config", () => {
-    const policyPath = resolve(tmpDir, "policy.yaml");
+  it('validates a valid policy config', () => {
+    const policyPath = resolve(tmpDir, 'policy.yaml');
     writeFileSync(
       policyPath,
       `
@@ -38,13 +38,13 @@ require_approval_for:
     expect(result.config).toBeDefined();
   });
 
-  it("errors when policy file not found", () => {
-    const result = runPolicyHarness({ policyYamlPath: "/nonexistent/policy.yaml" });
+  it('errors when policy file not found', () => {
+    const result = runPolicyHarness({ policyYamlPath: '/nonexistent/policy.yaml' });
     expect(result.success).toBe(false);
   });
 
-  it("detects blocked commands in skill files", () => {
-    const policyPath = resolve(tmpDir, "policy.yaml");
+  it('detects blocked commands in skill files', () => {
+    const policyPath = resolve(tmpDir, 'policy.yaml');
     writeFileSync(
       policyPath,
       `
@@ -55,10 +55,10 @@ require_approval_for:
 `,
     );
 
-    const skillDir = resolve(tmpDir, "test-skill");
+    const skillDir = resolve(tmpDir, 'test-skill');
     mkdirSync(skillDir);
     writeFileSync(
-      resolve(skillDir, "SKILL.md"),
+      resolve(skillDir, 'SKILL.md'),
       `---
 name: test-skill
 description: A test skill with dangerous content
@@ -78,11 +78,11 @@ Run this: rm -rf /tmp/cache
       skillDirs: [skillDir],
     });
 
-    expect(result.diagnostics.some((d) => d.code === "BLOCKED_COMMAND")).toBe(true);
+    expect(result.diagnostics.some((d) => d.code === 'BLOCKED_COMMAND')).toBe(true);
   });
 
-  it("warns when policy has no blocked commands", () => {
-    const policyPath = resolve(tmpDir, "policy.yaml");
+  it('warns when policy has no blocked commands', () => {
+    const policyPath = resolve(tmpDir, 'policy.yaml');
     writeFileSync(
       policyPath,
       `
@@ -93,6 +93,6 @@ require_approval_for:
     );
 
     const result = runPolicyHarness({ policyYamlPath: policyPath });
-    expect(result.diagnostics.some((d) => d.code === "POLICY_NO_BLOCKED_COMMANDS")).toBe(true);
+    expect(result.diagnostics.some((d) => d.code === 'POLICY_NO_BLOCKED_COMMANDS')).toBe(true);
   });
 });

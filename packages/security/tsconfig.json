@@ -20,7 +20,5 @@
   },
   "include": ["src"],
   "exclude": ["dist", "test", "node_modules"],
-  "references": [
-    { "path": "../core" }
-  ]
+  "references": [{ "path": "../core" }]
 }

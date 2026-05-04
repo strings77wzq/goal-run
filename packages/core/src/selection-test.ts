@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { parse as parseYaml } from "yaml";
-import type { Diagnostic } from "./diagnostic.js";
-import { createError } from "./diagnostic.js";
+import { z } from 'zod';
+import { parse as parseYaml } from 'yaml';
+import type { Diagnostic } from './diagnostic.js';
+import { createError } from './diagnostic.js';
 
 export const SelectionExpectSchema = z.object({
   skill: z.string(),
@@ -22,14 +22,19 @@ export const SelectionTestsSchema = z.object({
 export type SelectionTest = z.infer<typeof SelectionTestSchema>;
 export type SelectionTests = z.infer<typeof SelectionTestsSchema>;
 
-export function parseSelectionTests(yamlContent: string, filePath: string): {
-  success: true;
-  tests: SelectionTests;
-  diagnostics: Diagnostic[];
-} | {
-  success: false;
-  diagnostics: Diagnostic[];
-} {
+export function parseSelectionTests(
+  yamlContent: string,
+  filePath: string,
+):
+  | {
+      success: true;
+      tests: SelectionTests;
+      diagnostics: Diagnostic[];
+    }
+  | {
+      success: false;
+      diagnostics: Diagnostic[];
+    } {
   let raw: unknown;
 
   try {
@@ -38,18 +43,22 @@ export function parseSelectionTests(yamlContent: string, filePath: string): {
     return {
       success: false,
       diagnostics: [
-        createError("SELECTION_INVALID_YAML", `Failed to parse YAML in ${filePath}: ${String(err)}`, {
-          file: filePath,
-        }),
+        createError(
+          'SELECTION_INVALID_YAML',
+          `Failed to parse YAML in ${filePath}: ${String(err)}`,
+          {
+            file: filePath,
+          },
+        ),
       ],
     };
   }
 
-  if (!raw || (typeof raw === "object" && Object.keys(raw).length === 0)) {
+  if (!raw || (typeof raw === 'object' && Object.keys(raw).length === 0)) {
     return {
       success: false,
       diagnostics: [
-        createError("SELECTION_EMPTY", `Empty selection tests in ${filePath}`, { file: filePath }),
+        createError('SELECTION_EMPTY', `Empty selection tests in ${filePath}`, { file: filePath }),
       ],
     };
   }
@@ -59,7 +68,7 @@ export function parseSelectionTests(yamlContent: string, filePath: string): {
     return {
       success: false,
       diagnostics: parsed.error.issues.map((issue) =>
-        createError("SELECTION_INVALID_SCHEMA", `${issue.path.join(".")}: ${issue.message}`, {
+        createError('SELECTION_INVALID_SCHEMA', `${issue.path.join('.')}: ${issue.message}`, {
           file: filePath,
         }),
       ),

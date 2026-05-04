@@ -1,11 +1,11 @@
-import { z } from "zod";
-import { createHash } from "node:crypto";
-import { createError, type Diagnostic } from "./diagnostic.js";
+import { z } from 'zod';
+import { createHash } from 'node:crypto';
+import { createError, type Diagnostic } from './diagnostic.js';
 
 export const LockfileSkillSchema = z.object({
   version: z.string(),
   installed_at: z.string(),
-  source: z.literal("builtin"),
+  source: z.literal('builtin'),
   sha256: z.string().length(64).optional(),
   installed_targets: z.array(z.string()).optional(),
   provenance: z.string().optional(),
@@ -24,7 +24,7 @@ export function createLockfile(): Lockfile {
 }
 
 export function computeSkillHash(content: string): string {
-  return createHash("sha256").update(content).digest("hex");
+  return createHash('sha256').update(content).digest('hex');
 }
 
 export function addSkillToLockfile(
@@ -38,7 +38,7 @@ export function addSkillToLockfile(
   const entry: LockfileSkill = {
     version,
     installed_at: new Date().toISOString(),
-    source: "builtin" as const,
+    source: 'builtin' as const,
   };
   if (sha256) entry.sha256 = sha256;
   if (installedTargets) entry.installed_targets = installedTargets;
@@ -63,10 +63,7 @@ export function hasSkill(lockfile: Lockfile, name: string): boolean {
   return name in lockfile.skills;
 }
 
-export function getSkillInfo(
-  lockfile: Lockfile,
-  name: string,
-): LockfileSkill | undefined {
+export function getSkillInfo(lockfile: Lockfile, name: string): LockfileSkill | undefined {
   return lockfile.skills[name];
 }
 
@@ -81,7 +78,7 @@ export function verifyIntegrity(
     if (!content) {
       diagnostics.push(
         createError(
-          "INTEGRITY_SKILL_NOT_FOUND",
+          'INTEGRITY_SKILL_NOT_FOUND',
           `Skill "${name}" is in lockfile but not found in skills directory`,
           { hint: "Run 'goalrun skill install' to reinstall this skill" },
         ),
@@ -94,7 +91,7 @@ export function verifyIntegrity(
       if (actualHash !== entry.sha256) {
         diagnostics.push(
           createError(
-            "INTEGRITY_HASH_MISMATCH",
+            'INTEGRITY_HASH_MISMATCH',
             `Skill "${name}" content hash does not match lockfile`,
             {
               hint: "Skill content may have been modified. Run 'goalrun skill install --force' to reinstall.",

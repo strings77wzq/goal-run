@@ -1,11 +1,11 @@
-import { readFile, writeFile, mkdir, access, copyFile } from "node:fs/promises";
-import { resolve, relative, dirname } from "node:path";
-import { parse as parseYaml } from "yaml";
+import { readFile, writeFile, mkdir, access, copyFile } from 'node:fs/promises';
+import { resolve, relative, dirname } from 'node:path';
+import { parse as parseYaml } from 'yaml';
 
 export function resolveSafe(repoRoot: string, relativePath: string): string {
   const resolved = resolve(repoRoot, relativePath);
   const rel = relative(repoRoot, resolved);
-  if (rel.startsWith("..")) {
+  if (rel.startsWith('..')) {
     throw new Error(`Path traversal detected: "${relativePath}" resolves outside repo root`);
   }
   return resolved;
@@ -17,7 +17,7 @@ function validatePath(repoRoot: string, relativePath: string): string {
 
 export async function readFileSafe(repoRoot: string, relativePath: string): Promise<string> {
   const fullPath = validatePath(repoRoot, relativePath);
-  return readFile(fullPath, "utf-8");
+  return readFile(fullPath, 'utf-8');
 }
 
 export async function writeFileSafe(
@@ -27,7 +27,7 @@ export async function writeFileSafe(
 ): Promise<void> {
   const fullPath = validatePath(repoRoot, relativePath);
   await mkdir(dirname(fullPath), { recursive: true });
-  await writeFile(fullPath, content, "utf-8");
+  await writeFile(fullPath, content, 'utf-8');
 }
 
 export async function fileExists(repoRoot: string, relativePath: string): Promise<boolean> {

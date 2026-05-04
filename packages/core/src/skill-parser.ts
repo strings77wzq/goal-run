@@ -1,9 +1,9 @@
-import { z } from "zod";
-import matter from "gray-matter";
-import type { Diagnostic } from "./diagnostic.js";
-import { createError, createWarning } from "./diagnostic.js";
+import { z } from 'zod';
+import matter from 'gray-matter';
+import type { Diagnostic } from './diagnostic.js';
+import { createError, createWarning } from './diagnostic.js';
 
-export const RiskEnum = z.enum(["low", "medium", "high", "critical"]);
+export const RiskEnum = z.enum(['low', 'medium', 'high', 'critical']);
 
 export const SkillMetadataSchema = z.object({
   name: z.string().min(1),
@@ -44,9 +44,9 @@ export function parseSkillMd(content: string, filePath: string): ParseResult {
     return {
       success: false,
       diagnostics: [
-        createError("SKILL_NO_FRONTMATTER", `No valid YAML frontmatter found in ${filePath}`, {
+        createError('SKILL_NO_FRONTMATTER', `No valid YAML frontmatter found in ${filePath}`, {
           file: filePath,
-          hint: "Add YAML frontmatter between --- delimiters at the top of the file",
+          hint: 'Add YAML frontmatter between --- delimiters at the top of the file',
         }),
       ],
     };
@@ -56,9 +56,9 @@ export function parseSkillMd(content: string, filePath: string): ParseResult {
     return {
       success: false,
       diagnostics: [
-        createError("SKILL_NO_FRONTMATTER", `No frontmatter found in ${filePath}`, {
+        createError('SKILL_NO_FRONTMATTER', `No frontmatter found in ${filePath}`, {
           file: filePath,
-          hint: "Add YAML frontmatter between --- delimiters at the top of the file",
+          hint: 'Add YAML frontmatter between --- delimiters at the top of the file',
         }),
       ],
     };
@@ -68,7 +68,7 @@ export function parseSkillMd(content: string, filePath: string): ParseResult {
 
   if (!schemaResult.success) {
     const zodErrors = schemaResult.error.issues.map((issue) =>
-      createError("SKILL_INVALID_FRONTMATTER", `${issue.path.join(".")}: ${issue.message}`, {
+      createError('SKILL_INVALID_FRONTMATTER', `${issue.path.join('.')}: ${issue.message}`, {
         file: filePath,
       }),
     );
@@ -78,11 +78,11 @@ export function parseSkillMd(content: string, filePath: string): ParseResult {
   const metadata = schemaResult.data;
 
   // Check name matches directory name
-  const dirName = filePath.split("/").slice(-2, -1)[0] ?? "";
+  const dirName = filePath.split('/').slice(-2, -1)[0] ?? '';
   if (dirName && metadata.name !== dirName) {
     diagnostics.push(
       createWarning(
-        "SKILL_NAME_MISMATCH",
+        'SKILL_NAME_MISMATCH',
         `Skill name "${metadata.name}" does not match directory name "${dirName}"`,
         {
           file: filePath,
@@ -96,11 +96,11 @@ export function parseSkillMd(content: string, filePath: string): ParseResult {
   if (metadata.description.length < MIN_DESCRIPTION_LENGTH) {
     diagnostics.push(
       createWarning(
-        "SKILL_SHORT_DESCRIPTION",
+        'SKILL_SHORT_DESCRIPTION',
         `Description is too short (${metadata.description.length} chars). Minimum recommended: ${MIN_DESCRIPTION_LENGTH}`,
         {
           file: filePath,
-          hint: "Add a more detailed description so agents can decide when to use this skill",
+          hint: 'Add a more detailed description so agents can decide when to use this skill',
         },
       ),
     );

@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: Review code changes for correctness, test coverage, security, performance, and maintainability
-version: "1.0.0"
+version: '1.0.0'
 risk: low
 permissions:
   - read_files

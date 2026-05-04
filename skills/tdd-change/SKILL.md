@@ -1,7 +1,7 @@
 ---
 name: tdd-change
 description: Implement changes using strict test-driven development — red, green, refactor
-version: "1.0.0"
+version: '1.0.0'
 risk: medium
 permissions:
   - read_files

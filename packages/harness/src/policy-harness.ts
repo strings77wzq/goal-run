@@ -4,16 +4,16 @@ import {
   type PolicyConfig,
   type GoalSpec,
   createError,
-} from "goalrun-core";
+} from 'goalrun-core';
 import {
   validatePolicyConfig,
   checkGoalAgainstPolicy,
   checkSkillPermissions,
-} from "goalrun-security";
-import { scanForBlockedCommands } from "goalrun-security";
-import { readFileSync } from "node:fs";
-import { existsSync } from "node:fs";
-import { parseSkillMd } from "goalrun-core";
+} from 'goalrun-security';
+import { scanForBlockedCommands } from 'goalrun-security';
+import { readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
+import { parseSkillMd } from 'goalrun-core';
 
 export interface PolicyHarnessInput {
   policyYamlPath: string;
@@ -33,12 +33,12 @@ export function runPolicyHarness(input: PolicyHarnessInput): PolicyHarnessOutput
 
   if (!existsSync(input.policyYamlPath)) {
     diagnostics.push(
-      createError("POLICY_FILE_NOT_FOUND", `Policy file not found: ${input.policyYamlPath}`),
+      createError('POLICY_FILE_NOT_FOUND', `Policy file not found: ${input.policyYamlPath}`),
     );
     return { success: false, diagnostics };
   }
 
-  const content = readFileSync(input.policyYamlPath, "utf-8");
+  const content = readFileSync(input.policyYamlPath, 'utf-8');
   const parsed = parsePolicyConfigSafe(content, input.policyYamlPath);
 
   if (!parsed.success) {
@@ -61,8 +61,12 @@ export function runPolicyHarness(input: PolicyHarnessInput): PolicyHarnessOutput
     );
 
     // Scan goal spec for blocked commands
-    const goalContent = input.goalSpec.goal + "\n" + input.goalSpec.criteria.join("\n");
-    const goalBlocked = scanForBlockedCommands(goalContent, input.goalYamlPath, config.blocked_commands);
+    const goalContent = input.goalSpec.goal + '\n' + input.goalSpec.criteria.join('\n');
+    const goalBlocked = scanForBlockedCommands(
+      goalContent,
+      input.goalYamlPath,
+      config.blocked_commands,
+    );
     diagnostics.push(...goalBlocked);
   }
 
@@ -71,7 +75,7 @@ export function runPolicyHarness(input: PolicyHarnessInput): PolicyHarnessOutput
     for (const skillDir of input.skillDirs) {
       const skillMdPath = `${skillDir}/SKILL.md`;
       if (existsSync(skillMdPath)) {
-        const skillContent = readFileSync(skillMdPath, "utf-8");
+        const skillContent = readFileSync(skillMdPath, 'utf-8');
         const skillParsed = parseSkillMd(skillContent, skillMdPath);
         if (skillParsed.success) {
           diagnostics.push(
@@ -94,6 +98,6 @@ export function runPolicyHarness(input: PolicyHarnessInput): PolicyHarnessOutput
     }
   }
 
-  const hasErrors = diagnostics.some((d) => d.severity === "error");
+  const hasErrors = diagnostics.some((d) => d.severity === 'error');
   return { success: !hasErrors, config, diagnostics };
 }

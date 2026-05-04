@@ -1,19 +1,12 @@
-import { resolve } from "node:path";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import pc from "picocolors";
-import { loadConfig } from "../utils/config.js";
-import {
-  runGoalHarness,
-  runPolicyHarness,
-  generatePlanReport,
-} from "goalrun-harness";
-import { formatText, formatJson } from "goalrun-reporter";
-import { DEFAULT_POLICY, parsePolicyConfigSafe } from "goalrun-core";
+import { resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import pc from 'picocolors';
+import { loadConfig } from '../utils/config.js';
+import { runGoalHarness, runPolicyHarness, generatePlanReport } from 'goalrun-harness';
+import { formatText, formatJson } from 'goalrun-reporter';
+import { DEFAULT_POLICY, parsePolicyConfigSafe } from 'goalrun-core';
 
-export async function planCommand(
-  goalPath: string,
-  opts: { json?: boolean },
-): Promise<void> {
+export async function planCommand(goalPath: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
   const fullGoalPath = resolve(repoRoot, goalPath);
@@ -30,7 +23,7 @@ export async function planCommand(
   const policyPath = resolve(repoRoot, config.policy_file);
   let policy = DEFAULT_POLICY;
   if (existsSync(policyPath)) {
-    const policyContent = readFileSync(policyPath, "utf-8");
+    const policyContent = readFileSync(policyPath, 'utf-8');
     const parsed = parsePolicyConfigSafe(policyContent, policyPath);
     if (parsed.success) policy = parsed.config;
   }
@@ -46,7 +39,7 @@ export async function planCommand(
     if (opts.json) {
       console.log(formatJson(goalResult.diagnostics));
     } else {
-      console.log(pc.red("Goal validation failed:"));
+      console.log(pc.red('Goal validation failed:'));
       console.log(formatText(goalResult.diagnostics));
     }
     process.exit(1);
@@ -77,27 +70,32 @@ export async function planCommand(
   if (opts.json) {
     console.log(JSON.stringify(planReport, null, 2));
   } else {
-    console.log(pc.bold(pc.green("Execution Plan Generated")));
+    console.log(pc.bold(pc.green('Execution Plan Generated')));
     console.log(`Goal: ${spec.title} (${spec.id})`);
-    console.log(`Skills: ${spec.skills.join(", ")}`);
-    console.log(`Budget: ${spec.budget.max_iterations} iterations, ${spec.budget.max_changed_files} files, ${spec.budget.max_runtime_minutes} min`);
-    console.log("");
-    console.log(pc.bold("Risk Summary:"));
+    console.log(`Skills: ${spec.skills.join(', ')}`);
+    console.log(
+      `Budget: ${spec.budget.max_iterations} iterations, ${spec.budget.max_changed_files} files, ${spec.budget.max_runtime_minutes} min`,
+    );
+    console.log('');
+    console.log(pc.bold('Risk Summary:'));
     for (const r of riskSummary) {
-      console.log(`  ${pc.yellow("!")} ${r}`);
+      console.log(`  ${pc.yellow('!')} ${r}`);
     }
-    console.log("");
-    console.log(pc.bold("Agent Prompt (ready to share with Claude/Codex):"));
-    console.log(pc.dim("---"));
+    console.log('');
+    console.log(pc.bold('Agent Prompt (ready to share with Claude/Codex):'));
+    console.log(pc.dim('---'));
     console.log(planReport.agentPrompt);
-    console.log(pc.dim("---"));
+    console.log(pc.dim('---'));
   }
 }
 
 function buildRiskSummary(
-  spec: { budget: { max_iterations: number; max_changed_files: number; max_runtime_minutes: number }; policy: { require_approval_for: string[] } },
-  goalDiags: import("goalrun-core").Diagnostic[],
-  policyDiags: import("goalrun-core").Diagnostic[],
+  spec: {
+    budget: { max_iterations: number; max_changed_files: number; max_runtime_minutes: number };
+    policy: { require_approval_for: string[] };
+  },
+  goalDiags: import('goalrun-core').Diagnostic[],
+  policyDiags: import('goalrun-core').Diagnostic[],
 ): string[] {
   const risks: string[] = [];
 
@@ -108,13 +106,13 @@ function buildRiskSummary(
     risks.push(`High file change budget (${spec.budget.max_changed_files}) — wide blast radius`);
   }
   if (spec.policy.require_approval_for.length === 0) {
-    risks.push("No approval gates defined — all changes may proceed without approval");
+    risks.push('No approval gates defined — all changes may proceed without approval');
   }
-  if (spec.policy.require_approval_for.includes("changes_public_api")) {
-    risks.push("Public API changes require approval");
+  if (spec.policy.require_approval_for.includes('changes_public_api')) {
+    risks.push('Public API changes require approval');
   }
 
-  const errors = [...goalDiags, ...policyDiags].filter((d) => d.severity === "error");
+  const errors = [...goalDiags, ...policyDiags].filter((d) => d.severity === 'error');
   if (errors.length > 0) {
     risks.push(`${errors.length} validation error(s) — review before proceeding`);
   }

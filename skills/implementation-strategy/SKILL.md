@@ -1,7 +1,7 @@
 ---
 name: implementation-strategy
 description: Plan implementation strategy for medium-to-high risk changes before writing code
-version: "1.0.0"
+version: '1.0.0'
 risk: low
 permissions:
   - read_files

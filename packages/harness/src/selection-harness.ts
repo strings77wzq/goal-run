@@ -1,5 +1,5 @@
-import type { Diagnostic, SelectionTest, SelectionTests } from "goalrun-core";
-import { createError } from "goalrun-core";
+import type { Diagnostic, SelectionTest, SelectionTests } from 'goalrun-core';
+import { createError } from 'goalrun-core';
 
 export interface SelectionResult {
   test: SelectionTest;
@@ -36,7 +36,7 @@ export function runSelectionHarness(
         ? []
         : [
             createError(
-              "SELECTION_MISMATCH",
+              'SELECTION_MISMATCH',
               `Expected skill "${test.expect.skill}" but matched "${matched}"`,
               { hint: `Input: "${test.input}"` },
             ),
@@ -75,28 +75,29 @@ export function matchSkill(test: SelectionTest, availableSkills: string[]): stri
   // Check negative keywords — if found, return none
   if (test.negative_keywords && test.negative_keywords.length > 0) {
     const hasNegative = test.negative_keywords.some((kw) => input.includes(kw.toLowerCase()));
-    if (hasNegative) return "none";
+    if (hasNegative) return 'none';
   }
 
   // Simple keyword-based matching with scoring
   const skillKeywords: Record<string, string[]> = {
-    "implementation-strategy": ["design", "plan", "architecture", "strategy", "refactor", "major"],
-    "tdd-change": ["bug", "fix", "feature", "test", "tdd", "change", "implement", "regression"],
-    "code-review": ["review", "audit", "pr", "diff", "inspect", "quality"],
+    'implementation-strategy': ['design', 'plan', 'architecture', 'strategy', 'refactor', 'major'],
+    'tdd-change': ['bug', 'fix', 'feature', 'test', 'tdd', 'change', 'implement', 'regression'],
+    'code-review': ['review', 'audit', 'pr', 'diff', 'inspect', 'quality'],
   };
 
-  let bestSkill = "none";
+  let bestSkill = 'none';
   let bestScore = 0;
 
   // Priority order for tie-breaking: code-review > tdd-change > implementation-strategy
-  const priorityOrder = ["code-review", "tdd-change", "implementation-strategy"];
+  const priorityOrder = ['code-review', 'tdd-change', 'implementation-strategy'];
 
   for (const [skill, keywords] of Object.entries(skillKeywords)) {
     if (!availableSkills.includes(skill)) continue;
     const score = keywords.filter((kw) => input.includes(kw)).length;
     if (
       score > bestScore ||
-      (score === bestScore && bestScore > 0 &&
+      (score === bestScore &&
+        bestScore > 0 &&
         priorityOrder.indexOf(skill) < priorityOrder.indexOf(bestSkill))
     ) {
       bestScore = score;

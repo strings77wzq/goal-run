@@ -81,7 +81,8 @@ curl -s https://raw.githubusercontent.com/strings77wzq/goal-run/main/AI_GUIDE.md
 ```bash
 npm install -g goalrun
 ```
-```
+
+````
 
 ---
 
@@ -93,9 +94,10 @@ GoalRun 的工作流是 **10 条命令**，按顺序走：
 
 ```bash
 goalrun init
-```
+````
 
 这会在你的项目里创建：
+
 ```
 AGENTS.md                   # AI Agent 指令
 .goalrun/config.yaml        # 配置文件
@@ -111,6 +113,7 @@ goalrun skill install tdd-change code-review implementation-strategy
 ```
 
 三个内置技能：
+
 - `tdd-change` — 用 TDD 实现 bugfix/feature
 - `code-review` — 7 维度结构化代码审查
 - `implementation-strategy` — 中高风险变更的实施方案
@@ -154,6 +157,7 @@ goalrun verify .goalrun/goals/fix-login-timeout.yaml
 ```
 
 GoalRun 会检查：
+
 - 目标格式是否正确
 - 引用的技能是否已安装
 - 是否包含危险指令（rm -rf 等）
@@ -175,6 +179,7 @@ goalrun run .goalrun/goals/fix-login-timeout.yaml --supervised --loop
 ```
 
 这会在 `.goalrun/runs/<时间戳>/` 下创建：
+
 ```
 plan.md              # 执行计划
 agent-prompt.md      # AI Agent 可读的 prompt
@@ -234,14 +239,14 @@ planned ──→ waiting_for_agent ──→ waiting_for_user ──→ verifyi
 
 GoalRun 是 **agent 辅助软件工程的验证工具链**。它不是你写 prompt 的地方——它验证你的目标、检查你的技能、阻止危险操作、生成执行计划、追踪运行状态。
 
-| GoalRun 做 | GoalRun 不做 |
-|-----------|-------------|
-| 验证 goal 的完整性和安全性 | 执行你的代码 |
-| 检查 skill 质量（格式、权限、密钥泄露） | 调用外部 LLM API |
-| 阻止危险命令进入 Agent | 作为 24x7 自主 agent 运行 |
-| 生成结构化的执行计划 | 替代 Claude Code / Codex / Cursor |
-| 创建可检查点、可恢复的受监督运行 | 做 skills 市场或 registry |
-| 检测 prompt 注入和外部 URL | 在无人监督下自动操作 |
+| GoalRun 做                              | GoalRun 不做                      |
+| --------------------------------------- | --------------------------------- |
+| 验证 goal 的完整性和安全性              | 执行你的代码                      |
+| 检查 skill 质量（格式、权限、密钥泄露） | 调用外部 LLM API                  |
+| 阻止危险命令进入 Agent                  | 作为 24x7 自主 agent 运行         |
+| 生成结构化的执行计划                    | 替代 Claude Code / Codex / Cursor |
+| 创建可检查点、可恢复的受监督运行        | 做 skills 市场或 registry         |
+| 检测 prompt 注入和外部 URL              | 在无人监督下自动操作              |
 
 **GoalRun 是 harness（脚手架/验证器）。AI 做执行。你保持控制。**
 
@@ -251,37 +256,37 @@ GoalRun 是 **agent 辅助软件工程的验证工具链**。它不是你写 pro
 
 Agent skills 生态正在标准化。GoalRun 补齐了**质量和安全**这一层：
 
-| 没有 GoalRun | 有了 GoalRun |
-|-------------|-------------|
-| "这个 skill 应该安全吧" | Static harness 验证每个 SKILL.md |
-| "应该能跑" | Goal harness 检查 12 个质量维度 |
+| 没有 GoalRun             | 有了 GoalRun                                 |
+| ------------------------ | -------------------------------------------- |
+| "这个 skill 应该安全吧"  | Static harness 验证每个 SKILL.md             |
+| "应该能跑"               | Goal harness 检查 12 个质量维度              |
 | "它应该不会跑 rm -rf 吧" | Policy harness 在到达 Agent 之前阻止危险命令 |
-| "刚才发生了什么" | 可检查点的运行，结构化审计追踪 |
-| "能接着昨天的继续吗" | `goalrun resume` 从最后一个检查点恢复 |
-| "这个验收标准能验证吗" | Criteria harness 检测模糊不可验证的目标 |
+| "刚才发生了什么"         | 可检查点的运行，结构化审计追踪               |
+| "能接着昨天的继续吗"     | `goalrun resume` 从最后一个检查点恢复        |
+| "这个验收标准能验证吗"   | Criteria harness 检测模糊不可验证的目标      |
 
 ---
 
 ## 全部命令
 
-| 命令 | 做什么 |
-|------|--------|
-| `goalrun init` | 初始化 `.goalrun/`、`AGENTS.md`、策略配置 |
-| `goalrun skill install <skills>` | 安装技能（带 SHA-256 完整性验证） |
-| `goalrun lint` | 校验所有 GoalRun 文件 |
-| `goalrun test` | 运行确定性 skill 匹配测试 |
-| `goalrun plan <goal>` | 生成执行计划 + AI prompt |
-| `goalrun verify <goal>` | 5 个 harness 全部跑一遍 |
-| `goalrun run <goal> --supervised --loop` | 创建可检查点的受监督运行 |
-| `goalrun resume <run-id>` | 推进到下一个状态 |
-| `goalrun status [run-id]` | 查看运行状态和验收标准进度 |
-| `goalrun stop <run-id>` | 停止运行循环 |
-| `goalrun report [run-id]` | 详细运行报告 |
-| `goalrun doctor` | 环境健康检查 |
-| `goalrun handoff <goal> --target claude\|codex\|cursor\|opencode` | 为目标 runtime 生成专用 prompt |
-| `goalrun audit <run-id>` | 生成 PR-ready 验收报告 |
-| `goalrun from-issue <url\|title>` | 从 GitHub issue URL 生成 goal.yaml |
-| `goalrun compare <run-id-a> <run-id-b>` | 对比两次运行的标准差异 |
+| 命令                                                              | 做什么                                    |
+| ----------------------------------------------------------------- | ----------------------------------------- |
+| `goalrun init`                                                    | 初始化 `.goalrun/`、`AGENTS.md`、策略配置 |
+| `goalrun skill install <skills>`                                  | 安装技能（带 SHA-256 完整性验证）         |
+| `goalrun lint`                                                    | 校验所有 GoalRun 文件                     |
+| `goalrun test`                                                    | 运行确定性 skill 匹配测试                 |
+| `goalrun plan <goal>`                                             | 生成执行计划 + AI prompt                  |
+| `goalrun verify <goal>`                                           | 5 个 harness 全部跑一遍                   |
+| `goalrun run <goal> --supervised --loop`                          | 创建可检查点的受监督运行                  |
+| `goalrun resume <run-id>`                                         | 推进到下一个状态                          |
+| `goalrun status [run-id]`                                         | 查看运行状态和验收标准进度                |
+| `goalrun stop <run-id>`                                           | 停止运行循环                              |
+| `goalrun report [run-id]`                                         | 详细运行报告                              |
+| `goalrun doctor`                                                  | 环境健康检查                              |
+| `goalrun handoff <goal> --target claude\|codex\|cursor\|opencode` | 为目标 runtime 生成专用 prompt            |
+| `goalrun audit <run-id>`                                          | 生成 PR-ready 验收报告                    |
+| `goalrun from-issue <url\|title>`                                 | 从 GitHub issue URL 生成 goal.yaml        |
+| `goalrun compare <run-id-a> <run-id-b>`                           | 对比两次运行的标准差异                    |
 
 ---
 
@@ -306,12 +311,12 @@ pnpm test        # 210 tests
 
 ## 路线图
 
-| 阶段 | 状态 |
-|------|------|
-| P0 — 核心 CLI、5 个 harness、3 个 skills、9 条命令 | ✅ |
-| P1 — Lockfile 完整性、安全扫描 v2、标准质量检测 | ✅ |
-| P2 — 受监督检查点循环（resume/status/stop） | ✅ |
-| P3 — Git worktree 隔离、diff 捕获、回滚 | 计划中 |
+| 阶段                                               | 状态   |
+| -------------------------------------------------- | ------ |
+| P0 — 核心 CLI、5 个 harness、3 个 skills、9 条命令 | ✅     |
+| P1 — Lockfile 完整性、安全扫描 v2、标准质量检测    | ✅     |
+| P2 — 受监督检查点循环（resume/status/stop）        | ✅     |
+| P3 — Git worktree 隔离、diff 捕获、回滚            | 计划中 |
 | P4 — Adapter 层（Claude/Codex/Cursor prompt 变体） | 计划中 |
 
 ## 许可证

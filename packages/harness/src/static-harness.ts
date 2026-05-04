@@ -4,11 +4,16 @@ import {
   createError,
   createWarning,
   createInfo,
-} from "goalrun-core";
-import { scanForSecrets, scanForBlockedCommands, scanForPromptInjection, scanForExternalUrls } from "goalrun-security";
-import type { PolicyConfig } from "goalrun-core";
-import { readFileSync, existsSync } from "node:fs";
-import { resolve, dirname, basename } from "node:path";
+} from 'goalrun-core';
+import {
+  scanForSecrets,
+  scanForBlockedCommands,
+  scanForPromptInjection,
+  scanForExternalUrls,
+} from 'goalrun-security';
+import type { PolicyConfig } from 'goalrun-core';
+import { readFileSync, existsSync } from 'node:fs';
+import { resolve, dirname, basename } from 'node:path';
 
 export interface StaticHarnessInput {
   skillDir: string;
@@ -17,19 +22,19 @@ export interface StaticHarnessInput {
 
 export function runStaticHarness(input: StaticHarnessInput): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
-  const skillMdPath = resolve(input.skillDir, "SKILL.md");
+  const skillMdPath = resolve(input.skillDir, 'SKILL.md');
 
   if (!existsSync(skillMdPath)) {
     diagnostics.push(
-      createError("SKILL_MISSING_SKILLMD", `No SKILL.md found in ${input.skillDir}`, {
+      createError('SKILL_MISSING_SKILLMD', `No SKILL.md found in ${input.skillDir}`, {
         file: skillMdPath,
-        hint: "Every skill directory must contain a SKILL.md file",
+        hint: 'Every skill directory must contain a SKILL.md file',
       }),
     );
     return diagnostics;
   }
 
-  const content = readFileSync(skillMdPath, "utf-8");
+  const content = readFileSync(skillMdPath, 'utf-8');
   const parsed = parseSkillMd(content, skillMdPath);
 
   if (!parsed.success) {
@@ -41,12 +46,12 @@ export function runStaticHarness(input: StaticHarnessInput): Diagnostic[] {
 
   const { metadata, body } = parsed;
 
-  if (!diagnostics.some((d) => d.code === "SKILL_NAME_MISMATCH")) {
+  if (!diagnostics.some((d) => d.code === 'SKILL_NAME_MISMATCH')) {
     const dirName = basename(input.skillDir);
     if (dirName && metadata.name !== dirName) {
       diagnostics.push(
         createWarning(
-          "SKILL_NAME_MISMATCH",
+          'SKILL_NAME_MISMATCH',
           `Skill name "${metadata.name}" does not match directory name "${dirName}"`,
           { file: skillMdPath },
         ),
@@ -57,7 +62,7 @@ export function runStaticHarness(input: StaticHarnessInput): Diagnostic[] {
   // Check permissions are declared
   if (metadata.permissions.length === 0) {
     diagnostics.push(
-      createWarning("SKILL_NO_PERMISSIONS", `Skill "${metadata.name}" declares no permissions`, {
+      createWarning('SKILL_NO_PERMISSIONS', `Skill "${metadata.name}" declares no permissions`, {
         file: skillMdPath,
       }),
     );
@@ -81,15 +86,19 @@ export function runStaticHarness(input: StaticHarnessInput): Diagnostic[] {
 
   // Check referenced resources
   const skillDir = dirname(skillMdPath);
-  const resourceDirs = ["references", "scripts", "assets"];
+  const resourceDirs = ['references', 'scripts', 'assets'];
   for (const dir of resourceDirs) {
     const refPath = resolve(skillDir, dir);
-    const refMdPath = resolve(skillDir, dir, "index.md");
+    const refMdPath = resolve(skillDir, dir, 'index.md');
     if (existsSync(refPath) && !existsSync(refMdPath)) {
       diagnostics.push(
-        createInfo("SKILL_REFERENCE_FOUND", `Directory "${dir}/" exists but no documentation found`, {
-          file: skillMdPath,
-        }),
+        createInfo(
+          'SKILL_REFERENCE_FOUND',
+          `Directory "${dir}/" exists but no documentation found`,
+          {
+            file: skillMdPath,
+          },
+        ),
       );
     }
   }
@@ -97,10 +106,14 @@ export function runStaticHarness(input: StaticHarnessInput): Diagnostic[] {
   // Check body is not empty
   if (body.trim().length < 20) {
     diagnostics.push(
-      createWarning("SKILL_EMPTY_BODY", `SKILL.md body is very short (${body.trim().length} chars)`, {
-        file: skillMdPath,
-        hint: "Add detailed instructions for agents following this skill",
-      }),
+      createWarning(
+        'SKILL_EMPTY_BODY',
+        `SKILL.md body is very short (${body.trim().length} chars)`,
+        {
+          file: skillMdPath,
+          hint: 'Add detailed instructions for agents following this skill',
+        },
+      ),
     );
   }
 

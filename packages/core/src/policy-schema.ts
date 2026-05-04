@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { parse as parseYaml } from "yaml";
-import type { Diagnostic } from "./diagnostic.js";
-import { createError } from "./diagnostic.js";
+import { z } from 'zod';
+import { parse as parseYaml } from 'yaml';
+import type { Diagnostic } from './diagnostic.js';
+import { createError } from './diagnostic.js';
 
 export const PolicyConfigSchema = z.object({
   blocked_commands: z.array(z.string()),
@@ -17,31 +17,36 @@ export function parsePolicyConfig(yamlContent: string, _filePath: string): Polic
 
 export const DEFAULT_POLICY: PolicyConfig = {
   blocked_commands: [
-    "rm -rf",
-    "npm publish",
-    "pnpm publish",
-    "terraform apply",
-    "kubectl delete",
-    "gh release create",
+    'rm -rf',
+    'npm publish',
+    'pnpm publish',
+    'terraform apply',
+    'kubectl delete',
+    'gh release create',
   ],
   require_approval_for: [
-    "changes_public_api",
-    "deletes_files",
-    "modifies_auth_code",
-    "modifies_payment_code",
-    "modifies_infra",
-    "external_network_access",
+    'changes_public_api',
+    'deletes_files',
+    'modifies_auth_code',
+    'modifies_payment_code',
+    'modifies_infra',
+    'external_network_access',
   ],
 };
 
-export function parsePolicyConfigSafe(yamlContent: string, filePath: string): {
-  success: true;
-  config: PolicyConfig;
-  diagnostics: Diagnostic[];
-} | {
-  success: false;
-  diagnostics: Diagnostic[];
-} {
+export function parsePolicyConfigSafe(
+  yamlContent: string,
+  filePath: string,
+):
+  | {
+      success: true;
+      config: PolicyConfig;
+      diagnostics: Diagnostic[];
+    }
+  | {
+      success: false;
+      diagnostics: Diagnostic[];
+    } {
   let raw: unknown;
 
   try {
@@ -50,20 +55,24 @@ export function parsePolicyConfigSafe(yamlContent: string, filePath: string): {
     return {
       success: false,
       diagnostics: [
-        createError("POLICY_INVALID_YAML", `Failed to parse YAML in ${filePath}: ${String(err)}`, {
+        createError('POLICY_INVALID_YAML', `Failed to parse YAML in ${filePath}: ${String(err)}`, {
           file: filePath,
         }),
       ],
     };
   }
 
-  if (raw === null || raw === undefined || (typeof raw === "object" && Object.keys(raw).length === 0)) {
+  if (
+    raw === null ||
+    raw === undefined ||
+    (typeof raw === 'object' && Object.keys(raw).length === 0)
+  ) {
     return {
       success: false,
       diagnostics: [
-        createError("POLICY_EMPTY", `Empty policy config in ${filePath}`, {
+        createError('POLICY_EMPTY', `Empty policy config in ${filePath}`, {
           file: filePath,
-          hint: "Add blocked_commands and require_approval_for lists",
+          hint: 'Add blocked_commands and require_approval_for lists',
         }),
       ],
     };
@@ -73,7 +82,7 @@ export function parsePolicyConfigSafe(yamlContent: string, filePath: string): {
 
   if (!parsed.success) {
     const diags = parsed.error.issues.map((issue) =>
-      createError("POLICY_INVALID_SCHEMA", `${issue.path.join(".")}: ${issue.message}`, {
+      createError('POLICY_INVALID_SCHEMA', `${issue.path.join('.')}: ${issue.message}`, {
         file: filePath,
       }),
     );

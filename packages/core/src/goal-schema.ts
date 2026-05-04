@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { parse as parseYaml } from "yaml";
-import type { Diagnostic } from "./diagnostic.js";
-import { createError } from "./diagnostic.js";
+import { z } from 'zod';
+import { parse as parseYaml } from 'yaml';
+import type { Diagnostic } from './diagnostic.js';
+import { createError } from './diagnostic.js';
 
 export const BudgetSchema = z.object({
   max_iterations: z.number().int().positive(),
@@ -52,20 +52,24 @@ export function parseGoalSpec(yamlContent: string, filePath: string): GoalParseR
     return {
       success: false,
       diagnostics: [
-        createError("GOAL_INVALID_YAML", `Failed to parse YAML in ${filePath}: ${String(err)}`, {
+        createError('GOAL_INVALID_YAML', `Failed to parse YAML in ${filePath}: ${String(err)}`, {
           file: filePath,
         }),
       ],
     };
   }
 
-  if (raw === null || raw === undefined || (typeof raw === "object" && Object.keys(raw).length === 0)) {
+  if (
+    raw === null ||
+    raw === undefined ||
+    (typeof raw === 'object' && Object.keys(raw).length === 0)
+  ) {
     return {
       success: false,
       diagnostics: [
-        createError("GOAL_EMPTY", `Empty or null goal spec in ${filePath}`, {
+        createError('GOAL_EMPTY', `Empty or null goal spec in ${filePath}`, {
           file: filePath,
-          hint: "Add a valid goal specification with id, title, goal, skills, criteria, budget, policy, and verification",
+          hint: 'Add a valid goal specification with id, title, goal, skills, criteria, budget, policy, and verification',
         }),
       ],
     };
@@ -75,7 +79,7 @@ export function parseGoalSpec(yamlContent: string, filePath: string): GoalParseR
 
   if (!parsed.success) {
     const diags = parsed.error.issues.map((issue) =>
-      createError("GOAL_INVALID_SCHEMA", `${issue.path.join(".")}: ${issue.message}`, {
+      createError('GOAL_INVALID_SCHEMA', `${issue.path.join('.')}: ${issue.message}`, {
         file: filePath,
       }),
     );

@@ -1,16 +1,16 @@
-import { createWarning, type Diagnostic } from "goalrun-core";
+import { createWarning, type Diagnostic } from 'goalrun-core';
 
 const ALLOWED_DOMAINS = new Set([
-  "github.com",
-  "gitlab.com",
-  "bitbucket.org",
-  "npmjs.com",
-  "nodejs.org",
-  "typescriptlang.org",
-  "pnpm.io",
-  "vitest.dev",
-  "eslint.org",
-  "prettier.io",
+  'github.com',
+  'gitlab.com',
+  'bitbucket.org',
+  'npmjs.com',
+  'nodejs.org',
+  'typescriptlang.org',
+  'pnpm.io',
+  'vitest.dev',
+  'eslint.org',
+  'prettier.io',
 ]);
 
 const EXTERNAL_URL_PATTERN = /https?:\/\/([^\s<>"{}|\\^`[\]]+)/gi;
@@ -20,14 +20,16 @@ const WGET_PATTERN = /wget\s+(-\S+\s+)*['""]?(https?:\/\/[^\s'""]+)/gi;
 function extractDomain(url: string): string {
   try {
     const u = new URL(url);
-    return u.hostname.replace(/^www\./, "");
+    return u.hostname.replace(/^www\./, '');
   } catch {
-    return "";
+    return '';
   }
 }
 
 function isAllowedDomain(domain: string): boolean {
-  return ALLOWED_DOMAINS.has(domain) || domain.endsWith(".github.com") || domain.endsWith(".gitlab.io");
+  return (
+    ALLOWED_DOMAINS.has(domain) || domain.endsWith('.github.com') || domain.endsWith('.gitlab.io')
+  );
 }
 
 export function scanForExternalUrls(content: string, filePath: string): Diagnostic[] {
@@ -42,17 +44,13 @@ export function scanForExternalUrls(content: string, filePath: string): Diagnost
     const domain = extractDomain(url);
     if (domain && !isAllowedDomain(domain) && !seen.has(domain)) {
       seen.add(domain);
-      const line = content.slice(0, match.index).split("\n").length;
+      const line = content.slice(0, match.index).split('\n').length;
       diagnostics.push(
-        createWarning(
-          "SECURITY_EXTERNAL_URL",
-          `External URL reference to "${domain}" detected`,
-          {
-            file: filePath,
-            line,
-            hint: "External URLs in skills or goals may indicate data exfiltration or supply chain risk",
-          },
-        ),
+        createWarning('SECURITY_EXTERNAL_URL', `External URL reference to "${domain}" detected`, {
+          file: filePath,
+          line,
+          hint: 'External URLs in skills or goals may indicate data exfiltration or supply chain risk',
+        }),
       );
     }
   }
@@ -64,12 +62,12 @@ export function scanForExternalUrls(content: string, filePath: string): Diagnost
     const domain = extractDomain(url);
     if (domain && !isAllowedDomain(domain) && !seen.has(domain)) {
       seen.add(domain);
-      const line = content.slice(0, match.index).split("\n").length;
+      const line = content.slice(0, match.index).split('\n').length;
       diagnostics.push(
-        createWarning("SECURITY_EXTERNAL_URL", `curl to external domain "${domain}" detected`, {
+        createWarning('SECURITY_EXTERNAL_URL', `curl to external domain "${domain}" detected`, {
           file: filePath,
           line,
-          hint: "curl commands to external domains may download and execute untrusted code",
+          hint: 'curl commands to external domains may download and execute untrusted code',
         }),
       );
     }
@@ -82,12 +80,12 @@ export function scanForExternalUrls(content: string, filePath: string): Diagnost
     const domain = extractDomain(url);
     if (domain && !isAllowedDomain(domain) && !seen.has(domain)) {
       seen.add(domain);
-      const line = content.slice(0, match.index).split("\n").length;
+      const line = content.slice(0, match.index).split('\n').length;
       diagnostics.push(
-        createWarning("SECURITY_EXTERNAL_URL", `wget to external domain "${domain}" detected`, {
+        createWarning('SECURITY_EXTERNAL_URL', `wget to external domain "${domain}" detected`, {
           file: filePath,
           line,
-          hint: "wget commands to external domains may download untrusted code",
+          hint: 'wget commands to external domains may download untrusted code',
         }),
       );
     }

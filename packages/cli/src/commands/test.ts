@@ -1,9 +1,9 @@
-import { resolve } from "node:path";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import pc from "picocolors";
-import { loadConfig } from "../utils/config.js";
-import { parseSelectionTests } from "goalrun-core";
-import { runSelectionHarness } from "goalrun-harness";
+import { resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import pc from 'picocolors';
+import { loadConfig } from '../utils/config.js';
+import { parseSelectionTests } from 'goalrun-core';
+import { runSelectionHarness } from 'goalrun-harness';
 
 export async function testCommand(opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
@@ -16,11 +16,11 @@ export async function testCommand(opts: { json?: boolean }): Promise<void> {
     process.exit(1);
   }
 
-  const content = readFileSync(testsPath, "utf-8");
+  const content = readFileSync(testsPath, 'utf-8');
   const parsed = parseSelectionTests(content, testsPath);
 
   if (!parsed.success) {
-    console.error(pc.red("Failed to parse selection tests:"));
+    console.error(pc.red('Failed to parse selection tests:'));
     for (const d of parsed.diagnostics) {
       console.error(`  ${d.message}`);
     }
@@ -34,12 +34,14 @@ export async function testCommand(opts: { json?: boolean }): Promise<void> {
   if (opts.json) {
     console.log(JSON.stringify(result, null, 2));
   } else {
-    console.log(pc.bold("Selection Test Results"));
-    console.log(`Total: ${result.summary.total}, Passed: ${pc.green(String(result.summary.passed))}, Failed: ${pc.red(String(result.summary.failed))}`);
-    console.log("");
+    console.log(pc.bold('Selection Test Results'));
+    console.log(
+      `Total: ${result.summary.total}, Passed: ${pc.green(String(result.summary.passed))}, Failed: ${pc.red(String(result.summary.failed))}`,
+    );
+    console.log('');
 
     for (const r of result.results) {
-      const icon = r.passed ? pc.green("✓") : pc.red("✗");
+      const icon = r.passed ? pc.green('✓') : pc.red('✗');
       console.log(`${icon} ${r.test.description}`);
       if (!r.passed) {
         console.log(`   Expected: ${r.expected}, Got: ${r.matched}`);

@@ -1,7 +1,7 @@
 ---
 name: my-skill
 description: A custom GoalRun skill
-version: "0.1.0"
+version: '0.1.0'
 risk: low
 permissions:
   - read_files

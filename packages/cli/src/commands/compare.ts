@@ -1,8 +1,8 @@
-import { resolve } from "node:path";
-import { existsSync, readFileSync } from "node:fs";
-import pc from "picocolors";
-import { loadConfig } from "../utils/config.js";
-import { compareRuns, type RunState } from "goalrun-core";
+import { resolve } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import pc from 'picocolors';
+import { loadConfig } from '../utils/config.js';
+import { compareRuns, type RunState } from 'goalrun-core';
 
 export async function compareCommand(
   runIdA: string,
@@ -32,27 +32,35 @@ export async function compareCommand(
   } else {
     console.log(pc.bold(`Comparing ${runIdA} → ${runIdB}`));
     console.log(`Goal: ${diff.goalIdA}`);
-    console.log(`Status: ${diff.statusDiff.a} → ${diff.statusDiff.b}${diff.statusDiff.changed ? "" : " (unchanged)"}`);
-    console.log(`Iterations: ${diff.iterationDiff.a} → ${diff.iterationDiff.b} (${diff.iterationDiff.delta >= 0 ? "+" : ""}${diff.iterationDiff.delta})`);
-    console.log(`Checkpoints: ${diff.checkpointDiff.a} → ${diff.checkpointDiff.b} (${diff.checkpointDiff.delta >= 0 ? "+" : ""}${diff.checkpointDiff.delta})`);
-    console.log("");
-    console.log(pc.bold("Criteria:"));
+    console.log(
+      `Status: ${diff.statusDiff.a} → ${diff.statusDiff.b}${diff.statusDiff.changed ? '' : ' (unchanged)'}`,
+    );
+    console.log(
+      `Iterations: ${diff.iterationDiff.a} → ${diff.iterationDiff.b} (${diff.iterationDiff.delta >= 0 ? '+' : ''}${diff.iterationDiff.delta})`,
+    );
+    console.log(
+      `Checkpoints: ${diff.checkpointDiff.a} → ${diff.checkpointDiff.b} (${diff.checkpointDiff.delta >= 0 ? '+' : ''}${diff.checkpointDiff.delta})`,
+    );
+    console.log('');
+    console.log(pc.bold('Criteria:'));
     for (const c of diff.criteriaDiff) {
-      const iconA = c.statusA === "pass" ? pc.green("✓") : c.statusA === "fail" ? pc.red("✗") : pc.dim("○");
-      const iconB = c.statusB === "pass" ? pc.green("✓") : c.statusB === "fail" ? pc.red("✗") : pc.dim("○");
-      const arrow = c.changed ? pc.yellow("→") : " ";
+      const iconA =
+        c.statusA === 'pass' ? pc.green('✓') : c.statusA === 'fail' ? pc.red('✗') : pc.dim('○');
+      const iconB =
+        c.statusB === 'pass' ? pc.green('✓') : c.statusB === 'fail' ? pc.red('✗') : pc.dim('○');
+      const arrow = c.changed ? pc.yellow('→') : ' ';
       console.log(`  ${iconA} ${arrow} ${iconB}  ${c.text}`);
     }
-    console.log("");
+    console.log('');
     console.log(pc.bold(`Summary: ${diff.summary}`));
   }
 }
 
 function loadRun(runsDir: string, runId: string): RunState | null {
-  const statusPath = resolve(runsDir, runId, "status.json");
+  const statusPath = resolve(runsDir, runId, 'status.json');
   if (!existsSync(statusPath)) return null;
   try {
-    return JSON.parse(readFileSync(statusPath, "utf-8")) as RunState;
+    return JSON.parse(readFileSync(statusPath, 'utf-8')) as RunState;
   } catch {
     return null;
   }

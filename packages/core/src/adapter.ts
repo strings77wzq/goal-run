@@ -1,4 +1,4 @@
-export const TARGETS = ["claude", "codex", "cursor", "opencode"] as const;
+export const TARGETS = ['claude', 'codex', 'cursor', 'opencode'] as const;
 export type HandoffTarget = (typeof TARGETS)[number];
 
 export interface HandoffPlan {
@@ -16,16 +16,20 @@ const TARGET_CONFIGS: Record<
   HandoffTarget,
   { name: string; configFile: string; skillPath: string }
 > = {
-  claude: { name: "Claude Code", configFile: "CLAUDE.md", skillPath: ".claude/skills/" },
-  codex: { name: "Codex CLI", configFile: ".codex/config.yaml", skillPath: ".codex/skills/" },
-  cursor: { name: "Cursor", configFile: ".cursorrules", skillPath: ".cursor/skills/" },
-  opencode: { name: "OpenCode", configFile: ".opencode/config.yaml", skillPath: ".opencode/skills/" },
+  claude: { name: 'Claude Code', configFile: 'CLAUDE.md', skillPath: '.claude/skills/' },
+  codex: { name: 'Codex CLI', configFile: '.codex/config.yaml', skillPath: '.codex/skills/' },
+  cursor: { name: 'Cursor', configFile: '.cursorrules', skillPath: '.cursor/skills/' },
+  opencode: {
+    name: 'OpenCode',
+    configFile: '.opencode/config.yaml',
+    skillPath: '.opencode/skills/',
+  },
 };
 
 export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): string {
   const cfg = TARGET_CONFIGS[target];
   if (!cfg) {
-    throw new Error(`Unsupported target: "${target}". Supported: ${TARGETS.join(", ")}`);
+    throw new Error(`Unsupported target: "${target}". Supported: ${TARGETS.join(', ')}`);
   }
 
   const lines = [
@@ -55,7 +59,7 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
 
   // Target-specific instructions
   switch (target) {
-    case "claude":
+    case 'claude':
       lines.push(
         `1. Read each skill's SKILL.md from .agent/skills/<name>/SKILL.md`,
         `2. Follow the skill workflows in the specified order`,
@@ -65,7 +69,7 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
         `6. Report results against each criterion in the goal spec`,
       );
       break;
-    case "codex":
+    case 'codex':
       lines.push(
         `1. Load each skill from .codex/skills/<name>/SKILL.md`,
         `2. Execute skill workflows sequentially`,
@@ -74,7 +78,7 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
         `5. Reference ${cfg.configFile} for Codex configuration`,
       );
       break;
-    case "cursor":
+    case 'cursor':
       lines.push(
         `1. Open each SKILL.md from .agent/skills/<name>/SKILL.md`,
         `2. Apply skills in the listed order`,
@@ -83,7 +87,7 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
         `5. Verify with the checklist commands after each change`,
       );
       break;
-    case "opencode":
+    case 'opencode':
       lines.push(
         `1. Load skill definitions from .opencode/skills/<name>/SKILL.md`,
         `2. Follow the workflow for each skill in sequence`,
@@ -94,16 +98,15 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
       break;
   }
 
-  lines.push(
-    ``,
-    `## Validation Diagnostics (from GoalRun harnesses)`,
-  );
+  lines.push(``, `## Validation Diagnostics (from GoalRun harnesses)`);
 
   if (plan.diagnostics.length === 0) {
     lines.push(`All harness checks passed. No issues found.`);
   } else {
     for (const d of plan.diagnostics) {
-      lines.push(`- [${d.severity.toUpperCase()}] ${d.code}: ${d.message}${d.hint ? ` (Hint: ${d.hint})` : ""}`);
+      lines.push(
+        `- [${d.severity.toUpperCase()}] ${d.code}: ${d.message}${d.hint ? ` (Hint: ${d.hint})` : ''}`,
+      );
     }
   }
 
@@ -114,5 +117,5 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
     `https://github.com/strings77wzq/goal-run`,
   );
 
-  return lines.join("\n");
+  return lines.join('\n');
 }

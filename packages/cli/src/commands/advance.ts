@@ -1,17 +1,14 @@
-import { resolve } from "node:path";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import pc from "picocolors";
-import { loadConfig } from "../utils/config.js";
-import { autoAdvance, isTerminal, type RunState } from "goalrun-core";
+import { resolve } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import pc from 'picocolors';
+import { loadConfig } from '../utils/config.js';
+import { autoAdvance, isTerminal, type RunState } from 'goalrun-core';
 
-export async function advanceCommand(
-  runId: string,
-  opts: { json?: boolean },
-): Promise<void> {
+export async function advanceCommand(runId: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
   const runDir = resolve(repoRoot, config.runs_dir, runId);
-  const statusPath = resolve(runDir, "status.json");
+  const statusPath = resolve(runDir, 'status.json');
 
   if (!existsSync(statusPath)) {
     console.error(pc.red(`Run "${runId}" not found.`));
@@ -20,7 +17,7 @@ export async function advanceCommand(
 
   let state: RunState;
   try {
-    state = JSON.parse(readFileSync(statusPath, "utf-8")) as RunState;
+    state = JSON.parse(readFileSync(statusPath, 'utf-8')) as RunState;
   } catch {
     console.error(pc.red(`Failed to parse status.json for "${runId}"`));
     process.exit(1);
@@ -37,9 +34,9 @@ export async function advanceCommand(
 
   // Save all checkpoints
   for (const cp of result.checkpoints) {
-    const cpDir = resolve(runDir, "checkpoints", cp.id);
+    const cpDir = resolve(runDir, 'checkpoints', cp.id);
     mkdirSync(cpDir, { recursive: true });
-    writeFileSync(resolve(cpDir, "status.json"), JSON.stringify(cp, null, 2), "utf-8");
+    writeFileSync(resolve(cpDir, 'status.json'), JSON.stringify(cp, null, 2), 'utf-8');
   }
 
   // Save updated state
@@ -47,38 +44,46 @@ export async function advanceCommand(
     ...result.state,
     checkpoints: [...state.checkpoints, ...result.checkpoints],
   };
-  writeFileSync(statusPath, JSON.stringify(updatedState, null, 2), "utf-8");
+  writeFileSync(statusPath, JSON.stringify(updatedState, null, 2), 'utf-8');
 
   if (opts.json) {
-    console.log(JSON.stringify({
-      run_id: runId,
-      status: result.state.status,
-      checkpoints: result.checkpoints.map((c) => c.id),
-      stopped_at_gate: result.stopped_at_gate,
-    }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          run_id: runId,
+          status: result.state.status,
+          checkpoints: result.checkpoints.map((c) => c.id),
+          stopped_at_gate: result.stopped_at_gate,
+        },
+        null,
+        2,
+      ),
+    );
   } else {
     // Show transitions
     for (const cp of result.checkpoints) {
-      console.log(pc.dim(`  ${cp.id} → ${cp.status}${cp.summary ? ` — ${cp.summary}` : ""}`));
+      console.log(pc.dim(`  ${cp.id} → ${cp.status}${cp.summary ? ` — ${cp.summary}` : ''}`));
     }
 
-    console.log("");
+    console.log('');
     const icon = isTerminal(result.state.status)
-      ? (result.state.status === "completed" ? pc.green("✓") : pc.red("✗"))
-      : pc.cyan("◉");
+      ? result.state.status === 'completed'
+        ? pc.green('✓')
+        : pc.red('✗')
+      : pc.cyan('◉');
     console.log(`${icon} Status: ${pc.bold(result.state.status)}`);
 
     if (result.stopped_at_gate) {
-      console.log("");
-      console.log(pc.yellow("Stopped at human gate."));
+      console.log('');
+      console.log(pc.yellow('Stopped at human gate.'));
       printHumanAction(result.state.status, runId);
     } else if (isTerminal(result.state.status)) {
-      console.log("");
-      if (result.state.status === "completed") {
-        console.log(pc.green("Run completed. All criteria passed."));
+      console.log('');
+      if (result.state.status === 'completed') {
+        console.log(pc.green('Run completed. All criteria passed.'));
         console.log(pc.dim(`Next: goalrun audit ${runId}`));
-      } else if (result.state.status === "failed") {
-        console.log(pc.red("Run failed. Budget exhausted or unrecoverable error."));
+      } else if (result.state.status === 'failed') {
+        console.log(pc.red('Run failed. Budget exhausted or unrecoverable error.'));
         console.log(pc.dim(`Next: goalrun report ${runId}`));
       }
     }
@@ -87,15 +92,15 @@ export async function advanceCommand(
 
 function printHumanAction(status: string, runId: string): void {
   switch (status) {
-    case "waiting_for_user":
-      console.log(pc.bold("Action required:"));
-      console.log("  1. Review the agent's output in .goalrun/runs/" + runId + "/artifacts/");
-      console.log("  2. Update criteria status if needed");
+    case 'waiting_for_user':
+      console.log(pc.bold('Action required:'));
+      console.log("  1. Review the agent's output in .goalrun/runs/" + runId + '/artifacts/');
+      console.log('  2. Update criteria status if needed');
       console.log(pc.dim(`  3. Run: goalrun advance ${runId}`));
       break;
-    case "blocked_by_policy":
-      console.log(pc.bold("Action required:"));
-      console.log("  A policy gate was triggered. Review and approve/reject.");
+    case 'blocked_by_policy':
+      console.log(pc.bold('Action required:'));
+      console.log('  A policy gate was triggered. Review and approve/reject.');
       console.log(pc.dim(`  If approved: goalrun resume ${runId} --to waiting_for_user`));
       console.log(pc.dim(`  If rejected: goalrun stop ${runId}`));
       break;

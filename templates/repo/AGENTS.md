@@ -7,6 +7,7 @@ This file provides instructions for AI coding agents working in this repository.
 This project uses GoalRun for goal-driven agent workflows. Run `goalrun doctor` to check the setup.
 
 ### Key files
+
 - `.goalrun/config.yaml` — GoalRun configuration
 - `.goalrun/policy.yaml` — Security policy and blocked commands
 - `.goalrun/goals/` — Goal specifications
@@ -14,6 +15,7 @@ This project uses GoalRun for goal-driven agent workflows. Run `goalrun doctor` 
 - `goalrun.lock` — Lockfile tracking installed skills
 
 ### Common commands
+
 - `goalrun plan .goalrun/goals/<goal>.yaml` — Generate an execution plan
 - `goalrun verify .goalrun/goals/<goal>.yaml` — Validate a goal
 - `goalrun run .goalrun/goals/<goal>.yaml --supervised` — Create a supervised run
@@ -22,6 +24,7 @@ This project uses GoalRun for goal-driven agent workflows. Run `goalrun doctor` 
 - `goalrun doctor` — Health check
 
 ### Creating a goal
+
 1. Copy and modify `.goalrun/goals/example-fix-bug.yaml`
 2. Fill in id, title, goal, skills, criteria, budget, policy, and verification
 3. Run `goalrun verify` to check the goal is valid
@@ -29,6 +32,7 @@ This project uses GoalRun for goal-driven agent workflows. Run `goalrun doctor` 
 5. Review the generated prompt before executing
 
 ### Safety rules
+
 - Never bypass the policy gates in `.goalrun/policy.yaml`
 - Never execute blocked commands
 - Never claim tests pass without command output evidence

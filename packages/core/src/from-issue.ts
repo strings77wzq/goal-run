@@ -7,7 +7,9 @@ export interface IssueInfo {
   url: string;
 }
 
-export function parseIssueUrl(url: string): { owner: string; repo: string; issueNumber: number } | null {
+export function parseIssueUrl(
+  url: string,
+): { owner: string; repo: string; issueNumber: number } | null {
   const match = /github\.com\/([a-zA-Z0-9._-]+)\/([a-zA-Z0-9._-]+)\/issues\/(\d+)/.exec(url);
   if (!match) return null;
   return {
@@ -17,16 +19,20 @@ export function parseIssueUrl(url: string): { owner: string; repo: string; issue
   };
 }
 
-export function generateGoalFromIssue(
-  info: { owner: string; repo: string; issueNumber: number; title: string; body: string },
-): string {
+export function generateGoalFromIssue(info: {
+  owner: string;
+  repo: string;
+  issueNumber: number;
+  title: string;
+  body: string;
+}): string {
   const goalId = `${info.repo}-issue-${info.issueNumber}`;
-  const title = info.title.replace(/[`"']/g, "").slice(0, 80);
+  const title = info.title.replace(/[`"']/g, '').slice(0, 80);
 
   return `id: ${goalId}
 title: ${title}
 goal: >
-  ${info.body.split("\n")[0]?.slice(0, 200) ?? info.title}
+  ${info.body.split('\n')[0]?.slice(0, 200) ?? info.title}
 
 skills:
   - implementation-strategy
@@ -59,9 +65,9 @@ verification:
 export function generateGoalFromTitle(title: string): string {
   const goalId = title
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
     .slice(0, 50);
 
   return `id: ${goalId}

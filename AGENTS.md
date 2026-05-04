@@ -8,12 +8,14 @@ GoalRun is a goal-driven agent skills toolchain for software engineering.
 We build, test, install, govern and run agent-native engineering workflows.
 
 **GoalRun is:**
+
 - A CLI for goal specification, skill management, and verification
 - A harness system that validates skill quality and goal completeness
 - A policy layer that gates high-risk operations
 - A supervised run system that creates structured execution plans
 
 **GoalRun is NOT:**
+
 - An autonomous agent framework
 - A skills marketplace
 - A cloud service
@@ -79,6 +81,7 @@ pnpm build           # Build all packages
 ## Verification Before Completion
 
 All of these must pass:
+
 - [ ] pnpm install
 - [ ] pnpm test
 - [ ] pnpm lint

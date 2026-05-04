@@ -1,22 +1,19 @@
-import { resolve } from "node:path";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import pc from "picocolors";
-import { loadConfig } from "../utils/config.js";
+import { resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import pc from 'picocolors';
+import { loadConfig } from '../utils/config.js';
 import {
   runStaticHarness,
   runGoalHarness,
   runPolicyHarness,
   summarizeDiagnostics,
-} from "goalrun-harness";
-import { DEFAULT_POLICY, parsePolicyConfigSafe } from "goalrun-core";
-import type { Diagnostic } from "goalrun-core";
-import { formatText } from "goalrun-reporter";
-import { globSync } from "fast-glob";
+} from 'goalrun-harness';
+import { DEFAULT_POLICY, parsePolicyConfigSafe } from 'goalrun-core';
+import type { Diagnostic } from 'goalrun-core';
+import { formatText } from 'goalrun-reporter';
+import { globSync } from 'fast-glob';
 
-export async function verifyCommand(
-  goalPath: string,
-  opts: { json?: boolean },
-): Promise<void> {
+export async function verifyCommand(goalPath: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
   const fullGoalPath = resolve(repoRoot, goalPath);
@@ -26,7 +23,7 @@ export async function verifyCommand(
   const policyPath = resolve(repoRoot, config.policy_file);
   let policy = DEFAULT_POLICY;
   if (existsSync(policyPath)) {
-    const policyContent = readFileSync(policyPath, "utf-8");
+    const policyContent = readFileSync(policyPath, 'utf-8');
     const parsed = parsePolicyConfigSafe(policyContent, policyPath);
     if (parsed.success) policy = parsed.config;
   }
@@ -41,9 +38,9 @@ export async function verifyCommand(
 
   // 1. Static harness: validate all installed skills
   if (existsSync(skillsDir)) {
-    const skillFiles = globSync("*/SKILL.md", { cwd: skillsDir });
+    const skillFiles = globSync('*/SKILL.md', { cwd: skillsDir });
     for (const sf of skillFiles) {
-      const skillDir = resolve(skillsDir, sf.replace("/SKILL.md", ""));
+      const skillDir = resolve(skillsDir, sf.replace('/SKILL.md', ''));
       const diags = runStaticHarness({ skillDir, policy });
       allDiagnostics.push(...diags);
     }
@@ -71,7 +68,7 @@ export async function verifyCommand(
   }
 
   const summary = summarizeDiagnostics(allDiagnostics);
-  const errors = allDiagnostics.filter((d) => d.severity === "error");
+  const errors = allDiagnostics.filter((d) => d.severity === 'error');
 
   if (opts.json) {
     const report = {
@@ -83,7 +80,7 @@ export async function verifyCommand(
   } else {
     console.log(formatText(allDiagnostics));
     if (errors.length === 0) {
-      console.log(pc.green("Verification passed."));
+      console.log(pc.green('Verification passed.'));
     } else {
       console.log(pc.red(`Verification failed with ${errors.length} error(s).`));
     }

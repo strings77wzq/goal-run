@@ -2,7 +2,7 @@
 
 **Stop agents from claiming "done" before tests pass.**
 
-*Goal-driven is the idea. GoalRun is the safe, testable, auditable implementation for real software engineering.*
+_Goal-driven is the idea. GoalRun is the safe, testable, auditable implementation for real software engineering._
 
 <p align="center">
   <a href="README.md">English</a> |
@@ -113,14 +113,14 @@ goalrun report
 
 GoalRun is a **verification harness for agent-assisted engineering**.
 
-| GoalRun does | GoalRun does NOT |
-|---|---|
-| Validate goals for completeness and safety | Execute your code |
-| Verify skill quality (schema, permissions, no secrets) | Call external LLM APIs |
-| Block dangerous commands in skills and goals | Run as a 24/7 autonomous agent |
-| Generate structured plans for any AI assistant | Replace Claude Code / Codex / Cursor |
-| Create checkpointed, resumable supervised runs | Be a skills marketplace or registry |
-| Detect prompt injection and external URLs | Operate without human supervision |
+| GoalRun does                                           | GoalRun does NOT                     |
+| ------------------------------------------------------ | ------------------------------------ |
+| Validate goals for completeness and safety             | Execute your code                    |
+| Verify skill quality (schema, permissions, no secrets) | Call external LLM APIs               |
+| Block dangerous commands in skills and goals           | Run as a 24/7 autonomous agent       |
+| Generate structured plans for any AI assistant         | Replace Claude Code / Codex / Cursor |
+| Create checkpointed, resumable supervised runs         | Be a skills marketplace or registry  |
+| Detect prompt injection and external URLs              | Operate without human supervision    |
 
 **GoalRun is the harness. The AI does the work. You stay in control.**
 
@@ -136,14 +136,14 @@ GoalRun is a **verification harness for agent-assisted engineering**.
 
 The agent skills ecosystem is standardizing. GoalRun adds the **quality and safety layer**:
 
-| Without GoalRun | With GoalRun |
-|---|---|
-| "Trust me, the skill is safe" | Static harness validates every SKILL.md |
-| "It should work" | Goal harness checks 12 dimensions |
-| "I hope it didn't run rm -rf" | Policy harness blocks dangerous commands |
-| "What happened?" | Checkpointed runs with structured audit trail |
-| "Can I resume?" | `goalrun resume` from last checkpoint |
-| "Is this criteria verifiable?" | Criteria harness detects vague goals |
+| Without GoalRun                | With GoalRun                                  |
+| ------------------------------ | --------------------------------------------- |
+| "Trust me, the skill is safe"  | Static harness validates every SKILL.md       |
+| "It should work"               | Goal harness checks 12 dimensions             |
+| "I hope it didn't run rm -rf"  | Policy harness blocks dangerous commands      |
+| "What happened?"               | Checkpointed runs with structured audit trail |
+| "Can I resume?"                | `goalrun resume` from last checkpoint         |
+| "Is this criteria verifiable?" | Criteria harness detects vague goals          |
 
 ## The Semi-Autonomous Loop
 
@@ -165,7 +165,7 @@ GoalRun auto-advances through safe states. It only pauses at 2 human gates:
        │                                        │         │
        │                                        ▼         │
        │                                   verifying     │
-       │                              (auto-run tests)    │
+       │                        (you run verification)   │
        │                               ┌──────┴──────┐   │
        │                          criteria met   criteria │
        │                               │         fail    │
@@ -178,7 +178,7 @@ GoalRun auto-advances through safe states. It only pauses at 2 human gates:
        └────────────────────────────────────────┘        │
                                                           │
                     └────────────────────────────────────┘
-                    
+
   🛑 blocked_by_policy — second HUMAN GATE (approve/reject)
   ❌ failed — budget exhausted, auto-stops
   🛑 stopped — you decide to end the run
@@ -188,13 +188,13 @@ GoalRun auto-advances through safe states. It only pauses at 2 human gates:
 
 ### Before / After
 
-| Without GoalRun | With GoalRun |
-|---|---|
+| Without GoalRun                      | With GoalRun                                     |
+| ------------------------------------ | ------------------------------------------------ |
 | Agent says "done", you check nothing | GoalRun won't mark completed until criteria pass |
-| Agent deletes a file, nobody notices | `deletes_files` triggers policy gate |
-| 5 iterations with no progress | Budget exhausted → auto-failed |
-| "Trust me, I ran the tests" | Verification output saved to evidence files |
-| What happened in that session? | Full checkpoint timeline, auditable |
+| Agent deletes a file, nobody notices | `deletes_files` triggers policy gate             |
+| 5 iterations with no progress        | Budget exhausted → auto-failed                   |
+| "Trust me, I ran the tests"          | Verification output saved to evidence files      |
+| What happened in that session?       | Full checkpoint timeline, auditable              |
 
 ## Goal Spec Example
 
@@ -228,33 +228,33 @@ verification:
 
 ## Built-in Skills
 
-| Skill | Purpose |
-|-------|---------|
-| `implementation-strategy` | Plan medium/high-risk changes before coding |
-| `tdd-change` | Implement with strict Red-Green-Refactor |
-| `code-review` | Structured review across 7 quality dimensions |
+| Skill                     | Purpose                                       |
+| ------------------------- | --------------------------------------------- |
+| `implementation-strategy` | Plan medium/high-risk changes before coding   |
+| `tdd-change`              | Implement with strict Red-Green-Refactor      |
+| `code-review`             | Structured review across 7 quality dimensions |
 
 ## Commands
 
-| Command | Description |
-|---------|------------|
-| `goalrun init` | Scaffold `.goalrun/`, `AGENTS.md`, policy config |
-| `goalrun skill install <skills>` | Install skills with integrity verification |
-| `goalrun lint` | Validate all GoalRun files |
-| `goalrun test` | Run deterministic skill selection tests |
-| `goalrun plan <goal>` | Generate execution plan + AI prompt |
-| `goalrun verify <goal>` | Run all 5 harnesses on a goal |
-| `goalrun run <goal> --supervised --loop` | Create checkpointed supervised run |
-| `goalrun advance <run-id>` | **Semi-auto advance** — stops only at human gates |
-| `goalrun resume <run-id> --to <status>` | Manual single-step state transition |
-| `goalrun status [run-id]` | Show run status and criteria |
-| `goalrun stop <run-id>` | Stop a running loop |
-| `goalrun report [run-id]` | Detailed run report |
-| `goalrun audit <run-id>` | Generate PR-ready audit report |
-| `goalrun handoff <goal> --target <runtime>` | Generate runtime-specific prompt |
-| `goalrun from-issue <url\|title>` | Convert GitHub issue → goal.yaml |
-| `goalrun compare <run-a> <run-b>` | Diff two runs |
-| `goalrun doctor` | Health check |
+| Command                                     | Description                                       |
+| ------------------------------------------- | ------------------------------------------------- |
+| `goalrun init`                              | Scaffold `.goalrun/`, `AGENTS.md`, policy config  |
+| `goalrun skill install <skills>`            | Install skills with integrity verification        |
+| `goalrun lint`                              | Validate all GoalRun files                        |
+| `goalrun test`                              | Run deterministic skill selection tests           |
+| `goalrun plan <goal>`                       | Generate execution plan + AI prompt               |
+| `goalrun verify <goal>`                     | Run all 5 harnesses on a goal                     |
+| `goalrun run <goal> --supervised --loop`    | Create checkpointed supervised run                |
+| `goalrun advance <run-id>`                  | **Semi-auto advance** — stops only at human gates |
+| `goalrun resume <run-id> --to <status>`     | Manual single-step state transition               |
+| `goalrun status [run-id]`                   | Show run status and criteria                      |
+| `goalrun stop <run-id>`                     | Stop a running loop                               |
+| `goalrun report [run-id]`                   | Detailed run report                               |
+| `goalrun audit <run-id>`                    | Generate PR-ready audit report                    |
+| `goalrun handoff <goal> --target <runtime>` | Generate runtime-specific prompt                  |
+| `goalrun from-issue <url\|title>`           | Convert GitHub issue → goal.yaml                  |
+| `goalrun compare <run-a> <run-b>`           | Diff two runs                                     |
+| `goalrun doctor`                            | Health check                                      |
 
 ## Security
 
@@ -283,13 +283,18 @@ pnpm test        # 210 tests passing
 
 ## Roadmap
 
-| Phase | Status |
-|-------|--------|
-| P0 — Core CLI, 5 harnesses, 3 skills, 9 commands | ✅ |
-| P1 — Lockfile integrity, security v2, criteria quality | ✅ |
-| P2 — Supervised checkpoint loop (resume/status/stop) | ✅ |
-| P3 — Git worktree isolation, diff capture, rollback | Planned |
-| P4 — Adapter layer (Claude/Codex/Cursor variants) | Planned |
+GoalRun is in **alpha** (0.1.0-alpha.1). APIs and file formats may change.
+
+| Capability                                              | Status    |
+| ------------------------------------------------------- | --------- |
+| Goal spec validation + 5 harnesses                      | Alpha     |
+| Skill installation + integrity verification             | Alpha     |
+| Security scanning (secrets, prompt injection, URLs)     | Alpha     |
+| Supervised checkpoint loop (advance/resume/status/stop) | Alpha     |
+| Multi-runtime handoff (Claude/Codex/Cursor/OpenCode)    | Alpha     |
+| npm install -g goalrun                                  | Available |
+| Git worktree isolation + diff capture                   | Planned   |
+| npm package rename to @goalrun/cli                      | Planned   |
 
 ## License
 

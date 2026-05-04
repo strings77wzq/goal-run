@@ -13,6 +13,7 @@ A Go HTTP service has a JWT session bug: users are logged out after 5 minutes in
 Agent output: "Fixed the timeout. Done."
 
 What was missed:
+
 - ❌ No test for the timeout fix
 - ❌ Public API change not flagged
 - ❌ `go vet` not run — dead code left behind
@@ -26,6 +27,7 @@ goalrun advance <run-id>
 ```
 
 GoalRun caught:
+
 - ✅ Criteria enforced: "regression test added" → agent had to write one
 - ✅ Policy gate hit: `changes_public_api` → human approved before proceeding
 - ✅ Verification ran: `go vet ./...` → dead code caught

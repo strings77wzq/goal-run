@@ -1,6 +1,6 @@
 {
   "name": "goalrun-core",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "Core schemas, types, and utilities for GoalRun",
   "type": "module",
   "main": "./dist/index.js",

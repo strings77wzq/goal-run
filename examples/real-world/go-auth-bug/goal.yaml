@@ -12,7 +12,7 @@ skills:
 
 criteria:
   - JWT expiry reads from config (default 30 min)
-  - Regression test added: "session expires at configured timeout"
+  - Regression test added: 'session expires at configured timeout'
   - No change to public API (ErrorResponse type preserved)
   - go test ./auth/... passes
   - go vet ./... clean

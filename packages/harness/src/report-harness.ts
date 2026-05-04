@@ -1,5 +1,5 @@
-import type { Diagnostic } from "goalrun-core";
-import type { SelectionHarnessOutput } from "./selection-harness.js";
+import type { Diagnostic } from 'goalrun-core';
+import type { SelectionHarnessOutput } from './selection-harness.js';
 
 export interface ReportSummary {
   totalDiagnostics: number;
@@ -38,8 +38,8 @@ export function summarizeDiagnostics(diagnostics: Diagnostic[]): ReportSummary {
 
   for (const d of diagnostics) {
     if (d.file) files.add(d.file);
-    if (d.severity === "error") errors++;
-    else if (d.severity === "warning") warnings++;
+    if (d.severity === 'error') errors++;
+    else if (d.severity === 'warning') warnings++;
     else infos++;
   }
 
@@ -113,6 +113,6 @@ export function generatePlanReport(
     verificationChecklist,
     riskSummary,
     diagnostics,
-    agentPrompt: promptLines.join("\n"),
+    agentPrompt: promptLines.join('\n'),
   };
 }
