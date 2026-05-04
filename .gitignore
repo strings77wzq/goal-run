@@ -12,6 +12,12 @@ coverage/
 .opencode/
 openspec/
 
+# AI-generated docs (needs human rewrite)
+docs/
+
+# Build artifacts
+*.tsbuildinfo
+
 # Run artifacts (user-generated)
 .goalrun/runs/
 

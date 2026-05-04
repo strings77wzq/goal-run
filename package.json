@@ -9,7 +9,7 @@
     "test": "vitest run",
     "lint": "eslint . --max-warnings=0",
     "lint:fix": "eslint . --fix",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "tsc --build packages/core packages/security packages/harness packages/reporter packages/cli",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
     "clean": "pnpm -r clean"

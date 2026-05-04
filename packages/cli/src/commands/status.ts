@@ -124,7 +124,7 @@ export async function statusCommand(
   }
 }
 
-function getRuns(runsDir: string): Array<{ id: string; state: RunState | null }> {
+function getRuns(runsDir: string): { id: string; state: RunState | null }[] {
   const entries = readdirSync(runsDir, { withFileTypes: true })
     .filter((d) => d.isDirectory())
     .map((d) => d.name)

@@ -6,7 +6,7 @@ import { writeFileSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-const __dirname = fileURLToPath(new URL(".", import.meta.url));
+const _dirname = fileURLToPath(new URL(".", import.meta.url));
 
 describe("runPolicyHarness", () => {
   let tmpDir: string;

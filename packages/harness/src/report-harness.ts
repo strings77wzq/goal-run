@@ -1,5 +1,5 @@
 import type { Diagnostic } from "@goalrun/core";
-import type { SelectionHarnessOutput, SelectionResult } from "./selection-harness.js";
+import type { SelectionHarnessOutput } from "./selection-harness.js";
 
 export interface ReportSummary {
   totalDiagnostics: number;

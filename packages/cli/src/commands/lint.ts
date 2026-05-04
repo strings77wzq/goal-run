@@ -1,6 +1,5 @@
-import { resolve, join } from "node:path";
+import { resolve } from "node:path";
 import { existsSync } from "node:fs";
-import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
 import { formatText, formatJson } from "@goalrun/reporter";
 import { runStaticHarness } from "@goalrun/harness";
@@ -19,7 +18,7 @@ export async function lintCommand(opts: { json?: boolean }): Promise<void> {
       severity: "warning",
       message: "No AGENTS.md found in repo root",
       hint: "Run 'goalrun init' to scaffold the required files",
-    } as Diagnostic);
+    });
   }
 
   // Validate all skill files
@@ -40,7 +39,7 @@ export async function lintCommand(opts: { json?: boolean }): Promise<void> {
       code: "LINT_NO_POLICY",
       severity: "error",
       message: `Policy file not found: ${config.policy_file}`,
-    } as Diagnostic);
+    });
   }
 
   if (opts.json) {

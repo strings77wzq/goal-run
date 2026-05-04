@@ -1,13 +1,12 @@
 import { resolve } from "node:path";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
-import type { Diagnostic } from "@goalrun/core";
 
 export async function doctorCommand(opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
-  const checks: Array<{ name: string; ok: boolean; detail: string }> = [];
+  const checks: { name: string; ok: boolean; detail: string }[] = [];
 
   // Check Node version
   const nodeVersion = process.version;

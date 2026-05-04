@@ -42,14 +42,14 @@ export interface JsonReport {
     warnings: number;
     infos: number;
   };
-  diagnostics: Array<{
+  diagnostics: {
     code: string;
     severity: string;
     message: string;
     file?: string;
     line?: number;
     hint?: string;
-  }>;
+  }[];
 }
 
 export function formatJson(diagnostics: Diagnostic[]): string {

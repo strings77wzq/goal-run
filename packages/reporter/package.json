@@ -13,8 +13,8 @@
     }
   },
   "scripts": {
-    "build": "tsup src/index.ts --format esm --dts --clean",
-    "typecheck": "tsc --noEmit",
+    "build": "tsup src/index.ts --format esm",
+    "typecheck": "tsc --build",
     "clean": "rm -rf dist"
   },
   "dependencies": {

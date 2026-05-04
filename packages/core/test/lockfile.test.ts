@@ -136,19 +136,19 @@ describe("addSkillToLockfile integrity fields", () => {
   it("includes sha256 in installed skill entry", () => {
     const lock = createLockfile();
     const updated = addSkillToLockfile(lock, "test", "2.0.0", "abc123");
-    expect(updated.skills["test"]?.sha256).toBe("abc123");
+    expect(updated.skills.test?.sha256).toBe("abc123");
   });
 
   it("includes installed_targets in installed skill entry", () => {
     const lock = createLockfile();
     const updated = addSkillToLockfile(lock, "test", "1.0.0", "hash1", ["SKILL.md", "references/guide.md"]);
-    expect(updated.skills["test"]?.installed_targets).toEqual(["SKILL.md", "references/guide.md"]);
+    expect(updated.skills.test?.installed_targets).toEqual(["SKILL.md", "references/guide.md"]);
   });
 
   it("includes provenance in installed skill entry", () => {
     const lock = createLockfile();
     const updated = addSkillToLockfile(lock, "test", "1.0.0", "hash2", [], "git:abc123def");
-    expect(updated.skills["test"]?.provenance).toBe("git:abc123def");
+    expect(updated.skills.test?.provenance).toBe("git:abc123def");
   });
 });
 

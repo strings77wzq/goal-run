@@ -45,7 +45,7 @@ export function parseSelectionTests(yamlContent: string, filePath: string): {
     };
   }
 
-  if (!raw || (typeof raw === "object" && Object.keys(raw as object).length === 0)) {
+  if (!raw || (typeof raw === "object" && Object.keys(raw).length === 0)) {
     return {
       success: false,
       diagnostics: [

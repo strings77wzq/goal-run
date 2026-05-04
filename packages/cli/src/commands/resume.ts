@@ -7,6 +7,7 @@ import {
   createCheckpoint,
   isTerminal,
   type RunState,
+  type RunStatus,
 } from "@goalrun/core";
 
 export async function resumeCommand(
@@ -38,13 +39,15 @@ export async function resumeCommand(
   }
 
   // Default transitions based on current state
-  const nextStatus = opts.to ?? getDefaultNext(state.status);
+  const rawNext = opts.to ?? getDefaultNext(state.status);
 
-  if (!nextStatus) {
+  if (!rawNext) {
     console.error(pc.red(`Cannot determine next status from "${state.status}". Use --to <status>.`));
     console.error(pc.dim(`Valid next states: ${getValidNext(state.status).join(", ")}`));
     process.exit(1);
   }
+
+  const nextStatus = rawNext as RunStatus;
 
   const result = advanceState(state, nextStatus);
 

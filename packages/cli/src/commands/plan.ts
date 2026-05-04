@@ -6,10 +6,9 @@ import {
   runGoalHarness,
   runPolicyHarness,
   generatePlanReport,
-  type PlanReport,
 } from "@goalrun/harness";
-import { DEFAULT_POLICY, parseGoalSpec, parsePolicyConfigSafe } from "@goalrun/core";
 import { formatText, formatJson } from "@goalrun/reporter";
+import { DEFAULT_POLICY, parsePolicyConfigSafe } from "@goalrun/core";
 
 export async function planCommand(
   goalPath: string,

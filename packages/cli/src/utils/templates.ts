@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { resolve, relative } from "node:path";
+import { resolve } from "node:path";
 import { getTemplatesDir, getBuiltinSkillsDir } from "./config.js";
 
 export function readTemplate(relativePath: string): string {
@@ -11,7 +11,7 @@ export function getSkillTemplate(): string {
   return readTemplate("skill/SKILL.md");
 }
 
-export function getRepoInitFiles(): Array<{ dest: string; content: string }> {
+export function getRepoInitFiles(): { dest: string; content: string }[] {
   const templatesDir = getTemplatesDir();
   const repoDir = resolve(templatesDir, "repo");
 

@@ -4,7 +4,6 @@ import {
   type PolicyConfig,
   type GoalSpec,
   createError,
-  createWarning,
 } from "@goalrun/core";
 import {
   validatePolicyConfig,
@@ -14,7 +13,7 @@ import {
 import { scanForBlockedCommands } from "@goalrun/security";
 import { readFileSync } from "node:fs";
 import { existsSync } from "node:fs";
-import { parseSkillMd, type SkillMetadata } from "@goalrun/core";
+import { parseSkillMd } from "@goalrun/core";
 
 export interface PolicyHarnessInput {
   policyYamlPath: string;

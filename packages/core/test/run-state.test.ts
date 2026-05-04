@@ -81,22 +81,22 @@ describe("createRunState", () => {
 
 describe("VALID_TRANSITIONS", () => {
   it("planned can go to waiting_for_agent", () => {
-    expect(VALID_TRANSITIONS["planned"]).toContain("waiting_for_agent");
+    expect(VALID_TRANSITIONS.planned).toContain("waiting_for_agent");
   });
 
   it("waiting_for_agent can go to waiting_for_user", () => {
-    expect(VALID_TRANSITIONS["waiting_for_agent"]).toContain("waiting_for_user");
+    expect(VALID_TRANSITIONS.waiting_for_agent).toContain("waiting_for_user");
   });
 
   it("verifying can go to completed or needs_revision", () => {
-    expect(VALID_TRANSITIONS["verifying"]).toContain("completed");
-    expect(VALID_TRANSITIONS["verifying"]).toContain("needs_revision");
+    expect(VALID_TRANSITIONS.verifying).toContain("completed");
+    expect(VALID_TRANSITIONS.verifying).toContain("needs_revision");
   });
 
   it("terminal states have no transitions", () => {
-    expect(VALID_TRANSITIONS["completed"]).toHaveLength(0);
-    expect(VALID_TRANSITIONS["failed"]).toHaveLength(0);
-    expect(VALID_TRANSITIONS["stopped"]).toHaveLength(0);
+    expect(VALID_TRANSITIONS.completed).toHaveLength(0);
+    expect(VALID_TRANSITIONS.failed).toHaveLength(0);
+    expect(VALID_TRANSITIONS.stopped).toHaveLength(0);
   });
 });
 

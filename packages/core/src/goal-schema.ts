@@ -59,7 +59,7 @@ export function parseGoalSpec(yamlContent: string, filePath: string): GoalParseR
     };
   }
 
-  if (raw === null || raw === undefined || (typeof raw === "object" && Object.keys(raw as object).length === 0)) {
+  if (raw === null || raw === undefined || (typeof raw === "object" && Object.keys(raw).length === 0)) {
     return {
       success: false,
       diagnostics: [

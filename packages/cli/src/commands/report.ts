@@ -44,7 +44,7 @@ export async function reportCommand(
     state = JSON.parse(statusRaw) as RunState;
   } catch {
     // Fallback to legacy format
-    const legacy = JSON.parse(statusRaw) as Record<string, unknown>;
+    const legacy = JSON.parse(statusRaw) as Record<string, string>;
     if (opts.json) {
       console.log(JSON.stringify({ run_id: runId, status: legacy }, null, 2));
     } else {

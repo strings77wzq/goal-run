@@ -54,7 +54,8 @@ export function addSkillToLockfile(
 }
 
 export function removeSkillFromLockfile(lockfile: Lockfile, name: string): Lockfile {
-  const { [name]: _, ...rest } = lockfile.skills;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { [name]: _dropped, ...rest } = lockfile.skills;
   return { ...lockfile, skills: rest };
 }
 

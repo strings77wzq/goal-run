@@ -7,11 +7,10 @@ import {
   runGoalHarness,
   runPolicyHarness,
   summarizeDiagnostics,
-  mergeSummaries,
 } from "@goalrun/harness";
 import { DEFAULT_POLICY, parsePolicyConfigSafe } from "@goalrun/core";
-import { formatText, formatJson } from "@goalrun/reporter";
 import type { Diagnostic } from "@goalrun/core";
+import { formatText } from "@goalrun/reporter";
 import { globSync } from "fast-glob";
 
 export async function verifyCommand(

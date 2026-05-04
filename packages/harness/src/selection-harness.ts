@@ -1,9 +1,9 @@
 import type { Diagnostic, SelectionTest, SelectionTests } from "@goalrun/core";
-import { createError, createWarning, createInfo } from "@goalrun/core";
+import { createError } from "@goalrun/core";
 
 export interface SelectionResult {
   test: SelectionTest;
-  matched: string | "none";
+  matched: string;
   expected: string;
   passed: boolean;
   diagnostics: Diagnostic[];
@@ -54,7 +54,7 @@ export function runSelectionHarness(
   };
 }
 
-export function matchSkill(test: SelectionTest, availableSkills: string[]): string | "none" {
+export function matchSkill(test: SelectionTest, availableSkills: string[]): string {
   const input = test.input.toLowerCase();
 
   // Explicit mention: if input contains "use X skill" or "install X"

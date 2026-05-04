@@ -1,7 +1,7 @@
 import { z } from "zod";
 import matter from "gray-matter";
 import type { Diagnostic } from "./diagnostic.js";
-import { createError, createWarning, createInfo } from "./diagnostic.js";
+import { createError, createWarning } from "./diagnostic.js";
 
 export const RiskEnum = z.enum(["low", "medium", "high", "critical"]);
 
@@ -52,7 +52,7 @@ export function parseSkillMd(content: string, filePath: string): ParseResult {
     };
   }
 
-  if (!parsed.data || Object.keys(parsed.data as object).length === 0) {
+  if (!parsed.data || Object.keys(parsed.data).length === 0) {
     return {
       success: false,
       diagnostics: [

@@ -1,8 +1,6 @@
 import { readFile, writeFile, mkdir, access, copyFile } from "node:fs/promises";
 import { resolve, relative, dirname } from "node:path";
-import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
-import type { Diagnostic } from "./diagnostic.js";
-import { createError } from "./diagnostic.js";
+import { parse as parseYaml } from "yaml";
 
 export function resolveSafe(repoRoot: string, relativePath: string): string {
   const resolved = resolve(repoRoot, relativePath);

@@ -10,7 +10,7 @@ export const PolicyConfigSchema = z.object({
 
 export type PolicyConfig = z.infer<typeof PolicyConfigSchema>;
 
-export function parsePolicyConfig(yamlContent: string, filePath: string): PolicyConfig {
+export function parsePolicyConfig(yamlContent: string, _filePath: string): PolicyConfig {
   const raw = parseYaml(yamlContent);
   return PolicyConfigSchema.parse(raw);
 }
@@ -57,7 +57,7 @@ export function parsePolicyConfigSafe(yamlContent: string, filePath: string): {
     };
   }
 
-  if (raw === null || raw === undefined || (typeof raw === "object" && Object.keys(raw as object).length === 0)) {
+  if (raw === null || raw === undefined || (typeof raw === "object" && Object.keys(raw).length === 0)) {
     return {
       success: false,
       diagnostics: [
