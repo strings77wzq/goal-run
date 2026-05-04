@@ -15,9 +15,9 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
     process.exit(1);
   }
 
-  let state: RunState & { isolated?: boolean; worktree_path?: string };
+  let state: RunState;
   try {
-    state = JSON.parse(readFileSync(statusPath, 'utf-8'));
+    state = JSON.parse(readFileSync(statusPath, 'utf-8')) as RunState;
   } catch {
     console.error(pc.red(`Failed to parse status.json for "${runId}"`));
     process.exit(1);

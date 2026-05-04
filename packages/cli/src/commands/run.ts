@@ -105,8 +105,8 @@ export async function runCommand(
   );
 
   if (worktreePath) {
-    (runState as Record<string, unknown>).isolated = true;
-    (runState as Record<string, unknown>).worktree_path = worktreePath;
+    runState.isolated = true;
+    runState.worktree_path = worktreePath;
   }
 
   if (opts.dryRun) {

@@ -25,7 +25,7 @@ const program = new Command();
 program
   .name('goalrun')
   .description('Goal-driven agent skills for software engineering')
-  .version('0.1.0-alpha.4');
+  .version('0.1.0-alpha.5');
 
 program
   .command('init')
@@ -206,4 +206,7 @@ program
     await compareCommand(a, b, { json: opts.json });
   });
 
-program.parse();
+program.parseAsync().catch((err) => {
+  console.error(pc.red(`Fatal: ${String(err)}`));
+  process.exit(1);
+});

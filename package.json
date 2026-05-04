@@ -1,6 +1,6 @@
 {
   "name": "goalrun",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "private": true,
   "description": "Goal-driven agent skills for software engineering",
   "type": "module",

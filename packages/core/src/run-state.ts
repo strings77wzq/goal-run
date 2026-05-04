@@ -70,7 +70,7 @@ export const VALID_TRANSITIONS: Record<RunStatus, RunStatus[]> = {
 };
 
 export function isTerminal(status: RunStatus): boolean {
-  return VALID_TRANSITIONS[status].length === 0;
+  return (VALID_TRANSITIONS[status]?.length ?? 0) === 0;
 }
 
 export function canAdvanceTo(current: RunStatus, next: RunStatus): boolean {

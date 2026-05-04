@@ -18,10 +18,18 @@ export async function doctorCommand(opts: { json?: boolean }): Promise<void> {
   });
 
   // Check pnpm availability
+  let pnpmOk = false;
+  try {
+    const { execSync: es } = await import('node:child_process');
+    es('pnpm --version', { encoding: 'utf-8', timeout: 5000 });
+    pnpmOk = true;
+  } catch {
+    // pnpm not found
+  }
   checks.push({
     name: 'pnpm available',
-    ok: true, // We trust the user, since doctor runs via pnpm
-    detail: 'Running via pnpm',
+    ok: pnpmOk,
+    detail: pnpmOk ? 'Running via pnpm' : 'pnpm not found in PATH',
   });
 
   // Check if we're in a project directory (any project, not just JS)

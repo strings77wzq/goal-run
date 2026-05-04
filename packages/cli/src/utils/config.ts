@@ -31,7 +31,8 @@ export function loadConfig(repoRoot: string): GoalrunConfig {
   try {
     const parsed = parseYaml(raw);
     return { ...DEFAULT_CONFIG, ...(parsed as Partial<GoalrunConfig>) };
-  } catch {
+  } catch (err) {
+    console.error(`Warning: failed to parse ${configPath}, using defaults. Error: ${String(err)}`);
     return DEFAULT_CONFIG;
   }
 }

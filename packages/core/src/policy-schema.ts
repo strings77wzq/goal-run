@@ -23,6 +23,9 @@ export const DEFAULT_POLICY: PolicyConfig = {
     'terraform apply',
     'kubectl delete',
     'gh release create',
+    'git push --force',
+    'curl | bash',
+    'wget -O - | sh',
   ],
   require_approval_for: [
     'changes_public_api',

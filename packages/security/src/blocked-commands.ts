@@ -1,7 +1,8 @@
 import { createError, type Diagnostic } from 'goalrun-core';
 
 export function isCommandBlocked(command: string, blockedCommands: string[]): boolean {
-  return blockedCommands.some((blocked) => command.startsWith(blocked));
+  const normalized = command.trim().toLowerCase();
+  return blockedCommands.some((blocked) => normalized.includes(blocked.toLowerCase()));
 }
 
 export function scanForBlockedCommands(

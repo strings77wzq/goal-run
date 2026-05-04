@@ -43,18 +43,8 @@ export async function reportCommand(
   try {
     state = JSON.parse(statusRaw) as RunState;
   } catch {
-    // Fallback to legacy format
-    const legacy = JSON.parse(statusRaw) as Record<string, string>;
-    if (opts.json) {
-      console.log(JSON.stringify({ run_id: runId, status: legacy }, null, 2));
-    } else {
-      console.log(pc.bold('Run Report (legacy format)'));
-      console.log(`ID: ${runId}`);
-      console.log(`Goal: ${legacy.goal_id ?? 'unknown'}`);
-      console.log(`Status: ${legacy.status ?? 'unknown'}`);
-      console.log(`Started: ${legacy.started_at ?? 'unknown'}`);
-    }
-    return;
+    console.error(pc.red(`Failed to parse status.json for "${runId}"`));
+    process.exit(1);
   }
 
   if (opts.json) {

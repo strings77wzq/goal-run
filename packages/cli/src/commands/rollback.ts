@@ -19,9 +19,9 @@ export async function rollbackCommand(
     process.exit(1);
   }
 
-  let state: RunState & { isolated?: boolean; worktree_path?: string };
+  let state: RunState;
   try {
-    state = JSON.parse(readFileSync(statusPath, 'utf-8'));
+    state = JSON.parse(readFileSync(statusPath, 'utf-8')) as RunState;
   } catch {
     console.error(pc.red(`Failed to parse status.json for "${runId}"`));
     process.exit(1);
@@ -34,7 +34,7 @@ export async function rollbackCommand(
   }
 
   if (state.isolated && state.worktree_path) {
-    // Isolated mode: remove the worktree
+    // Isolated mode: remove the worktree (safe — main workspace untouched)
     console.log(pc.yellow(`Removing worktree: ${state.worktree_path}`));
     const result = removeWorktree(repoRoot, state.worktree_path, true);
     if (!result.success) {
@@ -43,11 +43,17 @@ export async function rollbackCommand(
     }
     console.log(pc.green('Worktree removed.'));
   } else {
-    // Non-isolated mode: git reset
-    console.log(pc.yellow('Resetting working directory...'));
+    // Non-isolated mode: require --force for safety
+    if (!opts.force) {
+      console.error(pc.red('Rollback in non-isolated mode will discard ALL uncommitted changes.'));
+      console.error(pc.red('This includes changes unrelated to this run.'));
+      console.error(pc.dim('Use --force if you are sure, or use --isolated runs in the future.'));
+      process.exit(1);
+    }
+
+    console.log(pc.yellow('Discarding uncommitted changes...'));
     try {
       execSync('git checkout -- .', { cwd: repoRoot, encoding: 'utf-8', timeout: 10000 });
-      execSync('git clean -fd', { cwd: repoRoot, encoding: 'utf-8', timeout: 10000 });
       console.log(pc.green('Working directory reset to last commit.'));
     } catch (err) {
       console.error(pc.red(`Failed to reset: ${String(err)}`));
