@@ -1,6 +1,6 @@
 {
   "name": "goalrun",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "private": true,
   "description": "Goal-driven agent skills for software engineering",
   "type": "module",
@@ -12,7 +12,11 @@
     "typecheck": "tsc --build packages/core packages/security packages/harness packages/reporter packages/cli",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",
-    "clean": "pnpm -r clean"
+    "clean": "pnpm -r clean",
+    "release:check": "pnpm format && pnpm typecheck && pnpm lint && pnpm test && pnpm build",
+    "release:pack": "pnpm -r pack --dry-run",
+    "release:alpha": "pnpm release:check && pnpm -r publish --tag alpha",
+    "release:latest": "echo 'ERROR: Manual confirmation required.' && echo 'Are you SURE you want to publish to latest? This is the default tag for all npm installs.' && echo 'Type: pnpm -r publish --tag latest'"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

@@ -79,8 +79,11 @@ curl -s https://raw.githubusercontent.com/strings77wzq/goal-run/main/AI_GUIDE.md
 ### npm 安装（推荐）
 
 ```bash
-npm install -g goalrun
+npm install -g goalrun@alpha
 ```
+
+> GoalRun 处于 **alpha** 阶段。`@alpha` 标签确保你获得最新的开发版本。
+> 运行 `npm view goalrun dist-tags` 查看可用标签。
 
 ---
 

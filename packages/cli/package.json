@@ -1,6 +1,6 @@
 {
   "name": "goalrun",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "CLI for GoalRun - goal-driven agent skills for software engineering",
   "type": "module",
   "main": "./dist/index.js",
@@ -53,5 +53,9 @@
     "software-engineering"
   ],
   "license": "MIT",
-  "author": "strings77wzq"
+  "author": "strings77wzq",
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha"
+  }
 }

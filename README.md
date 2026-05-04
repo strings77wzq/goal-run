@@ -74,8 +74,11 @@ curl -s https://raw.githubusercontent.com/strings77wzq/goal-run/main/AI_GUIDE.md
 ### npm (recommended)
 
 ```bash
-npm install -g goalrun
+npm install -g goalrun@alpha
 ```
+
+> GoalRun is in **alpha**. The `@alpha` tag ensures you get the latest development
+> release. Run `npm view goalrun dist-tags` to see available tags.
 
 ### From source
 

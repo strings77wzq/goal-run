@@ -1,6 +1,6 @@
 {
   "name": "goalrun-core",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "Core schemas, types, and utilities for GoalRun",
   "type": "module",
   "main": "./dist/index.js",
@@ -46,5 +46,9 @@
     "software-engineering"
   ],
   "license": "MIT",
-  "author": "strings77wzq"
+  "author": "strings77wzq",
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha"
+  }
 }
