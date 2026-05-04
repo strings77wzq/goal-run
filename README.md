@@ -1,8 +1,8 @@
 # GoalRun
 
-**Goal-driven agent skills for software engineering.**
+**Stop agents from claiming "done" before tests pass.**
 
-*Run tested agent skills against real software engineering goals.*
+*Goal-driven is the idea. GoalRun is the safe, testable, auditable implementation for real software engineering.*
 
 <p align="center">
   <a href="README.md">English</a> |
@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="#quick-start"><img src="https://img.shields.io/badge/quick_start-3_steps-blue?style=for-the-badge" alt="Quick Start"></a>
-  <a href="#what-goalrun-is"><img src="https://img.shields.io/badge/design-philosophy-orange?style=for-the-badge" alt="Design"></a>
+  <a href="#quick-start"><img src="https://img.shields.io/badge/quick_start-one_command-blue?style=for-the-badge" alt="Quick Start"></a>
+  <a href="#the-loop"><img src="https://img.shields.io/badge/see_the_loop-ASCII_diagram-orange?style=for-the-badge" alt="The Loop"></a>
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-210_passing-brightgreen" alt="210 tests">
+  <img src="https://img.shields.io/badge/tests-248_passing-brightgreen" alt="248 tests">
 </p>
 
 ---
@@ -137,18 +137,56 @@ The agent skills ecosystem is standardizing. GoalRun adds the **quality and safe
 | "Can I resume?" | `goalrun resume` from last checkpoint |
 | "Is this criteria verifiable?" | Criteria harness detects vague goals |
 
-## The Supervised Loop
+## The Semi-Autonomous Loop
+
+GoalRun auto-advances through safe states. It only pauses at 2 human gates:
 
 ```
-  planned ──→ waiting_for_agent ──→ waiting_for_user ──→ verifying
-                 (share prompt)     (review output)    (run commands)
-                                                      ┌────┴────┐
-                                                 completed     needs_revision
-                                                   ↑              │
-                                                   └── resume ────┘
+                    ┌─ AUTO-ADVANCE ─────────────────────┐
+                    │                                     │
+  goalrun advance   │                                     │
+       │            ▼                                     │
+       │    planned ──→ waiting_for_agent ──→             │
+       │                  (share with AI)       │         │
+       │                                        ▼         │
+       │                              waiting_for_user    │
+       │                              🛑 HUMAN GATE       │
+       │                              (review AI output)  │
+       │                                        │         │
+       │                              goalrun advance     │
+       │                                        │         │
+       │                                        ▼         │
+       │                                   verifying     │
+       │                              (auto-run tests)    │
+       │                               ┌──────┴──────┐   │
+       │                          criteria met   criteria │
+       │                               │         fail    │
+       │                               ▼           ▼     │
+       │                          completed   needs_     │
+       │                                      revision   │
+       │                                        │        │
+       │                              goalrun advance    │
+       │                                        │        │
+       └────────────────────────────────────────┘        │
+                                                          │
+                    └────────────────────────────────────┘
+                    
+  🛑 blocked_by_policy — second HUMAN GATE (approve/reject)
+  ❌ failed — budget exhausted, auto-stops
+  🛑 stopped — you decide to end the run
 ```
 
-Every transition creates a checkpoint. You advance the state — GoalRun never auto-advances.
+**Humans approve at 2 gates. Everything else is automatic.** Every step creates an auditable checkpoint.
+
+### Before / After
+
+| Without GoalRun | With GoalRun |
+|---|---|
+| Agent says "done", you check nothing | GoalRun won't mark completed until criteria pass |
+| Agent deletes a file, nobody notices | `deletes_files` triggers policy gate |
+| 5 iterations with no progress | Budget exhausted → auto-failed |
+| "Trust me, I ran the tests" | Verification output saved to evidence files |
+| What happened in that session? | Full checkpoint timeline, auditable |
 
 ## Goal Spec Example
 
@@ -199,10 +237,15 @@ verification:
 | `goalrun plan <goal>` | Generate execution plan + AI prompt |
 | `goalrun verify <goal>` | Run all 5 harnesses on a goal |
 | `goalrun run <goal> --supervised --loop` | Create checkpointed supervised run |
-| `goalrun resume <run-id>` | Advance to next state |
+| `goalrun advance <run-id>` | **Semi-auto advance** — stops only at human gates |
+| `goalrun resume <run-id> --to <status>` | Manual single-step state transition |
 | `goalrun status [run-id]` | Show run status and criteria |
 | `goalrun stop <run-id>` | Stop a running loop |
 | `goalrun report [run-id]` | Detailed run report |
+| `goalrun audit <run-id>` | Generate PR-ready audit report |
+| `goalrun handoff <goal> --target <runtime>` | Generate runtime-specific prompt |
+| `goalrun from-issue <url\|title>` | Convert GitHub issue → goal.yaml |
+| `goalrun compare <run-a> <run-b>` | Diff two runs |
 | `goalrun doctor` | Health check |
 
 ## Security
