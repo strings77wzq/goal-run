@@ -245,8 +245,10 @@ verification:
 | `goalrun plan <goal>`                       | Generate execution plan + AI prompt               |
 | `goalrun verify <goal>`                     | Run all 5 harnesses on a goal                     |
 | `goalrun run <goal> --supervised --loop`    | Create checkpointed supervised run                |
+| `goalrun run <goal> --isolated`             | Create run with git worktree isolation            |
 | `goalrun advance <run-id>`                  | **Semi-auto advance** — stops only at human gates |
 | `goalrun resume <run-id> --to <status>`     | Manual single-step state transition               |
+| `goalrun rollback <run-id>`                 | Discard changes (worktree remove or git reset)    |
 | `goalrun status [run-id]`                   | Show run status and criteria                      |
 | `goalrun stop <run-id>`                     | Stop a running loop                               |
 | `goalrun report [run-id]`                   | Detailed run report                               |
@@ -293,7 +295,7 @@ GoalRun is in **alpha** (0.1.0-alpha.1). APIs and file formats may change.
 | Supervised checkpoint loop (advance/resume/status/stop) | Alpha     |
 | Multi-runtime handoff (Claude/Codex/Cursor/OpenCode)    | Alpha     |
 | npm install -g goalrun                                  | Available |
-| Git worktree isolation + diff capture                   | Planned   |
+| Git worktree isolation + diff capture                   | Alpha     |
 | npm package rename to @goalrun/cli                      | Planned   |
 
 ## License
