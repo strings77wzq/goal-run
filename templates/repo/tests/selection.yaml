@@ -1,0 +1,24 @@
+# Selection tests for deterministic skill matching
+# These tests verify that the right skills are selected for given inputs
+# Run with: goalrun test
+
+tests:
+  - description: Bug fix selects tdd-change
+    input: Fix the login bug in auth module
+    expect:
+      skill: tdd-change
+
+  - description: Code review selects code-review
+    input: Review the pull request changes
+    expect:
+      skill: code-review
+
+  - description: Architecture change selects implementation-strategy
+    input: Design the new caching architecture
+    expect:
+      skill: implementation-strategy
+
+  - description: Documentation-only selects none
+    input: Update the README with new badges
+    expect:
+      skill: none

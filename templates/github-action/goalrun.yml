@@ -1,0 +1,39 @@
+# GoalRun CI check
+# Add this to .github/workflows/ to validate goals and skills on every PR
+
+name: GoalRun Check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  goalrun:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install
+
+      - name: GoalRun lint
+        run: npx goalrun lint --json
+
+      - name: GoalRun test
+        run: npx goalrun test --json
+
+      - name: GoalRun verify all goals
+        run: |
+          for goal in .goalrun/goals/*.yaml; do
+            npx goalrun verify "$goal" --json
+          done

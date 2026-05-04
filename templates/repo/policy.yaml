@@ -1,0 +1,21 @@
+# GoalRun security policy
+# These rules are enforced by the policy harness during plan/verify/run
+
+blocked_commands:
+  - rm -rf
+  - npm publish
+  - pnpm publish
+  - terraform apply
+  - kubectl delete
+  - gh release create
+  - git push --force
+  - curl | bash
+  - wget -O - | sh
+
+require_approval_for:
+  - changes_public_api
+  - deletes_files
+  - modifies_auth_code
+  - modifies_payment_code
+  - modifies_infra
+  - external_network_access

@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+.env
+
+# Local tool configs
+.omc/
+.claude/
+.codex/
+.opencode/
+openspec/
+
+# Run artifacts (user-generated)
+.goalrun/runs/
+
+# Example project deps
+examples/node-lib/node_modules/
+examples/node-lib/dist/
+examples/node-lib/package-lock.json

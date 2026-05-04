@@ -1,0 +1,22 @@
+# GoalRun configuration
+# See docs/concepts.md for full documentation
+
+version: 1
+
+# Skills directory relative to repo root
+skills_dir: .agent/skills
+
+# Goals directory relative to repo root
+goals_dir: .goalrun/goals
+
+# Policy file relative to repo root
+policy_file: .goalrun/policy.yaml
+
+# Selection tests file
+selection_tests: .goalrun/tests/selection.yaml
+
+# Runs output directory
+runs_dir: .goalrun/runs
+
+# Lockfile path
+lockfile: goalrun.lock

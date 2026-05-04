@@ -1,0 +1,36 @@
+{
+  "name": "@goalrun/cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI for GoalRun - goal-driven agent skills for software engineering",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "goalrun": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --clean",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@goalrun/core": "workspace:*",
+    "@goalrun/harness": "workspace:*",
+    "@goalrun/reporter": "workspace:*",
+    "@goalrun/security": "workspace:*",
+    "commander": "^13.1.0",
+    "picocolors": "^1.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsup": "^8.4.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}

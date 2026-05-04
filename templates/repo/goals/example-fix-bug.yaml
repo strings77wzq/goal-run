@@ -1,0 +1,31 @@
+id: example-fix-bug
+title: Fix example bug with TDD
+goal: >
+  Fix the documented bug and add regression tests.
+
+skills:
+  - implementation-strategy
+  - tdd-change
+  - code-review
+
+criteria:
+  - regression test added
+  - targeted tests pass
+  - no public API change
+  - final diff reviewed
+
+budget:
+  max_iterations: 5
+  max_changed_files: 20
+  max_runtime_minutes: 60
+
+policy:
+  require_approval_for:
+    - changes_public_api
+    - deletes_files
+    - modifies_auth_code
+
+verification:
+  commands:
+    - pnpm test
+    - pnpm typecheck
