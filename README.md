@@ -24,24 +24,79 @@
 
 ---
 
+## Skip This README
+
+Send this to your AI agent (Claude Code / Codex / Cursor) and let it figure everything out:
+
+```
+Read https://github.com/strings77wzq/goal-run and tell me
+what GoalRun is, and how to use it in my project.
+```
+
+---
+
+## Installation
+
+### For Humans
+
+**Don't install manually.** Copy this prompt, paste it to your AI agent (Claude Code, Codex CLI, Cursor, AmpCode — any of them):
+
+```
+Install and configure GoalRun:
+1. git clone https://github.com/strings77wzq/goal-run.git
+2. cd goal-run && pnpm install && pnpm build
+3. Link it globally or add to PATH
+4. In my project, run: goalrun init
+5. Install built-in skills: goalrun skill install tdd-change code-review implementation-strategy
+6. Run: goalrun doctor
+```
+
+Or if you insist on doing it yourself:
+
+```bash
+git clone https://github.com/strings77wzq/goal-run.git
+cd goal-run && pnpm install && pnpm build
+pnpm link --global              # makes 'goalrun' available globally
+cd /your-project
+goalrun init
+goalrun skill install tdd-change code-review implementation-strategy
+goalrun doctor
+```
+
+> Honestly, let the agent do it. Humans fat-finger configs.
+
+### For AI Agents
+
+```bash
+curl -s https://raw.githubusercontent.com/strings77wzq/goal-run/main/AI_GUIDE.md
+```
+
+### Coming soon to npm
+
+```bash
+pnpm add -g goalrun              # one-liner (soon)
+```
+
+---
+
 ## Quick Start
 
 ```bash
 # 1. Initialize GoalRun in your project
-npx goalrun init
+goalrun init
 
 # 2. Install built-in skills
-npx goalrun skill install tdd-change code-review implementation-strategy
+goalrun skill install tdd-change code-review implementation-strategy
 
 # 3. Plan and verify your first goal
-npx goalrun plan .goalrun/goals/example-fix-bug.yaml
-npx goalrun verify .goalrun/goals/example-fix-bug.yaml
+goalrun plan .goalrun/goals/example-fix-bug.yaml
+goalrun verify .goalrun/goals/example-fix-bug.yaml
 
 # 4. Create a supervised loop run
-npx goalrun run .goalrun/goals/example-fix-bug.yaml --supervised --loop
-npx goalrun status
-npx goalrun resume <run-id>
-npx goalrun report
+goalrun run .goalrun/goals/example-fix-bug.yaml --supervised --loop
+goalrun status
+goalrun resume <run-id>
+goalrun report
 ```
 
 **What just happened?** GoalRun validated your goal spec, checked all skills for quality and security, generated an AI-ready plan, and created a checkpointed supervised run — without calling any LLM or executing any code.
