@@ -297,7 +297,7 @@ GoalRun is in **alpha** (0.1.0-alpha.1). APIs and file formats may change.
 | Security scanning (secrets, prompt injection, URLs)     | Alpha     |
 | Supervised checkpoint loop (advance/resume/status/stop) | Alpha     |
 | Multi-runtime handoff (Claude/Codex/Cursor/OpenCode)    | Alpha     |
-| npm install -g goalrun                                  | Available |
+| npm install -g goalrun@alpha                            | Available |
 | Git worktree isolation + diff capture                   | Alpha     |
 | npm package rename to @goalrun/cli                      | Planned   |
 

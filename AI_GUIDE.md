@@ -4,7 +4,7 @@ You are an AI coding assistant (Claude Code, Codex, Cursor, or similar). This do
 
 ## What GoalRun Does (And Does NOT Do)
 
-GoalRun is a **verification harness** — it validates goals, checks skills, enforces policy, and manages supervised runs. It does NOT execute code, does NOT call external LLMs, and does NOT auto-advance without human input.
+GoalRun is a **verification harness** — it validates goals, checks skills, enforces policy, manages supervised runs, and captures git diffs. It does NOT execute code, does NOT call external LLMs, and does NOT auto-advance through human decision gates.
 
 ## Core Rules (NEVER BREAK)
 
@@ -18,11 +18,51 @@ GoalRun is a **verification harness** — it validates goals, checks skills, enf
 ## How to Help Users Set Up GoalRun
 
 ```bash
-npm install -g goalrun    # Install globally
-goalrun init              # Scaffold a project
+npm install -g goalrun@alpha    # Install (alpha tag — GoalRun is pre-1.0)
+goalrun init                    # Scaffold a project
 goalrun skill install tdd-change code-review implementation-strategy
-goalrun doctor            # Verify setup
+goalrun doctor                  # Verify setup
 ```
+
+> If `goalrun` is not found after install, ensure your npm global bin is in PATH:
+> `npm config get prefix` → add `<prefix>/bin` to PATH.
+
+## The Semi-Autonomous Loop
+
+GoalRun has a **semi-autonomous state machine**. The `advance` command auto-advances through safe states and stops only at human decision gates:
+
+```
+planned → waiting_for_agent → waiting_for_user (🛑 HUMAN) → verifying → completed
+                                                          ↘ needs_revision → waiting_for_agent ...
+```
+
+Two human gates stop auto-advance:
+
+- **waiting_for_user** — agent output needs human review
+- **blocked_by_policy** — a policy gate was triggered, need approval/rejection
+
+Key commands for managing a run:
+
+```bash
+goalrun advance <run-id>          # Semi-auto advance (recommended)
+goalrun resume <run-id> --to <status>  # Manual single-step
+goalrun status [run-id]           # View run state and criteria
+goalrun stop <run-id>             # Stop the run
+goalrun report [run-id]           # Detailed report
+goalrun rollback <run-id>         # Discard changes (worktree remove or git reset)
+```
+
+## Isolated Runs
+
+For extra safety, use the `--isolated` flag to create a git worktree:
+
+```bash
+goalrun run .goalrun/goals/task.yaml --supervised --loop --isolated
+```
+
+The agent works in an isolated git checkout at `.goalrun/runs/<id>/worktree/`.
+The main workspace stays untouched. When done, `goalrun rollback <run-id>` removes
+the worktree cleanly.
 
 ## How to Help Users Create a Goal
 
@@ -69,12 +109,13 @@ verification:
 ## When You Receive a GoalRun Plan
 
 1. Read the agent prompt carefully
-2. Read each skill's SKILL.md from `.agent/skills/<name>/SKILL.md`
-3. Follow skill workflows IN ORDER
-4. **Stop at each policy gate** and request user approval
-5. Run verification commands and capture output
-6. Save evidence to `.goalrun/runs/<id>/artifacts/`
-7. Report results against each criterion — with evidence
+2. **If the run is isolated**, `cd` into the worktree directory indicated in the run output
+3. Read each skill's SKILL.md from `.agent/skills/<name>/SKILL.md`
+4. Follow skill workflows IN ORDER
+5. **Stop at each policy gate** and request user approval
+6. Run verification commands and capture output
+7. Save evidence to `.goalrun/runs/<id>/artifacts/`
+8. Report results against each criterion — with evidence
 
 ## Safety Checklist Before Reporting "Done"
 
