@@ -166,3 +166,96 @@ export function allCriteriaPassed(state: RunState): boolean {
 export function isBudgetExhausted(state: RunState): boolean {
   return state.iteration >= state.max_iterations;
 }
+
+// ── P2-R Semi-Autonomous Loop ──
+
+const HUMAN_GATES: RunStatus[] = ["waiting_for_user", "blocked_by_policy"];
+
+export function needsHumanInput(status: RunStatus): boolean {
+  return HUMAN_GATES.includes(status);
+}
+
+export const AUTO_TRANSITIONS: Record<RunStatus, RunStatus | null> = {
+  planned: "waiting_for_agent",
+  waiting_for_agent: "waiting_for_user",
+  waiting_for_user: null,
+  verifying: null,
+  needs_revision: "waiting_for_agent",
+  blocked_by_policy: null,
+  completed: null,
+  failed: null,
+  stopped: null,
+};
+
+export interface AutoAdvanceResult {
+  state: RunState;
+  checkpoints: Checkpoint[];
+  stopped_at_gate: boolean;
+}
+
+export function autoAdvance(state: RunState): AutoAdvanceResult {
+  const checkpoints: Checkpoint[] = [];
+  let current = { ...state };
+
+  // Terminal states — no advancing
+  if (isTerminal(current.status)) {
+    return { state: current, checkpoints: [], stopped_at_gate: false };
+  }
+
+  // Budget check: if exhausted, fail immediately
+  if (isBudgetExhausted(current)) {
+    const failed = { ...current, status: "failed" as const, completed_at: new Date().toISOString() };
+    const cp = createCheckpointInternal(failed, "Budget exhausted — auto-failed");
+    return { state: failed, checkpoints: [cp], stopped_at_gate: false };
+  }
+
+  // Auto-advance through safe states until hitting a human gate or terminal
+  for (let safety = 0; safety < 20; safety++) {
+    if (isTerminal(current.status)) break;
+    if (needsHumanInput(current.status)) {
+      return { state: current, checkpoints, stopped_at_gate: true };
+    }
+
+    // Special handling for 'verifying': check criteria
+    if (current.status === "verifying") {
+      if (allCriteriaPassed(current)) {
+        const result = advanceState(current, "completed");
+        if (!result.success) break;
+        current = result.success ? result.state : current;
+        const cp = createCheckpointInternal(current, "All criteria passed — auto-completed");
+        checkpoints.push(cp);
+        break;
+      } else {
+        const result = advanceState(current, "needs_revision");
+        if (!result.success) break;
+        current = result.success ? result.state : current;
+        const cp = createCheckpointInternal(current, "Criteria not met — auto-revision");
+        checkpoints.push(cp);
+        // Continue loop: needs_revision → waiting_for_agent → waiting_for_user (gate)
+        continue;
+      }
+    }
+
+    // Standard auto-transition
+    const next = AUTO_TRANSITIONS[current.status];
+    if (!next) break;
+
+    const result = advanceState(current, next);
+    if (!result.success) break;
+    current = result.success ? result.state : current;
+    const cp = createCheckpointInternal(current, `Auto-advanced to ${next}`);
+    checkpoints.push(cp);
+  }
+
+  return { state: current, checkpoints, stopped_at_gate: needsHumanInput(current.status) };
+}
+
+function createCheckpointInternal(state: RunState, summary: string): Checkpoint {
+  return {
+    id: `${String(state.iteration).padStart(3, "0")}-${new Date().toISOString().replace(/[:.]/g, "-")}`,
+    iteration: state.iteration,
+    status: state.status,
+    created_at: new Date().toISOString(),
+    summary,
+  };
+}

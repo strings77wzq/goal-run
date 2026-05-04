@@ -6,6 +6,9 @@ import {
   advanceState,
   canAdvanceTo,
   isTerminal,
+  needsHumanInput,
+  autoAdvance,
+  AUTO_TRANSITIONS,
   VALID_TRANSITIONS,
   type RunState,
   type RunStatus,
@@ -149,4 +152,91 @@ describe("isTerminal", () => {
   it("stopped is terminal", () => expect(isTerminal("stopped")).toBe(true));
   it("planned is not terminal", () => expect(isTerminal("planned")).toBe(false));
   it("waiting_for_agent is not terminal", () => expect(isTerminal("waiting_for_agent")).toBe(false));
+});
+
+describe("needsHumanInput", () => {
+  it("waiting_for_user requires human", () => expect(needsHumanInput("waiting_for_user")).toBe(true));
+  it("blocked_by_policy requires human", () => expect(needsHumanInput("blocked_by_policy")).toBe(true));
+  it("planned does not require human", () => expect(needsHumanInput("planned")).toBe(false));
+  it("verifying does not require human", () => expect(needsHumanInput("verifying")).toBe(false));
+  it("needs_revision does not require human", () => expect(needsHumanInput("needs_revision")).toBe(false));
+  it("waiting_for_agent does not require human", () => expect(needsHumanInput("waiting_for_agent")).toBe(false));
+  it("terminal states do not require human", () => {
+    expect(needsHumanInput("completed")).toBe(false);
+    expect(needsHumanInput("failed")).toBe(false);
+    expect(needsHumanInput("stopped")).toBe(false);
+  });
+});
+
+describe("AUTO_TRANSITIONS", () => {
+  it("planned auto-advances to waiting_for_agent", () => {
+    expect(AUTO_TRANSITIONS.planned).toBe("waiting_for_agent");
+  });
+  it("waiting_for_agent auto-advances to waiting_for_user", () => {
+    expect(AUTO_TRANSITIONS.waiting_for_agent).toBe("waiting_for_user");
+  });
+  it("waiting_for_user has no auto-transition (needs human)", () => {
+    expect(AUTO_TRANSITIONS.waiting_for_user).toBeNull();
+  });
+  it("verifying has no fixed auto-transition (depends on criteria)", () => {
+    expect(AUTO_TRANSITIONS.verifying).toBeNull();
+  });
+  it("needs_revision auto-advances to waiting_for_agent", () => {
+    expect(AUTO_TRANSITIONS.needs_revision).toBe("waiting_for_agent");
+  });
+  it("blocked_by_policy has no auto-transition (needs human)", () => {
+    expect(AUTO_TRANSITIONS.blocked_by_policy).toBeNull();
+  });
+});
+
+describe("autoAdvance", () => {
+  it("auto-advances from planned to waiting_for_user (skips safe states)", () => {
+    const state = createRunState("r1", "g1", ["s1"], ["c1"], { max_iterations: 5, max_changed_files: 20, max_runtime_minutes: 60 }, []);
+    const result = autoAdvance(state);
+    expect(result.state.status).toBe("waiting_for_user");
+    expect(result.checkpoints.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("stops at human gate (waiting_for_user)", () => {
+    const state = createRunState("r1", "g1", ["s1"], ["c1"], { max_iterations: 5, max_changed_files: 20, max_runtime_minutes: 60 }, []);
+    // Set to waiting_for_user
+    state.status = "waiting_for_user";
+    const result = autoAdvance(state);
+    expect(result.state.status).toBe("waiting_for_user");
+    expect(result.stopped_at_gate).toBe(true);
+  });
+
+  it("auto-completes from verifying when all criteria pass", () => {
+    const state = createRunState("r1", "g1", ["s1"], ["test"], { max_iterations: 5, max_changed_files: 20, max_runtime_minutes: 60 }, []);
+    state.status = "verifying";
+    state.criteria = [{ text: "test", status: "pass" }];
+    const result = autoAdvance(state);
+    expect(result.state.status).toBe("completed");
+  });
+
+  it("auto-advances from verifying to waiting_for_user when criteria fail (via needs_revision)", () => {
+    const state = createRunState("r1", "g1", ["s1"], ["test"], { max_iterations: 5, max_changed_files: 20, max_runtime_minutes: 60 }, []);
+    state.status = "verifying";
+    state.criteria = [{ text: "test", status: "fail" }];
+    const result = autoAdvance(state);
+    // verifying → needs_revision → waiting_for_agent → waiting_for_user (gate)
+    expect(result.state.status).toBe("waiting_for_user");
+    expect(result.checkpoints.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("fails when budget exhausted", () => {
+    const state = createRunState("r1", "g1", ["s1"], ["c1"], { max_iterations: 5, max_changed_files: 20, max_runtime_minutes: 60 }, []);
+    state.iteration = 5;
+    state.max_iterations = 5;
+    const result = autoAdvance(state);
+    expect(result.state.status).toBe("failed");
+  });
+
+  it("does nothing for terminal states", () => {
+    const state = createRunState("r1", "g1", ["s1"], ["c1"], { max_iterations: 5, max_changed_files: 20, max_runtime_minutes: 60 }, []);
+    state.status = "completed";
+    const result = autoAdvance(state);
+    expect(result.state.status).toBe("completed");
+    expect(result.checkpoints).toHaveLength(0);
+  });
 });

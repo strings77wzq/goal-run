@@ -47,8 +47,11 @@ export {
   isBudgetExhausted,
   VALID_TRANSITIONS,
   RUN_STATUSES,
+  needsHumanInput,
+  autoAdvance,
+  AUTO_TRANSITIONS,
 } from "./run-state.js";
-export type { RunState, RunStatus, Checkpoint, CriterionStatus } from "./run-state.js";
+export type { RunState, RunStatus, Checkpoint, CriterionStatus, AutoAdvanceResult } from "./run-state.js";
 export { generateHandoff, TARGETS } from "./adapter.js";
 export type { HandoffTarget, HandoffPlan } from "./adapter.js";
 export { compareRuns } from "./compare.js";

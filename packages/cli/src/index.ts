@@ -17,13 +17,14 @@ import { handoffCommand } from "./commands/handoff.js";
 import { auditCommand } from "./commands/audit.js";
 import { fromIssueCommand } from "./commands/from-issue.js";
 import { compareCommand } from "./commands/compare.js";
+import { advanceCommand } from "./commands/advance.js";
 
 const program = new Command();
 
 program
   .name("goalrun")
   .description("Goal-driven agent skills for software engineering")
-  .version("0.3.0");
+  .version("0.4.0");
 
 program
   .command("init")
@@ -97,11 +98,24 @@ program
 
 program
   .command("resume <run-id>")
-  .description("Advance a supervised loop run to the next state")
-  .option("--to <status>", "Target status to advance to")
+  .description("Manually advance to a specific state (use --to)")
+  .option("--to <status>", "Target status (required)")
   .option("--json", "Output as JSON")
   .action(async (runId: string, opts) => {
+    if (!opts.to) {
+      console.error(pc.red("Error: --to is required for manual resume."));
+      console.error(pc.dim("For semi-autonomous advance, use: goalrun advance"));
+      process.exit(1);
+    }
     await resumeCommand(runId, { json: opts.json, to: opts.to });
+  });
+
+program
+  .command("advance <run-id>")
+  .description("Semi-autonomous advance — stops at human gates only")
+  .option("--json", "Output as JSON")
+  .action(async (runId: string, opts) => {
+    await advanceCommand(runId, { json: opts.json });
   });
 
 program
