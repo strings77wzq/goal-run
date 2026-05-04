@@ -17,6 +17,14 @@ const { globSync } = fastGlob;
 export async function verifyCommand(goalPath: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
+
+  // Check file exists before running harnesses
+  if (!existsSync(resolve(repoRoot, goalPath))) {
+    console.error(pc.red(`Error: Goal file not found: ${goalPath}`));
+    console.error(pc.dim('Run "goalrun init" first, or check the file path.'));
+    process.exit(1);
+  }
+
   const fullGoalPath = resolveSafe(repoRoot, goalPath);
   const allDiagnostics: Diagnostic[] = [];
 

@@ -35,31 +35,3 @@ export function loadConfig(repoRoot: string): GoalrunConfig {
     return DEFAULT_CONFIG;
   }
 }
-
-export function getTemplatesDir(): string {
-  // In development, templates are at the monorepo root
-  const cwd = process.cwd();
-  // Check for monorepo layout
-  const monorepoRoot = resolve(cwd, '..', '..');
-  const templatesPath = resolve(monorepoRoot, 'templates');
-  if (existsSync(templatesPath)) {
-    return templatesPath;
-  }
-  // Fallback: templates next to the CLI package
-  const pkgRoot = resolve(cwd, '..');
-  const altPath = resolve(pkgRoot, 'templates');
-  if (existsSync(altPath)) {
-    return altPath;
-  }
-  return templatesPath;
-}
-
-export function getBuiltinSkillsDir(): string {
-  const cwd = process.cwd();
-  const monorepoRoot = resolve(cwd, '..', '..');
-  const skillsPath = resolve(monorepoRoot, 'skills');
-  if (existsSync(skillsPath)) {
-    return skillsPath;
-  }
-  return resolve(cwd, '..', 'skills');
-}

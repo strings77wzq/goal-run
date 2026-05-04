@@ -79,6 +79,10 @@ export async function skillInstallCommand(
   if (unknown.length > 0) {
     console.log(pc.red(`Unknown skill(s): ${unknown.join(', ')}`));
     console.log(pc.dim(`Available: ${knownSkills.join(', ')}`));
+    process.exit(1);
+  }
+  if (installed.length === 0 && unknown.length === 0) {
+    console.log(pc.yellow('No skills installed — all requested skills are already installed.'));
   }
 }
 

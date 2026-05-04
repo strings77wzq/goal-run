@@ -24,12 +24,17 @@ export async function doctorCommand(opts: { json?: boolean }): Promise<void> {
     detail: 'Running via pnpm',
   });
 
-  // Check repo root
+  // Check if we're in a project directory (any project, not just JS)
   const hasPackageJson = existsSync(resolve(repoRoot, 'package.json'));
+  const hasGoMod = existsSync(resolve(repoRoot, 'go.mod'));
+  const hasGit = existsSync(resolve(repoRoot, '.git'));
+  const isProjectDir = hasPackageJson || hasGoMod || hasGit;
   checks.push({
-    name: 'Repo root (package.json)',
-    ok: hasPackageJson,
-    detail: hasPackageJson ? 'Found' : 'Not found — are you in a project root?',
+    name: 'Project directory',
+    ok: isProjectDir,
+    detail: isProjectDir
+      ? `Found: ${[hasPackageJson && 'package.json', hasGoMod && 'go.mod', hasGit && '.git'].filter(Boolean).join(', ')}`
+      : 'No package.json, go.mod, or .git found — are you in a project root?',
   });
 
   // Check GoalRun structure

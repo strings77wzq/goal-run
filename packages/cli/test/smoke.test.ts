@@ -1,29 +1,12 @@
 /**
  * Smoke test: exercises the full init → install → plan → verify flow
- * in a temporary directory. Mocks process.cwd() so commands operate
- * on the temp directory while templates/skills are loaded from the
- * real monorepo paths.
+ * in a temporary directory. Templates and skills are embedded as constants
+ * so no filesystem mocking is needed — just redirect process.cwd().
  */
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
 import { mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { tmpdir } from 'node:os';
-
-// Capture real monorepo paths BEFORE any mocking
-const REAL_MONOREPO_ROOT = resolve(import.meta.dirname ?? '', '..', '..', '..');
-
-// Mock config module to return real template/skill paths
-vi.mock('../src/utils/config.js', async () => {
-  const actual =
-    await vi.importActual<typeof import('../src/utils/config.js')>('../src/utils/config.js');
-  const monorepoRoot = REAL_MONOREPO_ROOT;
-  return {
-    ...actual,
-    getTemplatesDir: () => resolve(monorepoRoot, 'templates'),
-    getBuiltinSkillsDir: () => resolve(monorepoRoot, 'skills'),
-    loadConfig: actual.loadConfig,
-  };
-});
 
 describe('CLI smoke test (full workflow)', () => {
   let tempDir: string;
