@@ -5,7 +5,7 @@ import {
   parseIssueUrl,
   generateGoalFromIssue,
   generateGoalFromTitle,
-} from "@goalrun/core";
+} from "@strings77wzq/goalrun-core";
 
 export async function fromIssueCommand(
   input: string,

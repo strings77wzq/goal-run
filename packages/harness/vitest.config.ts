@@ -4,12 +4,12 @@ import { resolve } from "node:path";
 export default defineConfig({
   resolve: {
     alias: {
-      "@goalrun/core": resolve(__dirname, "../core/src/index.ts"),
-      "@goalrun/security": resolve(__dirname, "../security/src/index.ts"),
+      "@strings77wzq/goalrun-core": resolve(__dirname, "../core/src/index.ts"),
+      "@strings77wzq/goalrun-security": resolve(__dirname, "../security/src/index.ts"),
     },
   },
   test: {
-    name: "@goalrun/harness",
+    name: "@strings77wzq/goalrun-harness",
     include: ["test/**/*.test.ts"],
   },
 });

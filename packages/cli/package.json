@@ -1,5 +1,5 @@
 {
-  "name": "@goalrun/cli",
+  "name": "@strings77wzq/goalrun",
   "version": "0.1.0",
   "description": "CLI for GoalRun - goal-driven agent skills for software engineering",
   "type": "module",
@@ -19,10 +19,10 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@goalrun/core": "workspace:*",
-    "@goalrun/harness": "workspace:*",
-    "@goalrun/reporter": "workspace:*",
-    "@goalrun/security": "workspace:*",
+    "@strings77wzq/goalrun-core": "workspace:*",
+    "@strings77wzq/goalrun-harness": "workspace:*",
+    "@strings77wzq/goalrun-reporter": "workspace:*",
+    "@strings77wzq/goalrun-security": "workspace:*",
     "commander": "^13.1.0",
     "fast-glob": "^3.3.0",
     "picocolors": "^1.1.0",

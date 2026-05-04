@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { formatText, formatJson } from "../src/format.js";
-import { createError, createWarning, createInfo } from "@goalrun/core";
+import { createError, createWarning, createInfo } from "@strings77wzq/goalrun-core";
 
 describe("formatText", () => {
   it("returns 'All checks passed' for empty diagnostics", () => {

@@ -1,5 +1,5 @@
-import type { Diagnostic, SelectionTest, SelectionTests } from "@goalrun/core";
-import { createError } from "@goalrun/core";
+import type { Diagnostic, SelectionTest, SelectionTests } from "@strings77wzq/goalrun-core";
+import { createError } from "@strings77wzq/goalrun-core";
 
 export interface SelectionResult {
   test: SelectionTest;

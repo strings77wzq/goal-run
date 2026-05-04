@@ -1,4 +1,4 @@
-import { createWarning, type Diagnostic } from "@goalrun/core";
+import { createWarning, type Diagnostic } from "@strings77wzq/goalrun-core";
 
 export interface InjectionPattern {
   code: string;

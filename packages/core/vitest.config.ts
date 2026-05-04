@@ -2,7 +2,7 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    name: "@goalrun/core",
+    name: "@strings77wzq/goalrun-core",
     include: ["test/**/*.test.ts"],
   },
 });

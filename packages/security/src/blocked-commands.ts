@@ -1,4 +1,4 @@
-import { createError, type Diagnostic } from "@goalrun/core";
+import { createError, type Diagnostic } from "@strings77wzq/goalrun-core";
 
 export function isCommandBlocked(command: string, blockedCommands: string[]): boolean {
   return blockedCommands.some((blocked) => command.startsWith(blocked));

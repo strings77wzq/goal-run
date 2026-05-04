@@ -4,9 +4,9 @@ import {
   createError,
   createWarning,
   createInfo,
-} from "@goalrun/core";
-import { scanForSecrets, scanForBlockedCommands, scanForPromptInjection, scanForExternalUrls } from "@goalrun/security";
-import type { PolicyConfig } from "@goalrun/core";
+} from "@strings77wzq/goalrun-core";
+import { scanForSecrets, scanForBlockedCommands, scanForPromptInjection, scanForExternalUrls } from "@strings77wzq/goalrun-security";
+import type { PolicyConfig } from "@strings77wzq/goalrun-core";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname, basename } from "node:path";
 

@@ -1,4 +1,4 @@
-import { createError, createWarning, type Diagnostic, type PolicyConfig } from "@goalrun/core";
+import { createError, createWarning, type Diagnostic, type PolicyConfig } from "@strings77wzq/goalrun-core";
 
 const DANGEROUS_PERMISSIONS = [
   "execute_shell_commands",

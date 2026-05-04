@@ -2,9 +2,9 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync } from "node:fs";
 import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
-import { runGoalHarness, runPolicyHarness, generatePlanReport } from "@goalrun/harness";
-import { DEFAULT_POLICY, parsePolicyConfigSafe, generateHandoff, TARGETS } from "@goalrun/core";
-import type { HandoffTarget } from "@goalrun/core";
+import { runGoalHarness, runPolicyHarness, generatePlanReport } from "@strings77wzq/goalrun-harness";
+import { DEFAULT_POLICY, parsePolicyConfigSafe, generateHandoff, TARGETS } from "@strings77wzq/goalrun-core";
+import type { HandoffTarget } from "@strings77wzq/goalrun-core";
 
 export async function handoffCommand(
   goalPath: string,

@@ -1,4 +1,4 @@
-import type { Diagnostic } from "@goalrun/core";
+import type { Diagnostic } from "@strings77wzq/goalrun-core";
 import type { SelectionHarnessOutput } from "./selection-harness.js";
 
 export interface ReportSummary {

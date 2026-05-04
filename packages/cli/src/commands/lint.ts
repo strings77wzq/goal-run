@@ -1,9 +1,9 @@
 import { resolve } from "node:path";
 import { existsSync } from "node:fs";
 import { loadConfig } from "../utils/config.js";
-import { formatText, formatJson } from "@goalrun/reporter";
-import { runStaticHarness } from "@goalrun/harness";
-import { DEFAULT_POLICY, type Diagnostic } from "@goalrun/core";
+import { formatText, formatJson } from "@strings77wzq/goalrun-reporter";
+import { runStaticHarness } from "@strings77wzq/goalrun-harness";
+import { DEFAULT_POLICY, type Diagnostic } from "@strings77wzq/goalrun-core";
 import { globSync } from "fast-glob";
 
 export async function lintCommand(opts: { json?: boolean }): Promise<void> {

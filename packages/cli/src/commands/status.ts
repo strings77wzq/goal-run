@@ -2,7 +2,7 @@ import { resolve } from "node:path";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import pc from "picocolors";
 import { loadConfig } from "../utils/config.js";
-import { isTerminal, type RunState, type RunStatus } from "@goalrun/core";
+import { isTerminal, type RunState, type RunStatus } from "@strings77wzq/goalrun-core";
 
 const STATUS_ICONS: Record<RunStatus, string> = {
   planned: pc.blue("◉"),

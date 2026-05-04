@@ -1,5 +1,5 @@
 {
-  "name": "@goalrun/harness",
+  "name": "@strings77wzq/goalrun-harness",
   "version": "0.1.0",
   "description": "Validation harnesses for GoalRun skills, goals, policies, and selection",
   "type": "module",
@@ -17,8 +17,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@goalrun/core": "workspace:*",
-    "@goalrun/security": "workspace:*"
+    "@strings77wzq/goalrun-core": "workspace:*",
+    "@strings77wzq/goalrun-security": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.4.0",
