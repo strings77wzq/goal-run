@@ -76,10 +76,11 @@ goalrun doctor
 curl -s https://raw.githubusercontent.com/strings77wzq/goal-run/main/AI_GUIDE.md
 ```
 
-### 等 npm 发布后
+### npm 安装（推荐）
 
 ```bash
-pnpm add -g goalrun        # 一行搞定（即将上线）
+npm install -g goalrun
+```
 ```
 
 ---

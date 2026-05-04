@@ -71,10 +71,18 @@ goalrun doctor
 curl -s https://raw.githubusercontent.com/strings77wzq/goal-run/main/AI_GUIDE.md
 ```
 
-### Coming soon to npm
+### npm (recommended)
 
 ```bash
-pnpm add -g goalrun              # one-liner (soon)
+npm install -g goalrun
+```
+
+### From source
+
+```bash
+git clone https://github.com/strings77wzq/goal-run.git
+cd goal-run && pnpm install && pnpm build
+pnpm link --global
 ```
 
 ---
