@@ -19,7 +19,7 @@
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-210_passing-brightgreen" alt="210 tests">
+  <img src="https://img.shields.io/badge/tests-248_passing-brightgreen" alt="248 tests">
 </p>
 
 ---
@@ -306,7 +306,7 @@ Agent skills 生态正在标准化。GoalRun 补齐了**质量和安全**这一�
 git clone https://github.com/strings77wzq/goal-run.git
 cd goal-run
 pnpm install
-pnpm test        # 210 tests
+pnpm test        # 248 tests
 ```
 
 ## 路线图
