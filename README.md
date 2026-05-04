@@ -5,6 +5,11 @@
 *Run tested agent skills against real software engineering goals.*
 
 <p align="center">
+  <a href="README.md">English</a> |
+  <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
   <a href="#quick-start"><img src="https://img.shields.io/badge/quick_start-3_steps-blue?style=for-the-badge" alt="Quick Start"></a>
   <a href="#what-goalrun-is"><img src="https://img.shields.io/badge/design-philosophy-orange?style=for-the-badge" alt="Design"></a>
 </p>

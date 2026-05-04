@@ -4,7 +4,25 @@
 
 **用经过测试的 agent skills 来执行真实的软件工程目标。**
 
-GoalRun 是一个 CLI 工具链，帮助你使用目标规范和已验证的 skills 来定义、测试和运行 agent 辅助的工程工作流。它会验证目标、执行策略，并生成结构化的执行计划 —— 但不会调用外部 LLM，也不会执行你的代码。
+<p align="center">
+  <a href="README.md">English</a> |
+  <a href="README.zh-CN.md">简体中文</a>
+</p>
+
+<p align="center">
+  <a href="#快速开始"><img src="https://img.shields.io/badge/quick_start-3_steps-blue?style=for-the-badge" alt="Quick Start"></a>
+  <a href="#goalrun-是什么"><img src="https://img.shields.io/badge/design-philosophy-orange?style=for-the-badge" alt="Design"></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node >= 20">
+  <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
+  <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
+  <img src="https://img.shields.io/badge/tests-210_passing-brightgreen" alt="210 tests">
+</p>
+
+---
 
 ## 快速开始
 
