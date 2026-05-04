@@ -13,13 +13,17 @@ import { statusCommand } from "./commands/status.js";
 import { stopCommand } from "./commands/stop.js";
 import { doctorCommand } from "./commands/doctor.js";
 import { reportCommand } from "./commands/report.js";
+import { handoffCommand } from "./commands/handoff.js";
+import { auditCommand } from "./commands/audit.js";
+import { fromIssueCommand } from "./commands/from-issue.js";
+import { compareCommand } from "./commands/compare.js";
 
 const program = new Command();
 
 program
   .name("goalrun")
   .description("Goal-driven agent skills for software engineering")
-  .version("0.2.0");
+  .version("0.3.0");
 
 program
   .command("init")
@@ -130,6 +134,46 @@ program
   .option("--json", "Output as JSON")
   .action(async (runId: string | undefined, opts) => {
     await reportCommand(runId ?? "latest", { json: opts.json });
+  });
+
+program
+  .command("handoff <goal>")
+  .description("Generate target-specific agent prompt (claude/codex/cursor/opencode)")
+  .option("--target <target>", "Target runtime: claude, codex, cursor, opencode")
+  .option("--output <path>", "Write to file instead of stdout")
+  .option("--json", "Output as JSON")
+  .action(async (goal: string, opts) => {
+    if (!opts.target) {
+      console.error(pc.red("Error: --target is required. Choose: claude, codex, cursor, opencode"));
+      process.exit(1);
+    }
+    await handoffCommand(goal, { target: opts.target, output: opts.output, json: opts.json });
+  });
+
+program
+  .command("audit <run-id>")
+  .description("Generate PR-ready audit report for a run")
+  .option("--output <path>", "Write report to file")
+  .option("--json", "Output as JSON")
+  .action(async (runId: string, opts) => {
+    await auditCommand(runId, { output: opts.output, json: opts.json });
+  });
+
+program
+  .command("from-issue <input>")
+  .description("Generate goal.yaml from GitHub issue URL or title")
+  .option("--output <path>", "Output file path (default: .goalrun/goals/<slug>.yaml)")
+  .option("--json", "Output as JSON")
+  .action(async (input: string, opts) => {
+    await fromIssueCommand(input, { output: opts.output, json: opts.json });
+  });
+
+program
+  .command("compare <run-id-a> <run-id-b>")
+  .description("Compare two runs and show criteria delta")
+  .option("--json", "Output as JSON")
+  .action(async (a: string, b: string, opts) => {
+    await compareCommand(a, b, { json: opts.json });
   });
 
 program.parse();

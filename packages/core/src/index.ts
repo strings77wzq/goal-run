@@ -49,3 +49,9 @@ export {
   RUN_STATUSES,
 } from "./run-state.js";
 export type { RunState, RunStatus, Checkpoint, CriterionStatus } from "./run-state.js";
+export { generateHandoff, TARGETS } from "./adapter.js";
+export type { HandoffTarget, HandoffPlan } from "./adapter.js";
+export { compareRuns } from "./compare.js";
+export type { RunDiff } from "./compare.js";
+export { parseIssueUrl, generateGoalFromIssue, generateGoalFromTitle } from "./from-issue.js";
+export type { IssueInfo } from "./from-issue.js";

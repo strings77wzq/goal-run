@@ -116,6 +116,14 @@ GoalRun is a **verification harness for agent-assisted engineering**.
 
 **GoalRun is the harness. The AI does the work. You stay in control.**
 
+## Who Should NOT Use GoalRun
+
+- You want an **autonomous 24/7 agent** that runs unattended — GoalRun requires human supervision at every state transition
+- You want a **one-click code generator** — GoalRun doesn't write code, it validates the agent that does
+- You're looking for a **skills marketplace** — GoalRun ships with 3 built-in skills; it's not a registry
+- You want to **replace Claude Code / Codex / Cursor** — GoalRun generates plans for them, not instead of them
+- Your project has **no tests, no lint, no CI** — GoalRun's verification harness works best when you have verification commands to run
+
 ## Why GoalRun
 
 The agent skills ecosystem is standardizing. GoalRun adds the **quality and safety layer**:

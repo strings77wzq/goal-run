@@ -1,7 +1,7 @@
 {
   "name": "@goalrun/harness",
   "version": "0.1.0",
-  "private": true,
+  
   "description": "Validation harnesses for GoalRun skills, goals, policies, and selection",
   "type": "module",
   "main": "./dist/index.js",
