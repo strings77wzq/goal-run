@@ -1,7 +1,12 @@
 import { resolve } from 'node:path';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
-import { parseIssueUrl, generateGoalFromIssue, generateGoalFromTitle } from 'goalrun-core';
+import {
+  parseIssueUrl,
+  generateGoalFromIssue,
+  generateGoalFromTitle,
+  resolveSafe,
+} from 'goalrun-core';
 
 export async function fromIssueCommand(
   input: string,
@@ -40,7 +45,7 @@ export async function fromIssueCommand(
   if (opts.json) {
     console.log(JSON.stringify({ input, has_issue_url: !!issueInfo, yaml }, null, 2));
   } else {
-    const fullPath = resolve(repoRoot, outputPath);
+    const fullPath = resolveSafe(repoRoot, outputPath);
     mkdirSync(resolve(fullPath, '..'), { recursive: true });
     writeFileSync(fullPath, yaml, 'utf-8');
     console.log(pc.green(`Goal spec written to: ${outputPath}`));

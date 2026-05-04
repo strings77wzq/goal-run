@@ -4,12 +4,12 @@ import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
 import { runGoalHarness, runPolicyHarness, generatePlanReport } from 'goalrun-harness';
 import { formatText, formatJson } from 'goalrun-reporter';
-import { DEFAULT_POLICY, parsePolicyConfigSafe } from 'goalrun-core';
+import { DEFAULT_POLICY, parsePolicyConfigSafe, resolveSafe } from 'goalrun-core';
 
 export async function planCommand(goalPath: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
-  const fullGoalPath = resolve(repoRoot, goalPath);
+  const fullGoalPath = resolveSafe(repoRoot, goalPath);
 
   // Load available skills
   const skillsDir = resolve(repoRoot, config.skills_dir);

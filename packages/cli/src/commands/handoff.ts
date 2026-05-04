@@ -3,7 +3,13 @@ import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync } from 
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
 import { runGoalHarness, runPolicyHarness, generatePlanReport } from 'goalrun-harness';
-import { DEFAULT_POLICY, parsePolicyConfigSafe, generateHandoff, TARGETS } from 'goalrun-core';
+import {
+  DEFAULT_POLICY,
+  parsePolicyConfigSafe,
+  generateHandoff,
+  TARGETS,
+  resolveSafe,
+} from 'goalrun-core';
 import type { HandoffTarget } from 'goalrun-core';
 
 export async function handoffCommand(
@@ -18,7 +24,7 @@ export async function handoffCommand(
 
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
-  const fullGoalPath = resolve(repoRoot, goalPath);
+  const fullGoalPath = resolveSafe(repoRoot, goalPath);
 
   if (!existsSync(fullGoalPath)) {
     console.error(pc.red(`Goal file not found: ${goalPath}`));
@@ -83,7 +89,7 @@ export async function handoffCommand(
   );
 
   if (opts.output) {
-    const outPath = resolve(repoRoot, opts.output);
+    const outPath = resolveSafe(repoRoot, opts.output);
     mkdirSync(resolve(outPath, '..'), { recursive: true });
     writeFileSync(outPath, handoff, 'utf-8');
     console.log(pc.green(`Handoff written to: ${outPath}`));

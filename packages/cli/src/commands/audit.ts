@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, readFileSync, readdirSync, mkdirSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { type RunState, allCriteriaPassed } from 'goalrun-core';
+import { type RunState, allCriteriaPassed, resolveSafe } from 'goalrun-core';
 
 export async function auditCommand(
   runId: string,
@@ -76,7 +76,7 @@ export async function auditCommand(
   const report = lines.join('\n');
 
   if (opts.output) {
-    const outPath = resolve(repoRoot, opts.output);
+    const outPath = resolveSafe(repoRoot, opts.output);
     mkdirSync(resolve(outPath, '..'), { recursive: true });
     writeFileSync(outPath, report, 'utf-8');
     console.log(pc.green(`Audit report written to: ${outPath}`));

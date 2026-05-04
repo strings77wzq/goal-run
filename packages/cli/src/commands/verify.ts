@@ -8,7 +8,7 @@ import {
   runPolicyHarness,
   summarizeDiagnostics,
 } from 'goalrun-harness';
-import { DEFAULT_POLICY, parsePolicyConfigSafe } from 'goalrun-core';
+import { DEFAULT_POLICY, parsePolicyConfigSafe, resolveSafe } from 'goalrun-core';
 import type { Diagnostic } from 'goalrun-core';
 import { formatText } from 'goalrun-reporter';
 import { globSync } from 'fast-glob';
@@ -16,7 +16,7 @@ import { globSync } from 'fast-glob';
 export async function verifyCommand(goalPath: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
-  const fullGoalPath = resolve(repoRoot, goalPath);
+  const fullGoalPath = resolveSafe(repoRoot, goalPath);
   const allDiagnostics: Diagnostic[] = [];
 
   // Load policy

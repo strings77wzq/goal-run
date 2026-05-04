@@ -8,6 +8,7 @@ import {
   parsePolicyConfigSafe,
   createRunState,
   createCheckpoint,
+  resolveSafe,
 } from 'goalrun-core';
 
 export async function runCommand(
@@ -16,7 +17,7 @@ export async function runCommand(
 ): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
-  const fullGoalPath = resolve(repoRoot, goalPath);
+  const fullGoalPath = resolveSafe(repoRoot, goalPath);
 
   // Load available skills
   const skillsDir = resolve(repoRoot, config.skills_dir);
