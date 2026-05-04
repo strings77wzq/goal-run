@@ -79,3 +79,19 @@ export { compareRuns } from './compare.js';
 export type { RunDiff } from './compare.js';
 export { parseIssueUrl, generateGoalFromIssue, generateGoalFromTitle } from './from-issue.js';
 export type { IssueInfo } from './from-issue.js';
+export {
+  isGitRepo,
+  getMainBranch,
+  createWorktree,
+  removeWorktree,
+  listWorktrees,
+  hasWorktrees,
+} from './worktree.js';
+export {
+  captureDiff,
+  captureStagedDiff,
+  captureFullDiff,
+  getChangedFiles,
+  getChangeStats,
+  saveDiffPatch,
+} from './diff.js';

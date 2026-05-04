@@ -4,7 +4,8 @@ import { loadConfig } from '../utils/config.js';
 import { formatText, formatJson } from 'goalrun-reporter';
 import { runStaticHarness } from 'goalrun-harness';
 import { DEFAULT_POLICY, type Diagnostic } from 'goalrun-core';
-import { globSync } from 'fast-glob';
+import fastGlob from 'fast-glob';
+const { globSync } = fastGlob;
 
 export async function lintCommand(opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();

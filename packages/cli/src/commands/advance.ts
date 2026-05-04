@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { autoAdvance, isTerminal, type RunState } from 'goalrun-core';
+import { autoAdvance, isTerminal, captureFullDiff, type RunState } from 'goalrun-core';
 
 export async function advanceCommand(runId: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
@@ -15,9 +15,9 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
     process.exit(1);
   }
 
-  let state: RunState;
+  let state: RunState & { isolated?: boolean; worktree_path?: string };
   try {
-    state = JSON.parse(readFileSync(statusPath, 'utf-8')) as RunState;
+    state = JSON.parse(readFileSync(statusPath, 'utf-8'));
   } catch {
     console.error(pc.red(`Failed to parse status.json for "${runId}"`));
     process.exit(1);
@@ -29,14 +29,24 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
     return;
   }
 
+  // Determine diff root (worktree if isolated, else repo root)
+  const diffRoot =
+    state.isolated && state.worktree_path ? resolve(repoRoot, state.worktree_path) : repoRoot;
+
   // Semi-autonomous advance
   const result = autoAdvance(state);
 
-  // Save all checkpoints
+  // Save all checkpoints with diff capture
   for (const cp of result.checkpoints) {
     const cpDir = resolve(runDir, 'checkpoints', cp.id);
     mkdirSync(cpDir, { recursive: true });
     writeFileSync(resolve(cpDir, 'status.json'), JSON.stringify(cp, null, 2), 'utf-8');
+
+    // Capture diff at this checkpoint
+    const diffResult = captureFullDiff(diffRoot);
+    if (diffResult.success) {
+      writeFileSync(resolve(cpDir, 'diff.patch'), diffResult.diff, 'utf-8');
+    }
   }
 
   // Save updated state

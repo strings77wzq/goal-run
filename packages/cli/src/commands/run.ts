@@ -9,11 +9,13 @@ import {
   createRunState,
   createCheckpoint,
   resolveSafe,
+  isGitRepo,
+  createWorktree,
 } from 'goalrun-core';
 
 export async function runCommand(
   goalPath: string,
-  opts: { dryRun?: boolean; json?: boolean; loop?: boolean },
+  opts: { dryRun?: boolean; json?: boolean; loop?: boolean; isolated?: boolean },
 ): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
@@ -75,6 +77,23 @@ export async function runCommand(
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const runDir = resolve(repoRoot, config.runs_dir, timestamp);
 
+  // Worktree isolation
+  let worktreePath: string | undefined;
+  if (opts.isolated) {
+    if (!isGitRepo(repoRoot)) {
+      console.error(pc.red('Error: --isolated requires a git repository.'));
+      process.exit(1);
+    }
+    const wtRelPath = `.goalrun/runs/${timestamp}/worktree`;
+    const wtResult = createWorktree(repoRoot, wtRelPath);
+    if (!wtResult.success) {
+      console.error(pc.red(`Error creating worktree: ${wtResult.error}`));
+      process.exit(1);
+    }
+    worktreePath = wtRelPath;
+    console.log(pc.cyan(`Worktree created at: ${wtRelPath}`));
+  }
+
   // Create RunState for --loop mode
   const runState = createRunState(
     timestamp,
@@ -85,11 +104,19 @@ export async function runCommand(
     spec.policy.require_approval_for,
   );
 
+  if (worktreePath) {
+    (runState as Record<string, unknown>).isolated = true;
+    (runState as Record<string, unknown>).worktree_path = worktreePath;
+  }
+
   if (opts.dryRun) {
     console.log(pc.cyan(`[DRY RUN] Would create run in: ${runDir}`));
     console.log(pc.cyan('Would create: plan.md, agent-prompt.md, status.json'));
     if (opts.loop) {
       console.log(pc.cyan('Would create: checkpoints/, artifacts/, verification/'));
+    }
+    if (opts.isolated) {
+      console.log(pc.cyan(`Would create worktree at: ${worktreePath}`));
     }
   } else {
     mkdirSync(runDir, { recursive: true });
@@ -152,12 +179,17 @@ export async function runCommand(
       console.log(pc.dim(`  goalrun resume ${timestamp} --to <status>  # manual step`));
       console.log(pc.dim(`  goalrun stop ${timestamp}`));
       console.log(pc.dim(`  goalrun report ${timestamp}`));
+      console.log(pc.dim(`  goalrun rollback ${timestamp}  # discard changes`));
     }
   }
 
   console.log('');
   console.log(pc.bold('Next step:'));
-  console.log(pc.dim(`  Share ${resolve(runDir, 'agent-prompt.md')} with Claude Code or Codex.`));
+  const promptFile = resolve(runDir, 'agent-prompt.md');
+  console.log(pc.dim(`  Share ${promptFile} with Claude Code or Codex.`));
+  if (worktreePath && !opts.dryRun) {
+    console.log(pc.yellow(`  Agent should work in: ${resolve(repoRoot, worktreePath)}`));
+  }
 
   if (opts.json) {
     console.log(

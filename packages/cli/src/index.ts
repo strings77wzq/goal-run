@@ -17,6 +17,7 @@ import { handoffCommand } from './commands/handoff.js';
 import { auditCommand } from './commands/audit.js';
 import { fromIssueCommand } from './commands/from-issue.js';
 import { compareCommand } from './commands/compare.js';
+import { rollbackCommand } from './commands/rollback.js';
 import { advanceCommand } from './commands/advance.js';
 
 const program = new Command();
@@ -35,10 +36,10 @@ program
     await initCommand({ force: opts.force, dryRun: opts.dryRun });
   });
 
-program.command('skill').description('Manage installed skills');
+const skillCmd = program.command('skill').description('Manage installed skills');
 
-program
-  .command('skill install <skills...>')
+skillCmd
+  .command('install <skills...>')
   .description('Install built-in skills')
   .option('--force', 'Overwrite existing modified skills')
   .option('--dry-run', 'Show what would be installed')
@@ -83,6 +84,7 @@ program
   .description('Create a supervised run scaffold (does not execute code)')
   .option('--supervised', 'Run in supervised mode (required)')
   .option('--loop', 'Enable checkpointed loop mode with resume support')
+  .option('--isolated', 'Create git worktree for isolated execution')
   .option('--dry-run', 'Show what would be created')
   .option('--json', 'Output as JSON')
   .action(async (goal: string, opts) => {
@@ -93,7 +95,12 @@ program
       );
       process.exit(1);
     }
-    await runCommand(goal, { dryRun: opts.dryRun, json: opts.json, loop: opts.loop });
+    await runCommand(goal, {
+      dryRun: opts.dryRun,
+      json: opts.json,
+      loop: opts.loop,
+      isolated: opts.isolated,
+    });
   });
 
 program
@@ -116,6 +123,15 @@ program
   .option('--json', 'Output as JSON')
   .action(async (runId: string, opts) => {
     await advanceCommand(runId, { json: opts.json });
+  });
+
+program
+  .command('rollback <run-id>')
+  .description('Rollback changes from an isolated or non-isolated run')
+  .option('--force', 'Force rollback even on terminal states')
+  .option('--json', 'Output as JSON')
+  .action(async (runId: string, opts) => {
+    await rollbackCommand(runId, { force: opts.force, json: opts.json });
   });
 
 program

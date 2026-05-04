@@ -49,6 +49,8 @@ export const RunStateSchema = z.object({
   policy_gates: z.array(z.string()),
   current_skill: z.string().optional(),
   error: z.string().optional(),
+  isolated: z.boolean().optional(),
+  worktree_path: z.string().optional(),
 });
 
 export type RunState = z.infer<typeof RunStateSchema>;

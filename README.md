@@ -19,7 +19,7 @@ _Goal-driven is the idea. GoalRun is the safe, testable, auditable implementatio
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-261_passing-brightgreen" alt="261 tests">
+  <img src="https://img.shields.io/badge/tests-278_passing-brightgreen" alt="261 tests">
 </p>
 
 ---
@@ -272,7 +272,7 @@ verification:
 git clone https://github.com/strings77wzq/goal-run.git
 cd goal-run
 pnpm install
-pnpm test        # 261 tests passing
+pnpm test        # 278 tests passing
 ```
 
 ## What People Say This Is Not

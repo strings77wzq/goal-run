@@ -11,7 +11,8 @@ import {
 import { DEFAULT_POLICY, parsePolicyConfigSafe, resolveSafe } from 'goalrun-core';
 import type { Diagnostic } from 'goalrun-core';
 import { formatText } from 'goalrun-reporter';
-import { globSync } from 'fast-glob';
+import fastGlob from 'fast-glob';
+const { globSync } = fastGlob;
 
 export async function verifyCommand(goalPath: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
