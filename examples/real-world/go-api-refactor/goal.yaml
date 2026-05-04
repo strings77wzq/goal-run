@@ -1,0 +1,33 @@
+id: refactor-handler-to-service
+title: Refactor handler into service layer
+goal: >
+  Extract business logic from HTTP handler into a dedicated service
+  layer. Keep handler signatures unchanged. Add service unit tests.
+
+skills:
+  - implementation-strategy
+  - tdd-change
+  - code-review
+
+criteria:
+  - Service layer created with interfaces
+  - Handler delegates to service, signatures unchanged
+  - Service unit tests cover happy path + error cases
+  - go test ./... passes, no regression
+  - Changed files ≤ 12
+
+budget:
+  max_iterations: 8
+  max_changed_files: 12
+  max_runtime_minutes: 120
+
+policy:
+  require_approval_for:
+    - changes_public_api
+    - deletes_files
+
+verification:
+  commands:
+    - go test ./...
+    - go vet ./...
+    - golangci-lint run ./...

@@ -1,0 +1,34 @@
+id: fix-jwt-timeout
+title: Fix JWT session timeout (5 min → 30 min)
+goal: >
+  The JWT middleware has a hardcoded 5-minute timeout instead of
+  reading from config. Fix the expiry to use the configured value
+  (30 minutes). Add regression test.
+
+skills:
+  - implementation-strategy
+  - tdd-change
+  - code-review
+
+criteria:
+  - JWT expiry reads from config (default 30 min)
+  - Regression test added: "session expires at configured timeout"
+  - No change to public API (ErrorResponse type preserved)
+  - go test ./auth/... passes
+  - go vet ./... clean
+
+budget:
+  max_iterations: 5
+  max_changed_files: 5
+  max_runtime_minutes: 60
+
+policy:
+  require_approval_for:
+    - changes_public_api
+    - modifies_auth_code
+    - deletes_files
+
+verification:
+  commands:
+    - go test ./...
+    - go vet ./...

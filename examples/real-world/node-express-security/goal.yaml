@@ -1,0 +1,34 @@
+id: fix-nosql-injection-search
+title: Fix NoSQL injection in /api/search
+goal: >
+  The /api/search endpoint passes raw user input to MongoDB $where.
+  Sanitize input and add parameterized query. Add security regression test.
+
+skills:
+  - implementation-strategy
+  - tdd-change
+  - code-review
+
+criteria:
+  - User input sanitized before MongoDB query
+  - Security regression test: malicious $where payload rejected
+  - Response format unchanged (existing API contract preserved)
+  - All existing tests pass
+  - npm audit clean
+
+budget:
+  max_iterations: 5
+  max_changed_files: 5
+  max_runtime_minutes: 60
+
+policy:
+  require_approval_for:
+    - changes_public_api
+    - modifies_auth_code
+    - deletes_files
+
+verification:
+  commands:
+    - pnpm test
+    - pnpm typecheck
+    - npm audit

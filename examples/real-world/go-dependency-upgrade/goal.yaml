@@ -1,0 +1,33 @@
+id: upgrade-gin-v1-10
+title: Upgrade gin from v1.8 to v1.10
+goal: >
+  Upgrade gin-gonic/gin from v1.8.x to v1.10.x. Handle breaking
+  changes in middleware API. Verify all existing endpoints work.
+
+skills:
+  - implementation-strategy
+  - tdd-change
+  - code-review
+
+criteria:
+  - gin upgraded to v1.10.x in go.mod
+  - All compilation errors resolved
+  - All existing tests pass without modification
+  - Smoke test: all 12 endpoints return 2xx for valid requests
+  - go vet ./... clean
+
+budget:
+  max_iterations: 5
+  max_changed_files: 15
+  max_runtime_minutes: 90
+
+policy:
+  require_approval_for:
+    - changes_public_api
+    - deletes_files
+
+verification:
+  commands:
+    - go build ./...
+    - go test ./...
+    - go vet ./...
