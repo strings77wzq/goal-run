@@ -1,6 +1,6 @@
 {
   "name": "goalrun",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "CLI for GoalRun - goal-driven agent skills for software engineering",
   "type": "module",
   "main": "./dist/index.js",
