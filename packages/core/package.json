@@ -1,7 +1,6 @@
 {
   "name": "@goalrun/core",
   "version": "0.1.0",
-  
   "description": "Core schemas, types, and utilities for GoalRun",
   "type": "module",
   "main": "./dist/index.js",
@@ -27,5 +26,28 @@
     "tsup": "^8.4.0",
     "typescript": "^5.7.0",
     "vitest": "^3.0.0"
-  }
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strings77wzq/goal-run.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "goalrun",
+    "agent",
+    "skills",
+    "goal-driven",
+    "verification",
+    "harness",
+    "cli",
+    "software-engineering"
+  ],
+  "license": "MIT",
+  "author": "strings77wzq"
 }
