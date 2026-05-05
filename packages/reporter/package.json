@@ -1,6 +1,6 @@
 {
   "name": "goalrun-reporter",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.6",
   "description": "Text and JSON output formatting for GoalRun",
   "type": "module",
   "main": "./dist/index.js",

@@ -42,7 +42,22 @@ export async function rollbackCommand(
       process.exit(1);
     }
     console.log(pc.green('Worktree removed.'));
-  } else {
+
+    // Clean up the git branch created for this worktree
+    const branchName = (state as Record<string, unknown>).branch_name as string | undefined;
+    if (branchName) {
+      try {
+        execSync(`git branch -D ${branchName}`, {
+          cwd: repoRoot,
+          encoding: 'utf-8',
+          timeout: 5000,
+        });
+        console.log(pc.green(`Branch "${branchName}" deleted.`));
+      } catch {
+        // Branch may already be cleaned up by worktree remove — non-fatal
+      }
+    }
+  } else if (!state.isolated) {
     // Non-isolated mode: require --force for safety
     if (!opts.force) {
       console.error(pc.red('Rollback in non-isolated mode will discard ALL uncommitted changes.'));

@@ -77,7 +77,17 @@ export async function runCommand(
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const runDir = resolve(repoRoot, config.runs_dir, timestamp);
 
-  // Worktree isolation
+  // Create RunState first
+  const runState = createRunState(
+    timestamp,
+    spec.id,
+    spec.skills,
+    spec.criteria,
+    spec.budget,
+    spec.policy.require_approval_for,
+  );
+
+  // Worktree isolation (after runState exists so we can attach branch_name)
   let worktreePath: string | undefined;
   if (opts.isolated) {
     if (!isGitRepo(repoRoot)) {
@@ -91,22 +101,10 @@ export async function runCommand(
       process.exit(1);
     }
     worktreePath = wtRelPath;
-    console.log(pc.cyan(`Worktree created at: ${wtRelPath}`));
-  }
-
-  // Create RunState for --loop mode
-  const runState = createRunState(
-    timestamp,
-    spec.id,
-    spec.skills,
-    spec.criteria,
-    spec.budget,
-    spec.policy.require_approval_for,
-  );
-
-  if (worktreePath) {
     runState.isolated = true;
     runState.worktree_path = worktreePath;
+    runState.branch_name = wtResult.branch;
+    console.log(pc.cyan(`Worktree created at: ${wtRelPath}`));
   }
 
   if (opts.dryRun) {
@@ -147,26 +145,17 @@ export async function runCommand(
       mkdirSync(cpDir, { recursive: true });
       writeFileSync(resolve(cpDir, 'status.json'), JSON.stringify(checkpoint, null, 2), 'utf-8');
 
-      // Write checkpoint in root of run dir for quick access
+      // Write full run state
       writeFileSync(
         resolve(runDir, 'status.json'),
         JSON.stringify({ ...runState, checkpoints: [checkpoint] }, null, 2),
         'utf-8',
       );
     } else {
+      // Non-loop mode: still write full RunState schema so report/audit/compare work
       writeFileSync(
         resolve(runDir, 'status.json'),
-        JSON.stringify(
-          {
-            goal_id: spec.id,
-            status: 'pending',
-            started_at: new Date().toISOString(),
-            skills: spec.skills,
-            budget: spec.budget,
-          },
-          null,
-          2,
-        ),
+        JSON.stringify({ ...runState, checkpoints: [] }, null, 2),
         'utf-8',
       );
     }

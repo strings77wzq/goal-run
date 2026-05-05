@@ -51,6 +51,7 @@ export const RunStateSchema = z.object({
   error: z.string().optional(),
   isolated: z.boolean().optional(),
   worktree_path: z.string().optional(),
+  branch_name: z.string().optional(),
 });
 
 export type RunState = z.infer<typeof RunStateSchema>;

@@ -88,8 +88,13 @@ export async function verifyCommand(goalPath: string, opts: { json?: boolean }):
     console.log(JSON.stringify(report, null, 2));
   } else {
     console.log(formatText(allDiagnostics));
+    const warnings = allDiagnostics.filter((d) => d.severity === 'warning');
     if (errors.length === 0) {
-      console.log(pc.green('Verification passed.'));
+      if (warnings.length > 0) {
+        console.log(pc.yellow(`Verification completed with ${warnings.length} warning(s).`));
+      } else {
+        console.log(pc.green('Verification passed.'));
+      }
     } else {
       console.log(pc.red(`Verification failed with ${errors.length} error(s).`));
     }

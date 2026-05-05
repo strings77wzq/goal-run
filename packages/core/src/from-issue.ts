@@ -40,6 +40,7 @@ skills:
   - code-review
 
 criteria:
+  - the fix resolves the reported issue
   - regression test added for the fix
   - all existing tests continue to pass
   - no public API change unless explicitly required
@@ -81,10 +82,10 @@ skills:
   - code-review
 
 criteria:
-  - implementation matches the requirement
-  - tests added for new behavior
   - all existing tests continue to pass
-  - no public API change unless required
+  - new behavior is covered by at least one test
+  - no regression in unrelated functionality
+  - no public API change unless explicitly required
 
 budget:
   max_iterations: 5

@@ -22,7 +22,7 @@ export function getMainBranch(repoRoot: string): string {
 export function createWorktree(
   repoRoot: string,
   worktreePath: string,
-): { success: true; path: string } | { success: false; error: string } {
+): { success: true; path: string; branch: string } | { success: false; error: string } {
   if (!isGitRepo(repoRoot)) {
     return { success: false, error: 'Not a git repository. --isolated requires a git repo.' };
   }
@@ -48,7 +48,7 @@ export function createWorktree(
       timeout: 5000,
     });
 
-    return { success: true, path: fullPath };
+    return { success: true, path: fullPath, branch: branchName };
   } catch (err) {
     return { success: false, error: `Failed to create worktree: ${String(err)}` };
   }

@@ -25,7 +25,7 @@ const program = new Command();
 program
   .name('goalrun')
   .description('Goal-driven agent skills for software engineering')
-  .version('0.1.0-alpha.5');
+  .version('0.1.0-alpha.6');
 
 program
   .command('init')

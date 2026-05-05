@@ -37,6 +37,7 @@ export async function fromIssueCommand(
   const outputPath =
     opts.output ??
     `.goalrun/goals/${input
+      .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '')

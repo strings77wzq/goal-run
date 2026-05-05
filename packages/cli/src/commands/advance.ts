@@ -24,6 +24,12 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
   }
 
   if (isTerminal(state.status)) {
+    if (state.status === 'planned' && (!state.checkpoints || state.checkpoints.length === 0)) {
+      console.log(pc.yellow(`Run "${runId}" was created without --loop.`));
+      console.log(pc.dim('The advance/resume state machine requires --loop mode.'));
+      console.log(pc.dim('Re-create the run: goalrun run <goal> --supervised --loop'));
+      return;
+    }
     console.log(pc.yellow(`Run "${runId}" is in terminal state: ${state.status}`));
     console.log(pc.dim("Nothing to advance. Use 'goalrun report' to view."));
     return;
