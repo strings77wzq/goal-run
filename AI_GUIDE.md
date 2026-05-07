@@ -57,7 +57,7 @@ goalrun rollback <run-id>         # Discard changes (worktree remove or git rese
 For extra safety, use the `--isolated` flag to create a git worktree:
 
 ```bash
-goalrun run .goalrun/goals/task.yaml --supervised --loop --isolated
+goalrun run .goalrun/goals/task.yaml --loop --isolated
 ```
 
 The agent works in an isolated git checkout at `.goalrun/runs/<id>/worktree/`.

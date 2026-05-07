@@ -19,7 +19,7 @@ _Goal-driven is the idea. GoalRun is the safe, testable, auditable implementatio
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-278_passing-brightgreen" alt="261 tests">
+  <img src="https://img.shields.io/badge/tests-289_passing-brightgreen" alt="289 tests">
 </p>
 
 ---
@@ -103,10 +103,10 @@ goalrun skill install tdd-change code-review implementation-strategy
 goalrun plan .goalrun/goals/example-fix-bug.yaml
 goalrun verify .goalrun/goals/example-fix-bug.yaml
 
-# 4. Create a supervised loop run
-goalrun run .goalrun/goals/example-fix-bug.yaml --supervised --loop
+# 4. Create a supervised loop run (with worktree isolation)
+goalrun run .goalrun/goals/example-fix-bug.yaml --loop --isolated
 goalrun status
-goalrun resume <run-id>
+goalrun advance <run-id>
 goalrun report
 ```
 
@@ -239,32 +239,33 @@ verification:
 
 ## Commands
 
-| Command                                     | Description                                       |
-| ------------------------------------------- | ------------------------------------------------- |
-| `goalrun init`                              | Scaffold `.goalrun/`, `AGENTS.md`, policy config  |
-| `goalrun skill install <skills>`            | Install skills with integrity verification        |
-| `goalrun lint`                              | Validate all GoalRun files                        |
-| `goalrun test`                              | Run deterministic skill selection tests           |
-| `goalrun plan <goal>`                       | Generate execution plan + AI prompt               |
-| `goalrun verify <goal>`                     | Run all 5 harnesses on a goal                     |
-| `goalrun run <goal> --supervised --loop`    | Create checkpointed supervised run                |
-| `goalrun run <goal> --isolated`             | Create run with git worktree isolation            |
-| `goalrun advance <run-id>`                  | **Semi-auto advance** — stops only at human gates |
-| `goalrun resume <run-id> --to <status>`     | Manual single-step state transition               |
-| `goalrun rollback <run-id>`                 | Discard changes (worktree remove or git reset)    |
-| `goalrun status [run-id]`                   | Show run status and criteria                      |
-| `goalrun stop <run-id>`                     | Stop a running loop                               |
-| `goalrun report [run-id]`                   | Detailed run report                               |
-| `goalrun audit <run-id>`                    | Generate PR-ready audit report                    |
-| `goalrun handoff <goal> --target <runtime>` | Generate runtime-specific prompt                  |
-| `goalrun from-issue <url\|title>`           | Convert GitHub issue → goal.yaml                  |
-| `goalrun compare <run-a> <run-b>`           | Diff two runs                                     |
-| `goalrun doctor`                            | Health check                                      |
+| Command                                  | Description                                                     |
+| ---------------------------------------- | --------------------------------------------------------------- |
+| `goalrun init`                           | Scaffold `.goalrun/`, `AGENTS.md`, policy config                |
+| `goalrun skill install <skills>`         | Install skills with integrity verification                      |
+| `goalrun lint`                           | Validate all GoalRun files                                      |
+| `goalrun test`                           | Run deterministic skill selection tests                         |
+| `goalrun plan <goal>`                    | Generate execution plan + AI prompt                             |
+| `goalrun verify <goal>`                  | Run all 5 harnesses on a goal                                   |
+| `goalrun run <goal> --loop --isolated`   | Create checkpointed run with worktree isolation                 |
+| `goalrun advance <run-id>`               | **Semi-auto advance** — stops only at human gates               |
+| `goalrun resume <run-id> --to <status>`  | Manual single-step state transition                             |
+| `goalrun rollback <run-id>`              | Discard changes (worktree remove or git reset)                  |
+| `goalrun status [run-id]`                | Show run status and criteria                                    |
+| `goalrun stop <run-id>`                  | Stop a running loop                                             |
+| `goalrun report [run-id]`                | Detailed run report                                             |
+| `goalrun audit <run-id>`                 | Generate PR-ready audit report                                  |
+| `goalrun handoff <goal> --target claude` | Generate runtime-specific prompt (claude/codex/cursor/opencode) |
+| `goalrun from-issue <url\|title>`        | Convert GitHub issue → goal.yaml                                |
+| `goalrun compare <run-a> <run-b>`        | Diff two runs                                                   |
+| `goalrun doctor`                         | Health check                                                    |
 
 ## Security
 
-- **Path containment**: All writes restricted to repo root
+- **Path containment**: All writes and git operations restricted to repo root; worktree paths validated before creation
 - **No command execution**: Verified but never executed
+- **Structured git args**: All git commands use argument arrays (no shell interpolation)
+- **Worktree isolation**: `--isolated` creates git worktrees; rollback only deletes GoalRun-managed branches
 - **Secret detection**: 12 patterns, matched content never printed
 - **Prompt injection detection**: 8 patterns for instruction override / jailbreak
 - **External URL warnings**: curl/wget to non-allowlisted domains flagged
@@ -277,7 +278,7 @@ verification:
 git clone https://github.com/strings77wzq/goal-run.git
 cd goal-run
 pnpm install
-pnpm test        # 278 tests passing
+pnpm test        # 289 tests passing
 ```
 
 ## What People Say This Is Not
@@ -288,7 +289,7 @@ pnpm test        # 278 tests passing
 
 ## Roadmap
 
-GoalRun is in **alpha** (0.1.0-alpha.1). APIs and file formats may change.
+GoalRun is in **alpha** (0.1.0-alpha.6). APIs and file formats may change.
 
 | Capability                                              | Status    |
 | ------------------------------------------------------- | --------- |
@@ -297,9 +298,9 @@ GoalRun is in **alpha** (0.1.0-alpha.1). APIs and file formats may change.
 | Security scanning (secrets, prompt injection, URLs)     | Alpha     |
 | Supervised checkpoint loop (advance/resume/status/stop) | Alpha     |
 | Multi-runtime handoff (Claude/Codex/Cursor/OpenCode)    | Alpha     |
+| Git worktree isolation + diff capture + rollback        | Alpha     |
 | npm install -g goalrun@alpha                            | Available |
-| Git worktree isolation + diff capture                   | Alpha     |
-| npm package rename to @goalrun/cli                      | Planned   |
+| OpenSpec proposal → GoalRun goal bridge                 | Planned   |
 
 ## License
 
