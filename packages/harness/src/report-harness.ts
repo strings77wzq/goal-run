@@ -94,9 +94,7 @@ export function generatePlanReport(
     ...verificationChecklist.map((c) => `- [ ] ${c}`),
     ``,
     `## Risk Summary`,
-    ...(riskSummary.length > 0
-      ? riskSummary.map((r) => `- ${r}`)
-      : ['No risks identified.']),
+    ...(riskSummary.length > 0 ? riskSummary.map((r) => `- ${r}`) : ['No risks identified.']),
     ``,
     `## Instructions`,
     `1. Read and internalize each skill's SKILL.md before starting`,

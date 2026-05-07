@@ -1,11 +1,7 @@
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { resolveSafe } from 'goalrun-core';
 
-export function resolveRunDir(
-  repoRoot: string,
-  runsDirConfig: string,
-  runId: string,
-): string {
+export function resolveRunDir(repoRoot: string, runsDirConfig: string, runId: string): string {
   const runsDir = resolveSafe(repoRoot, runsDirConfig);
   const runDir = resolve(runsDir, runId);
   const rel = relative(runsDir, runDir);

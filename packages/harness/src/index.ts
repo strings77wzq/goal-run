@@ -6,7 +6,12 @@ export { runGoalHarness } from './goal-harness.js';
 export type { GoalHarnessInput, GoalHarnessOutput } from './goal-harness.js';
 export { runPolicyHarness } from './policy-harness.js';
 export type { PolicyHarnessInput, PolicyHarnessOutput } from './policy-harness.js';
-export { summarizeDiagnostics, mergeSummaries, generatePlanReport, deriveRiskSummary } from './report-harness.js';
+export {
+  summarizeDiagnostics,
+  mergeSummaries,
+  generatePlanReport,
+  deriveRiskSummary,
+} from './report-harness.js';
 export type { ReportSummary, PlanReport, VerifyReport } from './report-harness.js';
 export {
   checkCriteriaQuality,

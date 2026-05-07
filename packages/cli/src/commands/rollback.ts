@@ -3,12 +3,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
 import { resolveRunDir } from '../utils/run-dir.js';
-import {
-  type RunState,
-  isTerminal,
-  isGoalrunManagedBranch,
-  removeWorktree,
-} from 'goalrun-core';
+import { type RunState, isTerminal, isGoalrunManagedBranch, removeWorktree } from 'goalrun-core';
 import { spawnSync } from 'node:child_process';
 
 type GitRunner = (cwd: string, args: string[], timeout: number) => string;

@@ -2,7 +2,12 @@ import { resolve } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { runGoalHarness, runPolicyHarness, generatePlanReport, deriveRiskSummary } from 'goalrun-harness';
+import {
+  runGoalHarness,
+  runPolicyHarness,
+  generatePlanReport,
+  deriveRiskSummary,
+} from 'goalrun-harness';
 import {
   DEFAULT_POLICY,
   parsePolicyConfigSafe,
@@ -63,11 +68,10 @@ export async function runCommand(
   });
 
   // Generate plan report
-  const riskSummary = deriveRiskSummary(
-    spec.budget,
-    spec.policy.require_approval_for,
-    [...goalResult.diagnostics, ...policyResult.diagnostics],
-  );
+  const riskSummary = deriveRiskSummary(spec.budget, spec.policy.require_approval_for, [
+    ...goalResult.diagnostics,
+    ...policyResult.diagnostics,
+  ]);
 
   const planReport = generatePlanReport(
     spec.id,
