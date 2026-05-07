@@ -94,7 +94,9 @@ export function generatePlanReport(
     ...verificationChecklist.map((c) => `- [ ] ${c}`),
     ``,
     `## Risk Summary`,
-    ...riskSummary.map((r) => `- ${r}`),
+    ...(riskSummary.length > 0
+      ? riskSummary.map((r) => `- ${r}`)
+      : ['No risks identified.']),
     ``,
     `## Instructions`,
     `1. Read and internalize each skill's SKILL.md before starting`,
@@ -115,4 +117,38 @@ export function generatePlanReport(
     diagnostics,
     agentPrompt: promptLines.join('\n'),
   };
+}
+
+export function deriveRiskSummary(
+  budget: { max_iterations: number; max_changed_files: number; max_runtime_minutes: number },
+  approvalGates: string[],
+  diagnostics: Diagnostic[],
+): string[] {
+  const risks: string[] = [];
+
+  if (budget.max_iterations > 10) {
+    risks.push(`High iteration budget (${budget.max_iterations}) — consider reducing`);
+  }
+  if (budget.max_changed_files > 50) {
+    risks.push(`High file change budget (${budget.max_changed_files}) — wide blast radius`);
+  }
+  if (approvalGates.length === 0) {
+    risks.push('No approval gates defined — all changes may proceed without approval');
+  }
+  if (approvalGates.includes('changes_public_api')) {
+    risks.push('Public API changes require approval');
+  }
+  if (approvalGates.includes('deletes_files')) {
+    risks.push('File deletion requires approval');
+  }
+  if (approvalGates.includes('modifies_auth_code')) {
+    risks.push('Authentication code changes require approval');
+  }
+
+  const errors = diagnostics.filter((d) => d.severity === 'error');
+  if (errors.length > 0) {
+    risks.push(`${errors.length} validation error(s) — review before proceeding`);
+  }
+
+  return risks;
 }

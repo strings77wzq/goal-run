@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
+import { resolveRunDir } from '../utils/run-dir.js';
 import {
   advanceState,
   createCheckpoint,
@@ -16,7 +17,7 @@ export async function resumeCommand(
 ): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
-  const runDir = resolve(repoRoot, config.runs_dir, runId);
+  const runDir = resolveRunDir(repoRoot, config.runs_dir, runId);
   const statusPath = resolve(runDir, 'status.json');
 
   if (!existsSync(statusPath)) {

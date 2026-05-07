@@ -82,6 +82,8 @@ export type { IssueInfo } from './from-issue.js';
 export {
   isGitRepo,
   getMainBranch,
+  GOALRUN_BRANCH_PREFIX,
+  isGoalrunManagedBranch,
   createWorktree,
   removeWorktree,
   listWorktrees,

@@ -9,7 +9,6 @@ const SAMPLE_PLAN = {
   verificationChecklist: ['pnpm test', 'pnpm typecheck'],
   riskSummary: ['Public API change requires approval'],
   diagnostics: [],
-  agentPrompt: 'generic prompt',
 };
 
 describe('TARGETS', () => {
@@ -22,6 +21,13 @@ describe('TARGETS', () => {
 });
 
 describe('generateHandoff', () => {
+  const expectedSkillPaths: Record<HandoffTarget, string> = {
+    claude: '.claude/skills/',
+    codex: '.codex/skills/',
+    cursor: '.cursor/skills/',
+    opencode: '.opencode/skills/',
+  };
+
   it('generates Claude Code prompt with system preamble', () => {
     const result = generateHandoff(SAMPLE_PLAN, 'claude');
     expect(result).toContain('Claude Code');
@@ -61,6 +67,18 @@ describe('generateHandoff', () => {
     for (const target of TARGETS) {
       const result = generateHandoff(SAMPLE_PLAN, target);
       expect(result).toContain('pnpm test');
+    }
+  });
+
+  it('uses target-specific skill paths consistently', () => {
+    for (const target of TARGETS) {
+      const result = generateHandoff(SAMPLE_PLAN, target);
+      const expectedPath = expectedSkillPaths[target];
+
+      expect(result).toContain(`${expectedPath}implementation-strategy/SKILL.md`);
+      expect(result).toContain(`${expectedPath}<name>/SKILL.md`);
+      expect(result).not.toContain('.agent/skills/implementation-strategy/SKILL.md');
+      expect(result).not.toContain('.agent/skills/<name>/SKILL.md');
     }
   });
 

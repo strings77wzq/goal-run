@@ -50,7 +50,7 @@ describe('CLI smoke test (full workflow)', () => {
     const { planCommand } = await import('../src/commands/plan.js');
     const mockExit = vi
       .spyOn(process, 'exit')
-      .mockImplementation((code?: string | number | null) => {
+      .mockImplementation((code?: string | number | null): never => {
         throw new Error(`process.exit(${code})`);
       });
 
@@ -65,8 +65,9 @@ describe('CLI smoke test (full workflow)', () => {
     const { verifyCommand } = await import('../src/commands/verify.js');
     const mockExit = vi
       .spyOn(process, 'exit')
-      .mockImplementation((code?: string | number | null) => {
+      .mockImplementation((code?: string | number | null): never => {
         if (code === 1) throw new Error('process.exit(1)');
+        throw new Error(`process.exit(${code})`);
       });
 
     await verifyCommand('.goalrun/goals/example-fix-bug.yaml', { json: false });
@@ -78,13 +79,13 @@ describe('CLI smoke test (full workflow)', () => {
   it('goalrun run --supervised --loop creates run directory', async () => {
     const mockExit = vi
       .spyOn(process, 'exit')
-      .mockImplementation((code?: string | number | null) => {
+      .mockImplementation((code?: string | number | null): never => {
         if (code === 1) throw new Error('process.exit(1)');
+        throw new Error(`process.exit(${code})`);
       });
 
     const { runCommand } = await import('../src/commands/run.js');
     await runCommand('.goalrun/goals/example-fix-bug.yaml', {
-      supervised: true,
       loop: true,
       dryRun: false,
       json: false,

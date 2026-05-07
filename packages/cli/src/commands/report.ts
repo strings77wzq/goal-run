@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
+import { resolveRunDir } from '../utils/run-dir.js';
 import { type RunState } from 'goalrun-core';
 
 export async function reportCommand(
@@ -30,7 +31,7 @@ export async function reportCommand(
   }
 
   const runId = runIdOrLatest === 'latest' ? runs[0]! : runIdOrLatest;
-  const runDir = resolve(runsDir, runId);
+  const runDir = resolveRunDir(repoRoot, config.runs_dir, runId);
   const statusPath = resolve(runDir, 'status.json');
 
   if (!existsSync(statusPath)) {

@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, readFileSync, mkdirSync, writeFileSync, readdirSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { runGoalHarness, runPolicyHarness, generatePlanReport } from 'goalrun-harness';
+import { runGoalHarness, runPolicyHarness, deriveRiskSummary } from 'goalrun-harness';
 import {
   DEFAULT_POLICY,
   parsePolicyConfigSafe,
@@ -59,14 +59,12 @@ export async function handoffCommand(
     goalYamlPath: fullGoalPath,
   });
 
-  const planReport = generatePlanReport(
-    spec.id,
-    spec.title,
-    spec.skills,
+  const allDiagnostics = [...goalResult.diagnostics, ...policyResult.diagnostics];
+
+  const riskSummary = deriveRiskSummary(
+    spec.budget,
     spec.policy.require_approval_for,
-    spec.verification.commands,
-    [],
-    [...goalResult.diagnostics, ...policyResult.diagnostics],
+    allDiagnostics,
   );
 
   const handoff = generateHandoff(
@@ -76,14 +74,13 @@ export async function handoffCommand(
       selectedSkills: spec.skills,
       policyGates: spec.policy.require_approval_for,
       verificationChecklist: spec.verification.commands,
-      riskSummary: [],
-      diagnostics: [...goalResult.diagnostics, ...policyResult.diagnostics].map((d) => ({
+      riskSummary,
+      diagnostics: allDiagnostics.map((d) => ({
         code: d.code,
         severity: d.severity,
         message: d.message,
         hint: d.hint,
       })),
-      agentPrompt: planReport.agentPrompt,
     },
     target,
   );

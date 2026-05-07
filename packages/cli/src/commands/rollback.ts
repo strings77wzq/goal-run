@@ -2,8 +2,22 @@ import { resolve } from 'node:path';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { type RunState, isTerminal, removeWorktree } from 'goalrun-core';
-import { execSync } from 'node:child_process';
+import { resolveRunDir } from '../utils/run-dir.js';
+import {
+  type RunState,
+  isTerminal,
+  isGoalrunManagedBranch,
+  removeWorktree,
+} from 'goalrun-core';
+import { spawnSync } from 'node:child_process';
+
+type GitRunner = (cwd: string, args: string[], timeout: number) => string;
+
+let gitRunner: GitRunner = runGitProcess;
+
+export function setRollbackGitRunnerForTesting(runner: GitRunner | null): void {
+  gitRunner = runner ?? runGitProcess;
+}
 
 export async function rollbackCommand(
   runId: string,
@@ -11,7 +25,7 @@ export async function rollbackCommand(
 ): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
-  const runDir = resolve(repoRoot, config.runs_dir, runId);
+  const runDir = resolveRunDir(repoRoot, config.runs_dir, runId);
   const statusPath = resolve(runDir, 'status.json');
 
   if (!existsSync(statusPath)) {
@@ -45,17 +59,15 @@ export async function rollbackCommand(
 
     // Clean up the git branch created for this worktree
     const branchName = (state as Record<string, unknown>).branch_name as string | undefined;
-    if (branchName) {
+    if (branchName && isGoalrunManagedBranch(branchName)) {
       try {
-        execSync(`git branch -D ${branchName}`, {
-          cwd: repoRoot,
-          encoding: 'utf-8',
-          timeout: 5000,
-        });
+        runGit(repoRoot, ['branch', '-D', branchName], 5000);
         console.log(pc.green(`Branch "${branchName}" deleted.`));
       } catch {
         // Branch may already be cleaned up by worktree remove — non-fatal
       }
+    } else if (branchName) {
+      console.log(pc.yellow(`Skipping unmanaged branch "${branchName}".`));
     }
   } else if (!state.isolated) {
     // Non-isolated mode: require --force for safety
@@ -68,7 +80,7 @@ export async function rollbackCommand(
 
     console.log(pc.yellow('Discarding uncommitted changes...'));
     try {
-      execSync('git checkout -- .', { cwd: repoRoot, encoding: 'utf-8', timeout: 10000 });
+      runGit(repoRoot, ['checkout', '--', '.'], 10000);
       console.log(pc.green('Working directory reset to last commit.'));
     } catch (err) {
       console.error(pc.red(`Failed to reset: ${String(err)}`));
@@ -89,4 +101,26 @@ export async function rollbackCommand(
   } else {
     console.log(pc.green(`Run "${runId}" rolled back and stopped.`));
   }
+}
+
+function runGit(cwd: string, args: string[], timeout: number): string {
+  return gitRunner(cwd, args, timeout);
+}
+
+function runGitProcess(cwd: string, args: string[], timeout: number): string {
+  const result = spawnSync('git', args, {
+    cwd,
+    encoding: 'utf-8',
+    timeout,
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status !== 0) {
+    throw new Error(result.stderr || result.stdout || `git ${args.join(' ')} failed`);
+  }
+
+  return result.stdout;
 }

@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { runGoalHarness, runPolicyHarness, generatePlanReport } from 'goalrun-harness';
+import { runGoalHarness, runPolicyHarness, generatePlanReport, deriveRiskSummary } from 'goalrun-harness';
 import {
   DEFAULT_POLICY,
   parsePolicyConfigSafe,
@@ -63,13 +63,19 @@ export async function runCommand(
   });
 
   // Generate plan report
+  const riskSummary = deriveRiskSummary(
+    spec.budget,
+    spec.policy.require_approval_for,
+    [...goalResult.diagnostics, ...policyResult.diagnostics],
+  );
+
   const planReport = generatePlanReport(
     spec.id,
     spec.title,
     spec.skills,
     spec.policy.require_approval_for,
     spec.verification.commands,
-    [],
+    riskSummary,
     [...goalResult.diagnostics, ...policyResult.diagnostics],
   );
 
@@ -87,24 +93,14 @@ export async function runCommand(
     spec.policy.require_approval_for,
   );
 
-  // Worktree isolation (after runState exists so we can attach branch_name)
+  // Worktree isolation path (actual creation happens after dry-run handling)
   let worktreePath: string | undefined;
   if (opts.isolated) {
     if (!isGitRepo(repoRoot)) {
       console.error(pc.red('Error: --isolated requires a git repository.'));
       process.exit(1);
     }
-    const wtRelPath = `.goalrun/runs/${timestamp}/worktree`;
-    const wtResult = createWorktree(repoRoot, wtRelPath);
-    if (!wtResult.success) {
-      console.error(pc.red(`Error creating worktree: ${wtResult.error}`));
-      process.exit(1);
-    }
-    worktreePath = wtRelPath;
-    runState.isolated = true;
-    runState.worktree_path = worktreePath;
-    runState.branch_name = wtResult.branch;
-    console.log(pc.cyan(`Worktree created at: ${wtRelPath}`));
+    worktreePath = `.goalrun/runs/${timestamp}/worktree`;
   }
 
   if (opts.dryRun) {
@@ -117,6 +113,18 @@ export async function runCommand(
       console.log(pc.cyan(`Would create worktree at: ${worktreePath}`));
     }
   } else {
+    if (opts.isolated && worktreePath) {
+      const wtResult = createWorktree(repoRoot, worktreePath);
+      if (!wtResult.success) {
+        console.error(pc.red(`Error creating worktree: ${wtResult.error}`));
+        process.exit(1);
+      }
+      runState.isolated = true;
+      runState.worktree_path = worktreePath;
+      runState.branch_name = wtResult.branch;
+      console.log(pc.cyan(`Worktree created at: ${worktreePath}`));
+    }
+
     mkdirSync(runDir, { recursive: true });
 
     // Core files

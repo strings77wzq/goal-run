@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { runGoalHarness, runPolicyHarness, generatePlanReport } from 'goalrun-harness';
+import { runGoalHarness, runPolicyHarness, generatePlanReport, deriveRiskSummary } from 'goalrun-harness';
 import { formatText, formatJson } from 'goalrun-reporter';
 import { DEFAULT_POLICY, parsePolicyConfigSafe, resolveSafe } from 'goalrun-core';
 
@@ -55,7 +55,11 @@ export async function planCommand(goalPath: string, opts: { json?: boolean }): P
   });
 
   // Generate plan report
-  const riskSummary = buildRiskSummary(spec, goalResult.diagnostics, policyResult.diagnostics);
+  const riskSummary = deriveRiskSummary(
+    spec.budget,
+    spec.policy.require_approval_for,
+    [...goalResult.diagnostics, ...policyResult.diagnostics],
+  );
 
   const planReport = generatePlanReport(
     spec.id,
@@ -87,35 +91,4 @@ export async function planCommand(goalPath: string, opts: { json?: boolean }): P
     console.log(planReport.agentPrompt);
     console.log(pc.dim('---'));
   }
-}
-
-function buildRiskSummary(
-  spec: {
-    budget: { max_iterations: number; max_changed_files: number; max_runtime_minutes: number };
-    policy: { require_approval_for: string[] };
-  },
-  goalDiags: import('goalrun-core').Diagnostic[],
-  policyDiags: import('goalrun-core').Diagnostic[],
-): string[] {
-  const risks: string[] = [];
-
-  if (spec.budget.max_iterations > 10) {
-    risks.push(`High iteration budget (${spec.budget.max_iterations}) — consider reducing`);
-  }
-  if (spec.budget.max_changed_files > 50) {
-    risks.push(`High file change budget (${spec.budget.max_changed_files}) — wide blast radius`);
-  }
-  if (spec.policy.require_approval_for.length === 0) {
-    risks.push('No approval gates defined — all changes may proceed without approval');
-  }
-  if (spec.policy.require_approval_for.includes('changes_public_api')) {
-    risks.push('Public API changes require approval');
-  }
-
-  const errors = [...goalDiags, ...policyDiags].filter((d) => d.severity === 'error');
-  if (errors.length > 0) {
-    risks.push(`${errors.length} validation error(s) — review before proceeding`);
-  }
-
-  return risks;
 }
