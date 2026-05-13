@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      npm_tag:
+        description: 'npm dist-tag to publish'
+        required: true
+        default: alpha
+        type: choice
+        options:
+          - alpha
+          - beta
+          - latest
+      confirm_latest:
+        description: 'Type "publish latest" when npm_tag is latest'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm-release
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Guard latest tag
+        if: ${{ inputs.npm_tag == 'latest' && inputs.confirm_latest != 'publish latest' }}
+        run: |
+          echo 'Refusing latest publish without confirm_latest="publish latest".'
+          exit 1
+
+      - name: Release check
+        run: pnpm release:check
+
+      - name: Install smoke
+        run: pnpm release:install-smoke
+
+      - name: Publish packages
+        run: pnpm -r --filter './packages/*' publish --tag "${{ inputs.npm_tag }}" --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Verify npm dist-tags
+        run: pnpm release:verify-tags -- "${{ inputs.npm_tag }}"

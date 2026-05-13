@@ -27,6 +27,9 @@ jobs:
       - name: Format
         run: pnpm format
 
+      - name: Version consistency
+        run: node scripts/check-versions.mjs
+
       - name: Type check
         run: pnpm typecheck
 
@@ -38,3 +41,6 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Release install smoke
+        run: pnpm release:install-smoke

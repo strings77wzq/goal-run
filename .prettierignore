@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+.omx/
+.goalrun/runs/
+.goalrun/release-pack/
+.goalrun/tmp-pack/
+
+examples/node-lib/node_modules/
+examples/node-lib/dist/
+examples/node-lib/package-lock.json

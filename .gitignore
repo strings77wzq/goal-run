@@ -10,7 +10,6 @@ coverage/
 .claude/
 .codex/
 .opencode/
-openspec/
 
 # AI-generated docs (needs human rewrite)
 docs/
@@ -18,8 +17,13 @@ docs/
 # Build artifacts
 *.tsbuildinfo
 
+# Runtime state
+.omx/
+
 # Run artifacts (user-generated)
 .goalrun/runs/
+.goalrun/release-pack/
+.goalrun/tmp-pack/
 
 # Example project deps
 examples/node-lib/node_modules/
