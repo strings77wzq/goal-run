@@ -1,0 +1,45 @@
+# GoalRun selection tests — harness verification checks
+selection:
+  - id: openspec-specs-exist
+    description: OpenSpec baseline specs must exist
+    check: directory_exists
+    path: openspec/specs
+    min_items: 3
+
+  - id: sdd-tdd-goal-defined
+    description: SDD+TDD workflow goal must be defined
+    check: file_exists
+    path: .goalrun/goals/sdd-tdd-workflow.yaml
+
+  - id: policy-configured
+    description: Security policy must be configured
+    check: file_exists
+    path: .goalrun/policy.yaml
+
+  - id: skills-installed
+    description: Core SDD+TDD skills must be installed
+    check: directory_exists
+    path: .agent/skills
+    min_items: 3
+
+  - id: prettierignore-covers-runtime
+    description: Runtime state excluded from formatting
+    check: file_contains
+    path: .prettierignore
+    patterns:
+      - .omx/
+      - .goalrun/runs/
+
+  - id: gitignore-tracks-openspec
+    description: OpenSpec tracked in git
+    check: file_not_contains
+    path: .gitignore
+    patterns:
+      - openspec/
+
+  - id: ci-runs-verify
+    description: CI includes harness verify step
+    check: file_contains
+    path: .github/workflows/ci.yml
+    patterns:
+      - goalrun verify

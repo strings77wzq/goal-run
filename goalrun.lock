@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "tdd-change": {
+      "version": "1.0.0",
+      "installed_at": "2026-05-14T02:55:50.945Z",
+      "source": "builtin",
+      "sha256": "09f9bd731e022679a735955bc1ba14625898cc759c62c9ff9c865f7632e849e5",
+      "installed_targets": [
+        "SKILL.md"
+      ],
+      "provenance": "builtin:p0"
+    },
+    "code-review": {
+      "version": "1.0.0",
+      "installed_at": "2026-05-14T02:55:50.946Z",
+      "source": "builtin",
+      "sha256": "6fe89e95ec85d439ba070193d7e3c70a185d58533adcc842f234d5a5312709e8",
+      "installed_targets": [
+        "SKILL.md"
+      ],
+      "provenance": "builtin:p0"
+    },
+    "implementation-strategy": {
+      "version": "1.0.0",
+      "installed_at": "2026-05-14T02:55:50.946Z",
+      "source": "builtin",
+      "sha256": "c0a4e31cadc0ea7174067488f8c03be47237c40257f83547ae313fe15dd0ab8b",
+      "installed_targets": [
+        "SKILL.md"
+      ],
+      "provenance": "builtin:p0"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# GoalRun configuration
+version: 1
+
+# Skills directory — skills installed here become available for goal verification
+skills_dir: .agent/skills
+
+# Goals directory — contains SDD+TDD workflow goals
+goals_dir: .goalrun/goals
+
+# Policy file — security and process constraints enforced by harness
+policy_file: .goalrun/policy.yaml
+
+# Selection tests — harness checks for spec/skill/quality compliance
+selection_tests: .goalrun/tests/selection.yaml
+
+# Runs output directory
+runs_dir: .goalrun/runs
+
+# Lockfile path
+lockfile: goalrun.lock

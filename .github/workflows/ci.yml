@@ -42,5 +42,8 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Harness verify
+        run: pnpm exec goalrun verify .goalrun/goals/sdd-tdd-workflow.yaml
+
       - name: Release install smoke
         run: pnpm release:install-smoke

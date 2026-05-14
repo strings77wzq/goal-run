@@ -1,0 +1,47 @@
+id: sdd-tdd-workflow
+title: SDD+TDD 全流程规范开发
+goal: >
+  基于 harness 执行 SDD+TDD 全流程：
+  先使用 openspec-explore 探索需求，再用 openspec-propose 生成提案和设计文档，
+  经 architect 审阅架构后，用 tdd-change 执行 Red-Green-Refactor，
+  通过 verify 验收，最后用 code-review 审查代码质量，
+  全流程由 CI/CD 管道自动验证，确保每一步都有 gate 约束。
+
+skills:
+  - implementation-strategy
+  - tdd-change
+  - code-review
+
+criteria:
+  - OpenSpec proposal 已创建且 openspec validate --strict 通过
+  - 架构方案已通过 architect 审阅（安全性/性能/复用性），所有 medium+ 问题已解决
+  - TDD red-green-refactor 完成：测试先写且先失败，最小实现后测试通过，无跳过 Red 阶段
+  - 全量 pnpm test 297+ 通过，typecheck/lint/format/build 通过
+  - code review 批准且无未解决的 medium+ 问题
+  - CI/CD 管道全绿 (pnpm release:install-smoke 通过)
+  - 无新增 security regression，tarball 不含敏感文件
+
+budget:
+  max_iterations: 8
+  max_changed_files: 50
+  max_runtime_minutes: 120
+
+policy:
+  require_approval_for:
+    - changes_public_api
+    - deletes_files
+    - modifies_auth_code
+    - publishes_to_npm
+    - modifies_ci_cd
+    - modifies_specs
+
+verification:
+  commands:
+    - pnpm format
+    - node scripts/check-versions.mjs
+    - pnpm typecheck
+    - pnpm lint
+    - pnpm test
+    - pnpm build
+    - pnpm release:install-smoke
+    - openspec validate --strict
