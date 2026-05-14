@@ -18,7 +18,8 @@
     "release:install-smoke": "pnpm release:pack && node scripts/install-smoke.mjs",
     "release:verify-tags": "node scripts/verify-dist-tags.mjs",
     "release:alpha": "pnpm release:check && pnpm release:install-smoke && pnpm -r --filter './packages/*' publish --tag alpha",
-    "release:latest": "echo 'ERROR: Manual confirmation required.' && echo 'Are you SURE you want to publish to latest? This is the default tag for all npm installs.' && echo 'Type: pnpm release:check && pnpm release:install-smoke && pnpm -r --filter '\\''./packages/*'\\'' publish --tag latest'"
+    "release:latest": "echo 'ERROR: Manual confirmation required.' && echo 'Are you SURE you want to publish to latest? This is the default tag for all npm installs.' && echo 'Type: pnpm release:check && pnpm release:install-smoke && pnpm -r --filter '\\''./packages/*'\\'' publish --tag latest'",
+    "verify:harness": "goalrun verify .goalrun/goals/sdd-tdd-workflow.yaml"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
