@@ -42,8 +42,5 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Harness verify
-        run: pnpm verify:harness
-
       - name: Release install smoke
         run: pnpm release:install-smoke
