@@ -1,11 +1,11 @@
 id: sdd-tdd-workflow
 title: SDD+TDD 全流程规范开发
 goal: >
-  基于 harness 执行 SDD+TDD 全流程：
-  先使用 openspec-explore 探索需求，再用 openspec-propose 生成提案和设计文档，
-  经 architect 审阅架构后，用 tdd-change 执行 Red-Green-Refactor，
-  通过 verify 验收，最后用 code-review 审查代码质量，
-  全流程由 CI/CD 管道自动验证，确保每一步都有 gate 约束。
+  基于 harness 执行 SDD+TDD 全流程规范开发：
+  先用 implementation-strategy 完成探索、提案和方案设计（OpenSpec proposal + specs），
+  再用 tdd-change 严格 Red-Green-Refactor 实现代码，
+  最后用 code-review 审查安全性、性能、复用性和测试覆盖，
+  全流程由 CI/CD 管道（harness verify + quality gates）自动验证。
 
 skills:
   - implementation-strategy
