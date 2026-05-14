@@ -2,82 +2,87 @@
 
 You are an AI coding assistant (Claude Code, Codex, Cursor, or similar). This document explains how to help users work with GoalRun.
 
-## What GoalRun Does (And Does NOT Do)
+## What GoalRun Is
 
-GoalRun is a **verification harness** — it validates goals, checks skills, enforces policy, manages supervised runs, and captures git diffs. It does NOT execute code, does NOT call external LLMs, and does NOT auto-advance through human decision gates.
+GoalRun is a **verification harness** that enforces the SDD+TDD pipeline for AI-assisted engineering:
+
+```
+OpenSpec proposal → architect review → TDD (red-green-refactor) → verify gates → code review → CI/CD
+```
+
+It validates goals, checks skills, enforces policy, generates AI-ready execution plans, and manages supervised runs with checkpointed audit trails. It does NOT execute code, does NOT call external LLMs, and does NOT auto-advance through human decision gates.
 
 ## Core Rules (NEVER BREAK)
 
 1. **Never execute blocked commands.** If a skill or goal contains a command in `.goalrun/policy.yaml` blocked_commands list, STOP and alert the user.
 2. **Never bypass policy gates.** If a goal requires approval for `changes_public_api`, ask the user before modifying any public API.
-3. **Never claim tests pass without evidence.** Show actual command output. Do not say "tests pass" unless you ran them and saw the output.
+3. **Never claim tests pass without evidence.** Show actual command output.
 4. **Never ask users to paste secrets.** Tell them to use environment variables or a secret manager.
 5. **Never modify files outside the goal's scope.** The budget fields define the blast radius.
-6. **Never mark a criteria as "pass" without verification.** All criteria claims must have evidence in the artifacts directory.
+6. **Never mark a criteria as "pass" without verification evidence in the artifacts directory.**
 
 ## How to Help Users Set Up GoalRun
 
 ```bash
-npm install -g goalrun@alpha    # Install (alpha tag — GoalRun is pre-1.0)
-goalrun init                    # Scaffold a project
-goalrun skill install tdd-change code-review implementation-strategy
-goalrun doctor                  # Verify setup
+npm install -g goalrun@alpha       # Install (GoalRun is in alpha — use @alpha tag)
+goalrun init                       # Scaffold .goalrun/, AGENTS.md, policy, example goal
+goalrun skill install implementation-strategy tdd-change code-review
+goalrun doctor                     # Verify setup
 ```
 
-> If `goalrun` is not found after install, ensure your npm global bin is in PATH:
-> `npm config get prefix` → add `<prefix>/bin` to PATH.
+> If `goalrun` is not found after install: `npm config get prefix` → add `<prefix>/bin` to PATH.
+
+## The SDD+TDD Pipeline
+
+GoalRun enforces a full Spec-Driven + Test-Driven pipeline:
+
+### Phase 1: SDD — Spec & Design
+
+- User creates an OpenSpec proposal or writes a goal YAML
+- `goalrun verify <goal>` — all 5 harnesses check the goal for completeness and safety
+- `goalrun plan <goal>` — generates an AI-ready execution plan with risk summary
+
+### Phase 2: TDD — Implementation
+
+- Agent follows the plan using skills in order (implementation-strategy → tdd-change → code-review)
+- `goalrun run <goal> --loop --isolated` — creates a supervised, checkpointed run
+- Agent works in an isolated git worktree (`.goalrun/runs/<id>/worktree/`)
+- `goalrun advance <run-id>` — semi-auto advance through states
+
+### Phase 3: Verify — Quality Gates
+
+- Verification commands run (pnpm test, typecheck, lint, etc.)
+- CI/CD pipeline includes `goalrun verify` as a gate
+- `goalrun report <run-id>` — detailed evidence report
 
 ## The Semi-Autonomous Loop
 
-GoalRun has a **semi-autonomous state machine**. The `advance` command auto-advances through safe states and stops only at human decision gates:
-
 ```
 planned → waiting_for_agent → waiting_for_user (🛑 HUMAN) → verifying → completed
-                                                          ↘ needs_revision → waiting_for_agent ...
+                                                          ↘ needs_revision → retry
+
+blocked_by_policy (🛑 HUMAN) — approve or reject
 ```
 
 Two human gates stop auto-advance:
 
 - **waiting_for_user** — agent output needs human review
-- **blocked_by_policy** — a policy gate was triggered, need approval/rejection
-
-Key commands for managing a run:
-
-```bash
-goalrun advance <run-id>          # Semi-auto advance (recommended)
-goalrun resume <run-id> --to <status>  # Manual single-step
-goalrun status [run-id]           # View run state and criteria
-goalrun stop <run-id>             # Stop the run
-goalrun report [run-id]           # Detailed report
-goalrun rollback <run-id>         # Discard changes (worktree remove or git reset)
-```
-
-## Isolated Runs
-
-For extra safety, use the `--isolated` flag to create a git worktree:
-
-```bash
-goalrun run .goalrun/goals/task.yaml --loop --isolated
-```
-
-The agent works in an isolated git checkout at `.goalrun/runs/<id>/worktree/`.
-The main workspace stays untouched. When done, `goalrun rollback <run-id>` removes
-the worktree cleanly.
+- **blocked_by_policy** — a policy gate was triggered
 
 ## How to Help Users Create a Goal
 
 ```yaml
 # .goalrun/goals/<goal-id>.yaml
 id: my-task
-title: Short description
-goal: One-sentence description of the engineering task
+title: Short description of the engineering task
+goal: One-sentence description of what needs to be done
 skills:
-  - implementation-strategy
-  - tdd-change
-  - code-review
+  - implementation-strategy # SDD: plan the approach
+  - tdd-change # TDD: red-green-refactor
+  - code-review # Verify: structured review
 criteria:
-  - <measurable criterion 1>
-  - <measurable criterion 2>
+  - <specific measurable outcome 1>
+  - <specific measurable outcome 2>
 budget:
   max_iterations: 5
   max_changed_files: 20
@@ -94,35 +99,36 @@ verification:
 
 ## How to Help With verify Failures
 
-| Code                        | Meaning                        | Fix                                                |
-| --------------------------- | ------------------------------ | -------------------------------------------------- |
-| `GOAL_MISSING_SKILL`        | Referenced skill not installed | `goalrun skill install <skill>`                    |
-| `GOAL_INVALID_SCHEMA`       | Schema violation               | Fix the YAML to match the schema                   |
-| `SKILL_NAME_MISMATCH`       | SKILL.md name != directory     | Rename one to match                                |
-| `BLOCKED_COMMAND`           | Dangerous command detected     | Remove or replace                                  |
-| `SECRET_*`                  | Possible secret in skill       | Remove the secret, rotate if exposed               |
-| `SECURITY_PROMPT_INJECTION` | Possible prompt injection      | Review and sanitize the content                    |
-| `CRITERIA_VAGUE`            | Criterion uses vague language  | Add measurable targets                             |
-| `CRITERIA_UNVERIFIABLE`     | Subjective criterion           | Replace with testable condition                    |
-| `INTEGRITY_HASH_MISMATCH`   | Skill content changed          | Reinstall: `goalrun skill install --force <skill>` |
+| Code                          | Meaning                        | Fix                                                |
+| ----------------------------- | ------------------------------ | -------------------------------------------------- |
+| `GOAL_MISSING_SKILL`          | Referenced skill not installed | `goalrun skill install <skill>`                    |
+| `GOAL_INVALID_SCHEMA`         | Schema violation               | Fix YAML to match schema                           |
+| `BLOCKED_COMMAND`             | Dangerous command detected     | Remove or replace                                  |
+| `SECRET_*`                    | Possible secret in skill       | Remove the secret, rotate if exposed               |
+| `PROMPT_INJECTION`            | Possible prompt injection      | Review and sanitize                                |
+| `CRITERIA_VAGUE`              | Vague criterion language       | Add measurable targets                             |
+| `CRITERIA_UNVERIFIABLE`       | Subjective criterion           | Replace with testable condition                    |
+| `CRITERIA_MISSING_ERROR_PATH` | No error/edge case criteria    | Add error handling criteria                        |
+| `CRITERIA_MISSING_REGRESSION` | No regression criteria         | Add regression test requirement                    |
+| `INTEGRITY_HASH_MISMATCH`     | Skill content changed          | Reinstall: `goalrun skill install --force <skill>` |
 
 ## When You Receive a GoalRun Plan
 
 1. Read the agent prompt carefully
-2. **If the run is isolated**, `cd` into the worktree directory indicated in the run output
+2. **If the run is isolated**, `cd` into the worktree directory shown in the run output
 3. Read each skill's SKILL.md from `.agent/skills/<name>/SKILL.md`
-4. Follow skill workflows IN ORDER
+4. Follow skill workflows **IN ORDER** — strategy first, then TDD, then review
 5. **Stop at each policy gate** and request user approval
 6. Run verification commands and capture output
 7. Save evidence to `.goalrun/runs/<id>/artifacts/`
-8. Report results against each criterion — with evidence
+8. Report results against each criterion — with specific evidence
 
 ## Safety Checklist Before Reporting "Done"
 
 - [ ] All criteria have evidence (test output, lint output, etc.)
 - [ ] No policy gates were bypassed without user approval
 - [ ] File changes are within the budget
-- [ ] Verification commands were run and their output is saved
+- [ ] Verification commands were run and output saved
 - [ ] No blocked commands were executed
 - [ ] No secrets were printed in any output
 

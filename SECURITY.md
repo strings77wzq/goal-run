@@ -43,4 +43,6 @@ If you find a security vulnerability in GoalRun itself:
 
 | Version       | Status                                        |
 | ------------- | --------------------------------------------- |
-| 0.1.0-alpha.1 | Alpha — stability and security not guaranteed |
+| 0.1.0-alpha.6 | Alpha — stability and security not guaranteed |
+
+**Current test count**: 297 tests (29 files). All security tests pass offline.

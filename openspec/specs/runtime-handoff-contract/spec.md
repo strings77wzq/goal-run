@@ -1,6 +1,6 @@
 ## Purpose
 
-Define the runtime-specific handoff contract that lets GoalRun produce actionable prompts for Claude, Codex, Cursor, and OpenCode without mixing skill paths across runtimes.
+Define the runtime-specific handoff contract that lets GoalRun produce actionable prompts for Claude, Codex, Cursor, and OpenCode without mixing skill paths across runtimes. This is the final CI/CD phase of the SDD+TDD pipeline — after implementation and review, the handoff generates a runtime-optimized agent prompt.
 
 ## Requirements
 
