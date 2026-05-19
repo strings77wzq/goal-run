@@ -40,6 +40,8 @@ GoalRun enforces a full Spec-Driven + Test-Driven pipeline:
 
 - User creates an OpenSpec proposal or writes a goal YAML
 - `goalrun verify <goal>` — all 5 harnesses check the goal for completeness and safety
+- `goalrun verify <goal> --format sarif` — output as SARIF v2.1.0 (GitHub Code Scanning)
+- `goalrun verify <goal> --format junit` — output as JUnit XML (GitLab CI, Jenkins)
 - `goalrun plan <goal>` — generates an AI-ready execution plan with risk summary
 
 ### Phase 2: TDD — Implementation

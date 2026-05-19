@@ -51,7 +51,7 @@ describe('release/install hardening', () => {
   it('checks workspace package version consistency and reports mismatches', async () => {
     const { checkVersionConsistency } = await loadReleaseUtils();
 
-    expect(checkVersionConsistency(repoRoot).version).toBe('0.1.0-alpha.6');
+    expect(checkVersionConsistency(repoRoot).version).toBe('0.1.0-alpha.7');
 
     const fixtureRoot = mkdtempSync(resolve(tmpdir(), 'goalrun-version-fixture-'));
     try {

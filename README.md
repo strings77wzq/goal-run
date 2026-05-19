@@ -14,7 +14,7 @@ GoalRun validates goals, checks skills, blocks dangerous commands, generates AI-
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-297_passing-brightgreen" alt="297 tests">
+  <img src="https://img.shields.io/badge/tests-318_passing-brightgreen" alt="318 tests">
 </p>
 
 ---
@@ -135,6 +135,8 @@ goalrun doctor                        # Health check
 
 # SDD phase — spec & design
 goalrun verify <goal>                 # Run all 5 harnesses on a goal
+goalrun verify <goal> --format sarif  # Output as SARIF v2.1.0 (GitHub Code Scanning)
+goalrun verify <goal> --format junit  # Output as JUnit XML (GitLab CI, Jenkins)
 goalrun plan <goal>                   # Generate execution plan + AI prompt
 goalrun from-issue <url>              # Convert GitHub issue → goal.yaml
 
@@ -205,7 +207,7 @@ verification:
 git clone https://github.com/strings77wzq/goal-run.git
 cd goal-run
 pnpm install
-pnpm test        # 297 tests passing
+pnpm test        # 318 tests passing
 pnpm typecheck   # TypeScript strict
 pnpm lint        # ESLint
 pnpm build       # All 5 packages
@@ -215,7 +217,7 @@ pnpm build       # All 5 packages
 
 ## Roadmap
 
-GoalRun is in **alpha** (0.1.0-alpha.6).
+GoalRun is in **alpha** (0.1.0-alpha.7).
 
 | Capability                                              | Status       |
 | ------------------------------------------------------- | ------------ |
@@ -226,6 +228,7 @@ GoalRun is in **alpha** (0.1.0-alpha.6).
 | Git worktree isolation + diff capture + rollback        | ✅ Alpha     |
 | Multi-runtime handoff (Claude/Codex/Cursor/OpenCode)    | ✅ Alpha     |
 | OpenSpec SDD pipeline integration                       | ✅ Alpha     |
+| CI/CD output: SARIF v2.1.0 + JUnit XML                  | ✅ Alpha     |
 | npm install -g goalrun@alpha                            | ✅ Available |
 | OpenSpec proposal → GoalRun goal bridge                 | 🔲 Planned   |
 
