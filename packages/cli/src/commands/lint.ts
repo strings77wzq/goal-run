@@ -1,13 +1,14 @@
 import { resolve } from 'node:path';
 import { existsSync } from 'node:fs';
 import { loadConfig } from '../utils/config.js';
-import { formatText, formatJson } from 'goalrun-reporter';
+import { formatText, formatJson, formatDiagnostics } from 'goalrun-reporter';
+import type { FormatType } from 'goalrun-reporter';
 import { runStaticHarness } from 'goalrun-harness';
 import { DEFAULT_POLICY, type Diagnostic } from 'goalrun-core';
 import fastGlob from 'fast-glob';
 const { globSync } = fastGlob;
 
-export async function lintCommand(opts: { json?: boolean }): Promise<void> {
+export async function lintCommand(opts: { json?: boolean; format?: string }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
   const diagnostics: Diagnostic[] = [];
@@ -43,7 +44,10 @@ export async function lintCommand(opts: { json?: boolean }): Promise<void> {
     });
   }
 
-  if (opts.json) {
+  if (opts.format) {
+    const format = opts.format as FormatType;
+    console.log(formatDiagnostics(diagnostics, format));
+  } else if (opts.json) {
     console.log(formatJson(diagnostics));
   } else {
     console.log(formatText(diagnostics));

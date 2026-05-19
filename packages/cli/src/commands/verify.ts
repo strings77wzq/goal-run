@@ -10,11 +10,15 @@ import {
 } from 'goalrun-harness';
 import { DEFAULT_POLICY, parsePolicyConfigSafe, resolveSafe } from 'goalrun-core';
 import type { Diagnostic } from 'goalrun-core';
-import { formatText } from 'goalrun-reporter';
+import { formatText, formatDiagnostics } from 'goalrun-reporter';
+import type { FormatType } from 'goalrun-reporter';
 import fastGlob from 'fast-glob';
 const { globSync } = fastGlob;
 
-export async function verifyCommand(goalPath: string, opts: { json?: boolean }): Promise<void> {
+export async function verifyCommand(
+  goalPath: string,
+  opts: { json?: boolean; format?: string },
+): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
 
@@ -79,7 +83,10 @@ export async function verifyCommand(goalPath: string, opts: { json?: boolean }):
   const summary = summarizeDiagnostics(allDiagnostics);
   const errors = allDiagnostics.filter((d) => d.severity === 'error');
 
-  if (opts.json) {
+  if (opts.format) {
+    const format = opts.format as FormatType;
+    console.log(formatDiagnostics(allDiagnostics, format));
+  } else if (opts.json) {
     const report = {
       passed: errors.length === 0,
       summary,

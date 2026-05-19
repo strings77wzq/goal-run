@@ -51,16 +51,18 @@ program
   .command('lint')
   .description('Validate all GoalRun files')
   .option('--json', 'Output as JSON')
+  .option('--format <type>', 'Output format: text, json, sarif, junit')
   .action(async (opts) => {
-    await lintCommand({ json: opts.json });
+    await lintCommand({ json: opts.json, format: opts.format });
   });
 
 program
   .command('test')
   .description('Run skill selection tests')
   .option('--json', 'Output as JSON')
+  .option('--format <type>', 'Output format: text, json, sarif, junit')
   .action(async (opts) => {
-    await testCommand({ json: opts.json });
+    await testCommand({ json: opts.json, format: opts.format });
   });
 
 program
@@ -75,8 +77,9 @@ program
   .command('verify <goal>')
   .description('Validate a goal spec against all harnesses')
   .option('--json', 'Output as JSON')
+  .option('--format <type>', 'Output format: text, json, sarif, junit')
   .action(async (goal: string, opts) => {
-    await verifyCommand(goal, { json: opts.json });
+    await verifyCommand(goal, { json: opts.json, format: opts.format });
   });
 
 program

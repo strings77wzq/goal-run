@@ -1,2 +1,2 @@
-export { formatText, formatJson } from './format.js';
-export type { JsonReport } from './format.js';
+export { formatText, formatJson, formatSarif, formatJunit, formatDiagnostics } from './format.js';
+export type { JsonReport, FormatType } from './format.js';

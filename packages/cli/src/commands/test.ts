@@ -2,10 +2,12 @@ import { resolve } from 'node:path';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
-import { parseSelectionTests } from 'goalrun-core';
+import { parseSelectionTests, createError, createInfo, type Diagnostic } from 'goalrun-core';
+import { formatDiagnostics } from 'goalrun-reporter';
+import type { FormatType } from 'goalrun-reporter';
 import { runSelectionHarness } from 'goalrun-harness';
 
-export async function testCommand(opts: { json?: boolean }): Promise<void> {
+export async function testCommand(opts: { json?: boolean; format?: string }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
   const testsPath = resolve(repoRoot, config.selection_tests);
@@ -31,7 +33,17 @@ export async function testCommand(opts: { json?: boolean }): Promise<void> {
 
   const result = runSelectionHarness(parsed.tests, availableSkills);
 
-  if (opts.json) {
+  if (opts.format) {
+    const diags: Diagnostic[] = result.results.map((r) =>
+      r.passed
+        ? createInfo('SELECTION_PASS', r.test.description)
+        : createError('SELECTION_MISMATCH', r.test.description, {
+            hint: `Expected: ${r.expected}, Got: ${r.matched}`,
+          }),
+    );
+    const format = opts.format as FormatType;
+    console.log(formatDiagnostics(diags, format));
+  } else if (opts.json) {
     console.log(JSON.stringify(result, null, 2));
   } else {
     console.log(pc.bold('Selection Test Results'));
