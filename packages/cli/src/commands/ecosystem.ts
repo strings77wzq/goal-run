@@ -243,7 +243,9 @@ async function statusSubcommand(repoRoot: string, opts: { json?: boolean }): Pro
     }
 
     console.log('');
-    console.log(pc.dim('Run `goalrun ecosystem bootstrap` for detailed installation instructions.'));
+    console.log(
+      pc.dim('Run `goalrun ecosystem bootstrap` for detailed installation instructions.'),
+    );
   } else {
     console.log('');
     console.log(pc.green('All ecosystem components are installed and healthy!'));
@@ -254,7 +256,12 @@ async function statusSubcommand(repoRoot: string, opts: { json?: boolean }): Pro
     console.log('');
     console.log(pc.bold('Diagnostics:'));
     for (const d of detection.diagnostics) {
-      const icon = d.severity === 'error' ? pc.red('✗') : d.severity === 'warning' ? pc.yellow('!') : pc.blue('i');
+      const icon =
+        d.severity === 'error'
+          ? pc.red('✗')
+          : d.severity === 'warning'
+            ? pc.yellow('!')
+            : pc.blue('i');
       console.log(`  ${icon} ${d.message}`);
       if (d.hint) console.log(pc.dim(`    ${d.hint}`));
     }

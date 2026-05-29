@@ -170,13 +170,23 @@ function getNextSteps(state: RunState): string {
     case 'waiting_for_agent':
       return '1. Agent should continue from current pipeline stage\n2. Check criteria status above\n3. Review excluded approaches before retrying';
     case 'waiting_for_user':
-      return '1. Review agent output in artifacts/\n2. Update criteria status if needed\n3. Run: goalrun advance ' + state.run_id;
+      return (
+        '1. Review agent output in artifacts/\n2. Update criteria status if needed\n3. Run: goalrun advance ' +
+        state.run_id
+      );
     case 'verifying':
       return '1. Run verification commands\n2. Check criteria pass/fail\n3. Advance when all criteria pass';
     case 'needs_revision':
-      return '1. Review what failed\n2. Check excluded approaches\n3. Run: goalrun advance ' + state.run_id;
+      return (
+        '1. Review what failed\n2. Check excluded approaches\n3. Run: goalrun advance ' +
+        state.run_id
+      );
     case 'blocked_by_policy':
-      return '1. Review policy gate violation\n2. Approve or reject\n3. Run: goalrun resume ' + state.run_id + ' --to waiting_for_user';
+      return (
+        '1. Review policy gate violation\n2. Approve or reject\n3. Run: goalrun resume ' +
+        state.run_id +
+        ' --to waiting_for_user'
+      );
     default:
       return '1. Check current status with: goalrun status ' + state.run_id;
   }

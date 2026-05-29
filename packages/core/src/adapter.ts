@@ -111,11 +111,31 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
   if (plan.ecosystem) {
     lines.push(``, `## Ecosystem Components`);
     const components = [
-      { key: 'superpowers' as const, name: 'Superpowers', usage: 'TDD, verification-before-completion, requesting-code-review, brainstorming' },
-      { key: 'omc' as const, name: 'Oh-My-ClaudeCode (OMC)', usage: 'ralph (TDD loop), ultrawork (parallel), team (multi-agent review)' },
-      { key: 'openspec' as const, name: 'OpenSpec', usage: 'Change lifecycle: explore → propose → apply → archive' },
-      { key: 'gstack' as const, name: 'gstack', usage: 'Role-based review: /ship, /review, /qa, /cso' },
-      { key: 'ecc' as const, name: 'ECC', usage: 'Language-specific rules, hooks, and agent orchestration' },
+      {
+        key: 'superpowers' as const,
+        name: 'Superpowers',
+        usage: 'TDD, verification-before-completion, requesting-code-review, brainstorming',
+      },
+      {
+        key: 'omc' as const,
+        name: 'Oh-My-ClaudeCode (OMC)',
+        usage: 'ralph (TDD loop), ultrawork (parallel), team (multi-agent review)',
+      },
+      {
+        key: 'openspec' as const,
+        name: 'OpenSpec',
+        usage: 'Change lifecycle: explore → propose → apply → archive',
+      },
+      {
+        key: 'gstack' as const,
+        name: 'gstack',
+        usage: 'Role-based review: /ship, /review, /qa, /cso',
+      },
+      {
+        key: 'ecc' as const,
+        name: 'ECC',
+        usage: 'Language-specific rules, hooks, and agent orchestration',
+      },
     ];
     for (const comp of components) {
       const status = plan.ecosystem[comp.key] ? '✅ Installed' : '❌ Not installed';
@@ -132,7 +152,11 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
     // Truncate if very long
     const contextLines = plan.contextMd.split('\n');
     if (contextLines.length > 100) {
-      lines.push(...contextLines.slice(0, 100), '', `> ... (${contextLines.length - 100} more lines. Read .goalrun/CONTEXT.md for full context.)`);
+      lines.push(
+        ...contextLines.slice(0, 100),
+        '',
+        `> ... (${contextLines.length - 100} more lines. Read .goalrun/CONTEXT.md for full context.)`,
+      );
     } else {
       lines.push(plan.contextMd);
     }
@@ -143,7 +167,11 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
     lines.push(``, `## Architecture Constraints (from .goalrun/ARCHITECTURE.md)`, ``);
     const archLines = plan.architectureMd.split('\n');
     if (archLines.length > 80) {
-      lines.push(...archLines.slice(0, 80), '', `> ... (${archLines.length - 80} more lines. Read .goalrun/ARCHITECTURE.md for full architecture.)`);
+      lines.push(
+        ...archLines.slice(0, 80),
+        '',
+        `> ... (${archLines.length - 80} more lines. Read .goalrun/ARCHITECTURE.md for full architecture.)`,
+      );
     } else {
       lines.push(plan.architectureMd);
     }
@@ -152,12 +180,17 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
   // Lessons section
   if (plan.lessons && plan.lessons.length > 0) {
     lines.push(``, `## Lessons Learned (from .goalrun/lessons.json)`, ``);
-    lines.push('> **Check these BEFORE writing code.** These are failure patterns from previous runs.', '');
+    lines.push(
+      '> **Check these BEFORE writing code.** These are failure patterns from previous runs.',
+      '',
+    );
     for (const lesson of plan.lessons.slice(0, 10)) {
       lines.push(`- [${lesson.severity.toUpperCase()}] **${lesson.pattern}**: ${lesson.lesson}`);
     }
     if (plan.lessons.length > 10) {
-      lines.push(`- ... and ${plan.lessons.length - 10} more. Search with: goalrun lessons search <keyword>`);
+      lines.push(
+        `- ... and ${plan.lessons.length - 10} more. Search with: goalrun lessons search <keyword>`,
+      );
     }
   }
 

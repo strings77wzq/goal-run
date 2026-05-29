@@ -122,12 +122,7 @@ export {
   getChangeStats,
   saveDiffPatch,
 } from './diff.js';
-export {
-  loadLessons,
-  searchLessons,
-  addLesson,
-  nominateFromRun,
-} from './lessons.js';
+export { loadLessons, searchLessons, addLesson, nominateFromRun } from './lessons.js';
 export type { Lesson, LessonsFile, LessonsSearchResult } from './lessons.js';
 export {
   estimateTokenBudget,
@@ -136,13 +131,7 @@ export {
   getRestartProtocol,
 } from './context-manager.js';
 export type { WindowResetTrigger } from './context-manager.js';
-export {
-  getStageRole,
-  checkRoleBoundary,
-  checkRoleBoundariesForFiles,
-} from './role-boundary.js';
+export { getStageRole, checkRoleBoundary, checkRoleBoundariesForFiles } from './role-boundary.js';
 export type { StageRole, FileOperation } from './role-boundary.js';
-export {
-  enforceBreakingChangeProtocol,
-} from './destructive-change.js';
+export { enforceBreakingChangeProtocol } from './destructive-change.js';
 export type { BreakingChangeProtocol } from './destructive-change.js';

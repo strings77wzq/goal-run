@@ -3,17 +3,9 @@ import { existsSync, readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
 import { resolveRunDir } from '../utils/run-dir.js';
-import {
-  nominateFromRun,
-  addLesson,
-  isTerminal,
-  type RunState,
-} from 'goalrun-core';
+import { nominateFromRun, addLesson, isTerminal, type RunState } from 'goalrun-core';
 
-export async function archiveCommand(
-  runId: string,
-  opts: { json?: boolean },
-): Promise<void> {
+export async function archiveCommand(runId: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
   const runDir = resolveRunDir(repoRoot, config.runs_dir, runId);

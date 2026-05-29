@@ -116,7 +116,12 @@ export async function doctorCommand(opts: { json?: boolean }): Promise<void> {
   checks.push({
     name: 'Ecosystem components',
     ok: installedCount >= 2, // At least superpowers + one other
-    detail: `${installedCount}/5 installed (${ecosystemComponents.filter((c) => c.installed).map((c) => c.name).join(', ') || 'none'})`,
+    detail: `${installedCount}/5 installed (${
+      ecosystemComponents
+        .filter((c) => c.installed)
+        .map((c) => c.name)
+        .join(', ') || 'none'
+    })`,
   });
 
   // Check CONTEXT.md (brownfield support)

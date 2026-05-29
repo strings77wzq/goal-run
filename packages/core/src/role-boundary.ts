@@ -56,7 +56,14 @@ const STAGE_ROLES: Record<PipelineStage, StageRole> = {
     stage: 'dev',
     description: 'Execute tasks with TDD. Can read/write source and test files.',
     allowedOperations: ['read', 'write'],
-    allowedPaths: ['src/**', 'lib/**', 'test/**', '__tests__/**', 'packages/*/src/**', 'packages/*/test/**'],
+    allowedPaths: [
+      'src/**',
+      'lib/**',
+      'test/**',
+      '__tests__/**',
+      'packages/*/src/**',
+      'packages/*/test/**',
+    ],
     deniedPaths: [
       '.goalrun/policy.yaml',
       '.goalrun/goals/**',
@@ -82,7 +89,11 @@ const STAGE_ROLES: Record<PipelineStage, StageRole> = {
     stage: 'integration',
     description: 'UAT and archival. Read source, write only to archive/lessons.',
     allowedOperations: ['read', 'write'],
-    allowedPaths: ['.goalrun/lessons.*', '.goalrun/runs/*/archive/**', 'openspec/changes/archived/**'],
+    allowedPaths: [
+      '.goalrun/lessons.*',
+      '.goalrun/runs/*/archive/**',
+      'openspec/changes/archived/**',
+    ],
     deniedPaths: ['src/**', 'lib/**', 'packages/*/src/**'],
   },
 };
@@ -164,13 +175,20 @@ export function checkRoleBoundary(
 export function checkRoleBoundariesForFiles(
   stage: PipelineStage,
   changedFiles: { path: string; operation: FileOperation }[],
-): { violations: { file: string; operation: FileOperation; diagnostics: Diagnostic[] }[]; allAllowed: boolean } {
+): {
+  violations: { file: string; operation: FileOperation; diagnostics: Diagnostic[] }[];
+  allAllowed: boolean;
+} {
   const violations: { file: string; operation: FileOperation; diagnostics: Diagnostic[] }[] = [];
 
   for (const file of changedFiles) {
     const result = checkRoleBoundary(stage, file.path, file.operation);
     if (!result.allowed) {
-      violations.push({ file: file.path, operation: file.operation, diagnostics: result.diagnostics });
+      violations.push({
+        file: file.path,
+        operation: file.operation,
+        diagnostics: result.diagnostics,
+      });
     }
   }
 

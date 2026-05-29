@@ -5,7 +5,10 @@ import { createWarning, createInfo } from 'goalrun-core';
  * Skill-to-ecosystem mapping.
  * Defines which ecosystem components are recommended/required for each skill.
  */
-const SKILL_ECOSYSTEM_MAP: Record<string, { component: keyof EcosystemDetection; required: boolean; reason: string }> = {
+const SKILL_ECOSYSTEM_MAP: Record<
+  string,
+  { component: keyof EcosystemDetection; required: boolean; reason: string }
+> = {
   'tdd-change': {
     component: 'superpowers',
     required: false,
@@ -14,7 +17,8 @@ const SKILL_ECOSYSTEM_MAP: Record<string, { component: keyof EcosystemDetection;
   'implementation-strategy': {
     component: 'openspec',
     required: false,
-    reason: 'OpenSpec provides structured change lifecycle tracking (explore → propose → apply → archive)',
+    reason:
+      'OpenSpec provides structured change lifecycle tracking (explore → propose → apply → archive)',
   },
   'code-review': {
     component: 'superpowers',
