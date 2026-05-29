@@ -9,6 +9,16 @@ export interface HandoffPlan {
   verificationChecklist: string[];
   riskSummary: string[];
   diagnostics: { code: string; severity: string; message: string; hint?: string }[];
+  ecosystem?: {
+    superpowers: boolean;
+    omc: boolean;
+    openspec: boolean;
+    gstack: boolean;
+    ecc: boolean;
+  };
+  contextMd?: string;
+  architectureMd?: string;
+  lessons?: { pattern: string; lesson: string; severity: string }[];
 }
 
 const TARGET_CONFIGS: Record<
@@ -97,6 +107,60 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
       break;
   }
 
+  // Ecosystem integration section
+  if (plan.ecosystem) {
+    lines.push(``, `## Ecosystem Components`);
+    const components = [
+      { key: 'superpowers' as const, name: 'Superpowers', usage: 'TDD, verification-before-completion, requesting-code-review, brainstorming' },
+      { key: 'omc' as const, name: 'Oh-My-ClaudeCode (OMC)', usage: 'ralph (TDD loop), ultrawork (parallel), team (multi-agent review)' },
+      { key: 'openspec' as const, name: 'OpenSpec', usage: 'Change lifecycle: explore → propose → apply → archive' },
+      { key: 'gstack' as const, name: 'gstack', usage: 'Role-based review: /ship, /review, /qa, /cso' },
+      { key: 'ecc' as const, name: 'ECC', usage: 'Language-specific rules, hooks, and agent orchestration' },
+    ];
+    for (const comp of components) {
+      const status = plan.ecosystem[comp.key] ? '✅ Installed' : '❌ Not installed';
+      lines.push(`- **${comp.name}**: ${status}`);
+      if (plan.ecosystem[comp.key]) {
+        lines.push(`  - Use: ${comp.usage}`);
+      }
+    }
+  }
+
+  // Project context section
+  if (plan.contextMd) {
+    lines.push(``, `## Project Context (from .goalrun/CONTEXT.md)`, ``);
+    // Truncate if very long
+    const contextLines = plan.contextMd.split('\n');
+    if (contextLines.length > 100) {
+      lines.push(...contextLines.slice(0, 100), '', `> ... (${contextLines.length - 100} more lines. Read .goalrun/CONTEXT.md for full context.)`);
+    } else {
+      lines.push(plan.contextMd);
+    }
+  }
+
+  // Architecture constraints section
+  if (plan.architectureMd) {
+    lines.push(``, `## Architecture Constraints (from .goalrun/ARCHITECTURE.md)`, ``);
+    const archLines = plan.architectureMd.split('\n');
+    if (archLines.length > 80) {
+      lines.push(...archLines.slice(0, 80), '', `> ... (${archLines.length - 80} more lines. Read .goalrun/ARCHITECTURE.md for full architecture.)`);
+    } else {
+      lines.push(plan.architectureMd);
+    }
+  }
+
+  // Lessons section
+  if (plan.lessons && plan.lessons.length > 0) {
+    lines.push(``, `## Lessons Learned (from .goalrun/lessons.json)`, ``);
+    lines.push('> **Check these BEFORE writing code.** These are failure patterns from previous runs.', '');
+    for (const lesson of plan.lessons.slice(0, 10)) {
+      lines.push(`- [${lesson.severity.toUpperCase()}] **${lesson.pattern}**: ${lesson.lesson}`);
+    }
+    if (plan.lessons.length > 10) {
+      lines.push(`- ... and ${plan.lessons.length - 10} more. Search with: goalrun lessons search <keyword>`);
+    }
+  }
+
   lines.push(``, `## Validation Diagnostics (from GoalRun harnesses)`);
 
   if (plan.diagnostics.length === 0) {
@@ -108,6 +172,18 @@ export function generateHandoff(plan: HandoffPlan, target: HandoffTarget): strin
       );
     }
   }
+
+  // Context window reset protocol
+  lines.push(
+    ``,
+    `## Context Window Reset Protocol`,
+    '',
+    'If your context window fills up or you detect looping:',
+    '1. **Before clearing**: PROGRESS.md has been auto-generated with current state.',
+    '2. **After clearing**: Reload in order: CONTEXT.md → ARCHITECTURE.md → lessons.json → PROGRESS.md → SKILL.md',
+    '3. **Before retrying**: Check "Excluded Approaches" in PROGRESS.md.',
+    '4. **Do not blind-retry**: Same error 3 times = stop and escalate.',
+  );
 
   lines.push(
     ``,

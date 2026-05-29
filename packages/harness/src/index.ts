@@ -19,3 +19,5 @@ export {
   detectUnverifiable,
   checkCompleteness,
 } from './criteria-harness.js';
+export { runEcosystemHarness } from './ecosystem-harness.js';
+export type { EcosystemHarnessInput, EcosystemHarnessOutput } from './ecosystem-harness.js';

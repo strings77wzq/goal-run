@@ -126,8 +126,9 @@ program
   .command('advance <run-id>')
   .description('Semi-autonomous advance — stops at human gates only')
   .option('--json', 'Output as JSON')
+  .option('--force', 'Skip TDD evidence and breaking change blocks (use with caution)')
   .action(async (runId: string, opts) => {
-    await advanceCommand(runId, { json: opts.json });
+    await advanceCommand(runId, { json: opts.json, force: opts.force });
   });
 
 program
@@ -239,6 +240,23 @@ ecosystemCmd
   .option('--force', 'Overwrite existing bootstrap instructions')
   .action(async (opts) => {
     await ecosystemCommand('bootstrap', { json: opts.json, force: opts.force });
+  });
+
+ecosystemCmd
+  .command('status')
+  .description('Show ecosystem component status with health checks')
+  .option('--json', 'Output as JSON')
+  .action(async (opts) => {
+    await ecosystemCommand('status', { json: opts.json });
+  });
+
+program
+  .command('archive <run-id>')
+  .description('Archive a completed run and nominate lessons learned')
+  .option('--json', 'Output as JSON')
+  .action(async (runId: string, opts) => {
+    const { archiveCommand } = await import('./commands/archive.js');
+    await archiveCommand(runId, { json: opts.json });
   });
 
 program.parseAsync().catch((err) => {

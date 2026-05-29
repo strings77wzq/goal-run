@@ -2,6 +2,7 @@ import { resolve } from 'node:path';
 import { existsSync, readdirSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
+import { detectEcosystem } from 'goalrun-core';
 
 export async function doctorCommand(opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
@@ -100,6 +101,30 @@ export async function doctorCommand(opts: { json?: boolean }): Promise<void> {
     name: 'AGENTS.md',
     ok: hasAgents,
     detail: hasAgents ? 'Found' : "Missing — run 'goalrun init'",
+  });
+
+  // Check ecosystem components
+  const ecosystem = detectEcosystem(repoRoot);
+  const ecosystemComponents = [
+    { name: 'Superpowers', installed: ecosystem.superpowers },
+    { name: 'OMC', installed: ecosystem.omc },
+    { name: 'OpenSpec', installed: ecosystem.openspec },
+    { name: 'gstack', installed: ecosystem.gstack },
+    { name: 'ECC', installed: ecosystem.ecc },
+  ];
+  const installedCount = ecosystemComponents.filter((c) => c.installed).length;
+  checks.push({
+    name: 'Ecosystem components',
+    ok: installedCount >= 2, // At least superpowers + one other
+    detail: `${installedCount}/5 installed (${ecosystemComponents.filter((c) => c.installed).map((c) => c.name).join(', ') || 'none'})`,
+  });
+
+  // Check CONTEXT.md (brownfield support)
+  const hasContext = existsSync(resolve(repoRoot, '.goalrun', 'CONTEXT.md'));
+  checks.push({
+    name: '.goalrun/CONTEXT.md',
+    ok: hasContext,
+    detail: hasContext ? 'Found (brownfield context)' : "Missing — run 'goalrun intel-scan'",
   });
 
   if (opts.json) {

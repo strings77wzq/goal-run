@@ -4,6 +4,13 @@ import pc from 'picocolors';
 import { getRepoInitFiles } from '../utils/templates.js';
 import { detectEcosystem, generateBootstrapPlan } from 'goalrun-core';
 
+interface EcosystemStatus {
+  detected_at: string;
+  components: Record<string, boolean>;
+  missing: string[];
+  bootstrap_actions: { component: string; command: string; priority: string }[];
+}
+
 export interface InitOptions {
   force?: boolean;
   dryRun?: boolean;
@@ -87,6 +94,29 @@ export async function initCommand(opts: InitOptions): Promise<void> {
     } else {
       console.log('');
       console.log(pc.green('All ecosystem components installed!'));
+    }
+
+    // Save ecosystem detection results
+    if (!opts.dryRun) {
+      const ecosystemStatus: EcosystemStatus = {
+        detected_at: new Date().toISOString(),
+        components: {
+          superpowers: detection.superpowers,
+          omc: detection.omc,
+          openspec: detection.openspec,
+          gstack: detection.gstack,
+          ecc: detection.ecc,
+        },
+        missing: plan.missing,
+        bootstrap_actions: plan.actions.map((a) => ({
+          component: a.component,
+          command: a.command,
+          priority: a.priority,
+        })),
+      };
+      const ecoPath = resolve(repoRoot, '.goalrun', 'ecosystem.json');
+      mkdirSync(resolve(ecoPath, '..'), { recursive: true });
+      writeFileSync(ecoPath, JSON.stringify(ecosystemStatus, null, 2), 'utf-8');
     }
   }
 

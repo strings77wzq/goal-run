@@ -11,11 +11,20 @@ import {
   verifyCriteriaAutomatically,
   verifyEvidenceExists,
   checkDestructiveChange,
+  enforceBreakingChangeProtocol,
   getChangedFiles,
+  loadLessons,
+  searchLessons,
+  checkRoleBoundariesForFiles,
+  PIPELINE_STAGES,
   type RunState,
+  type PipelineStage,
 } from 'goalrun-core';
 
-export async function advanceCommand(runId: string, opts: { json?: boolean }): Promise<void> {
+export async function advanceCommand(
+  runId: string,
+  opts: { json?: boolean; force?: boolean },
+): Promise<void> {
   const repoRoot = process.cwd();
   const config = loadConfig(repoRoot);
   const runDir = resolveRunDir(repoRoot, config.runs_dir, runId);
@@ -84,9 +93,10 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
     }
   }
 
-  // 3. TDD evidence check
+  // 3. TDD evidence check — BLOCK if tdd-change skill is used and evidence is missing
   const verificationDir = resolve(runDir, 'verification');
-  if (existsSync(verificationDir)) {
+  const usesTddSkill = state.skills.includes('tdd-change');
+  if (existsSync(verificationDir) || usesTddSkill) {
     const requiredEvidence = ['red-phase.txt'];
     const evidenceResult = verifyEvidenceExists(verificationDir, requiredEvidence);
     verificationResults.push({
@@ -96,7 +106,73 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
         ? 'TDD evidence captured'
         : evidenceResult.diagnostics.map((d) => d.message).join('; '),
     });
-    // Don't block on missing evidence, just warn
+    // Block if TDD skill is used but evidence is missing (unless --force)
+    if (!evidenceResult.success && usesTddSkill && !opts.force) {
+      verificationBlocked = true;
+    }
+  }
+
+  // 3b. Breaking change protocol — enforce full 4-step protocol
+  for (const file of changedFiles.slice(0, 20)) {
+    const protocol = enforceBreakingChangeProtocol(repoRoot, file);
+    if (protocol.isDestructive) {
+      verificationResults.push({
+        name: `breaking_change:${file}`,
+        passed: false,
+        detail: `Breaking change detected — ${protocol.totalSteps}-step protocol required`,
+      });
+      // Write protocol instructions to verification dir
+      if (!opts.force) {
+        verificationBlocked = true;
+        const protocolDir = resolve(runDir, 'verification');
+        mkdirSync(protocolDir, { recursive: true });
+        writeFileSync(
+          resolve(protocolDir, `breaking-change-${file.replace(/\//g, '_')}.md`),
+          protocol.instructions,
+          'utf-8',
+        );
+      }
+    }
+  }
+
+  // 3c. LESSONS.md search — warn about matching failure patterns
+  const { lessons } = loadLessons(repoRoot);
+  if (lessons.length > 0) {
+    const keywords = state.skills.concat(state.criteria.map((c) => c.text.split(' ')[0] ?? ''));
+    const { matches } = searchLessons(lessons, keywords);
+    if (matches.length > 0) {
+      verificationResults.push({
+        name: 'lessons_match',
+        passed: true,
+        detail: `${matches.length} matching lesson(s) found — review before proceeding`,
+      });
+      // Write lessons to verification dir for agent reference
+      const lessonsDir = resolve(runDir, 'verification');
+      mkdirSync(lessonsDir, { recursive: true });
+      writeFileSync(
+        resolve(lessonsDir, 'matching-lessons.json'),
+        JSON.stringify(matches, null, 2),
+        'utf-8',
+      );
+    }
+  }
+
+  // 3d. Role boundary check — verify agent stayed within stage boundaries
+  if (state.pipeline_stage && PIPELINE_STAGES.includes(state.pipeline_stage as PipelineStage)) {
+    const stage = state.pipeline_stage as PipelineStage;
+    const fileOps = changedFiles.map((f) => ({ path: f, operation: 'write' as const }));
+    const roleResult = checkRoleBoundariesForFiles(stage, fileOps);
+    if (!roleResult.allAllowed) {
+      const violationCount = roleResult.violations.length;
+      verificationResults.push({
+        name: 'role_boundary',
+        passed: false,
+        detail: `${violationCount} file(s) outside role boundaries for stage "${state.pipeline_stage}"`,
+      });
+      if (!opts.force) {
+        verificationBlocked = true;
+      }
+    }
   }
 
   // 4. Auto-verify criteria by running verification commands

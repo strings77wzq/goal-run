@@ -16,9 +16,12 @@ export async function ecosystemCommand(
     case 'bootstrap':
       await bootstrapSubcommand(repoRoot, opts);
       break;
+    case 'status':
+      await statusSubcommand(repoRoot, opts);
+      break;
     default:
       console.error(pc.red(`Unknown subcommand: ${subcommand}`));
-      console.log(pc.dim('Available subcommands: detect, bootstrap'));
+      console.log(pc.dim('Available subcommands: detect, bootstrap, status'));
       process.exit(1);
   }
 }
@@ -150,4 +153,110 @@ async function bootstrapSubcommand(
   console.log('');
   console.log(pc.dim('Follow the instructions to install missing components.'));
   console.log(pc.dim('After installation, run `goalrun ecosystem detect` to verify.'));
+}
+
+async function statusSubcommand(repoRoot: string, opts: { json?: boolean }): Promise<void> {
+  const detection = detectEcosystem(repoRoot);
+  const plan = generateBootstrapPlan(detection);
+
+  const components = [
+    {
+      name: 'Superpowers',
+      key: 'superpowers' as const,
+      installed: detection.superpowers,
+      desc: 'TDD, verification, code-review, brainstorming skills',
+      healthCheck: () => detection.superpowers,
+    },
+    {
+      name: 'OMC (Oh-My-ClaudeCode)',
+      key: 'omc' as const,
+      installed: detection.omc,
+      desc: 'ralph, ultrawork, team execution modes',
+      healthCheck: () => detection.omc,
+    },
+    {
+      name: 'OpenSpec',
+      key: 'openspec' as const,
+      installed: detection.openspec,
+      desc: 'Change lifecycle: explore → propose → apply → archive',
+      healthCheck: () => detection.openspec,
+    },
+    {
+      name: 'gstack',
+      key: 'gstack' as const,
+      installed: detection.gstack,
+      desc: 'Role-based review: /ship, /review, /qa, /cso',
+      healthCheck: () => detection.gstack,
+    },
+    {
+      name: 'ECC',
+      key: 'ecc' as const,
+      installed: detection.ecc,
+      desc: 'Language-specific rules, hooks, and agent orchestration',
+      healthCheck: () => detection.ecc,
+    },
+  ];
+
+  if (opts.json) {
+    const status = {
+      components: components.map((c) => ({
+        name: c.name,
+        installed: c.installed,
+        healthy: c.healthCheck(),
+        description: c.desc,
+      })),
+      missing: plan.missing,
+      allInstalled: plan.missing.length === 0,
+    };
+    console.log(JSON.stringify(status, null, 2));
+    return;
+  }
+
+  console.log(pc.bold('Ecosystem Status'));
+  console.log('');
+
+  const installedCount = components.filter((c) => c.installed).length;
+  const totalCount = components.length;
+
+  for (const comp of components) {
+    const icon = comp.installed ? pc.green('✓') : pc.red('✗');
+    const statusText = comp.installed ? pc.green('installed') : pc.red('missing');
+    console.log(`  ${icon} ${comp.name} — ${statusText}`);
+    console.log(pc.dim(`    ${comp.desc}`));
+  }
+
+  console.log('');
+  console.log(`${installedCount}/${totalCount} components installed`);
+
+  if (plan.missing.length > 0) {
+    console.log('');
+    console.log(pc.yellow('Missing components:'));
+    for (const action of plan.actions) {
+      const priority =
+        action.priority === 'required'
+          ? pc.red('[required]')
+          : action.priority === 'recommended'
+            ? pc.yellow('[recommended]')
+            : pc.dim('[optional]');
+      console.log(`  ${priority} ${action.component}: ${action.description}`);
+      console.log(pc.dim(`    Install: ${action.command}`));
+    }
+
+    console.log('');
+    console.log(pc.dim('Run `goalrun ecosystem bootstrap` for detailed installation instructions.'));
+  } else {
+    console.log('');
+    console.log(pc.green('All ecosystem components are installed and healthy!'));
+  }
+
+  // Show diagnostics
+  if (detection.diagnostics.length > 0) {
+    console.log('');
+    console.log(pc.bold('Diagnostics:'));
+    for (const d of detection.diagnostics) {
+      const icon = d.severity === 'error' ? pc.red('✗') : d.severity === 'warning' ? pc.yellow('!') : pc.blue('i');
+      console.log(`  ${icon} ${d.message}`);
+      if (d.hint) console.log(pc.dim(`    ${d.hint}`));
+    }
+  }
 }

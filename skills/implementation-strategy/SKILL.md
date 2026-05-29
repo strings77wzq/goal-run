@@ -1,10 +1,20 @@
 ---
 name: implementation-strategy
 description: Plan implementation strategy for medium-to-high risk changes before writing code
-version: '1.0.0'
+version: '1.1.0'
 risk: low
 permissions:
   - read_files
+verify_commands: []
+file_boundaries:
+  read_files:
+    - '**/*'
+  write_files:
+    - '*.md'
+    - '.goalrun/**/*.md'
+    - 'docs/**/*.md'
+    - 'openspec/**/*.md'
+lessons_required: true
 when_to_use: |
   Use before making changes that affect multiple files, public APIs, data models,
   auth code, payment systems, or any change with significant blast radius.
@@ -19,6 +29,12 @@ when_not_to_use: |
 Analyze a proposed change and produce a structured implementation plan before writing code.
 
 ## Workflow
+
+0. **Check lessons (MANDATORY)**
+   - Read `.goalrun/lessons.json` for matching failure patterns
+   - Search for lessons matching the current change type, file paths, or risk areas
+   - If matches found, factor them into the strategy
+   - If no lessons file exists, skip this step
 
 1. **Understand the goal**
    - Read the goal specification, criteria, and budget

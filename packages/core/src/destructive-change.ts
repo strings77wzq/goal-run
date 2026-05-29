@@ -172,3 +172,89 @@ export function checkAbstractionReuse(
     return { exists: false, locations: [], diagnostics: [] };
   }
 }
+
+export interface BreakingChangeProtocol {
+  isDestructive: boolean;
+  step: number;
+  totalSteps: 4;
+  instructions: string;
+  referenceGraph: string[];
+  codemodSuggestion: string;
+  diagnostics: Diagnostic[];
+}
+
+/**
+ * Enforce the full breaking change protocol (4 steps).
+ * When a destructive change is detected, returns instructions for the agent to follow.
+ *
+ * Step 1: Grep reference graph — list all callers
+ * Step 2: Ask user — delete or backward-compatible?
+ * Step 3: Provide codemod/compatibility plan
+ * Step 4: Regression tests covering old path
+ */
+export function enforceBreakingChangeProtocol(
+  repoRoot: string,
+  filePath: string,
+): BreakingChangeProtocol {
+  const result = checkDestructiveChange(repoRoot, filePath);
+
+  if (!result.isDestructive) {
+    return {
+      isDestructive: false,
+      step: 0,
+      totalSteps: 4,
+      instructions: 'No destructive change detected.',
+      referenceGraph: [],
+      codemodSuggestion: '',
+      diagnostics: [],
+    };
+  }
+
+  const refGraph = result.details.referencedFiles;
+  const deletedLines = result.details.deletedLines;
+  const publicApiChanged = result.details.publicApiChanged;
+
+  const instructions = [
+    `## Breaking Change Protocol — ${filePath}`,
+    '',
+    `**${deletedLines} lines deleted**, public API changed: ${publicApiChanged}`,
+    '',
+    '### Step 1: Reference Graph',
+    refGraph.length > 0
+      ? `${refGraph.length} files reference this module:\n${refGraph.map((f) => `- ${f}`).join('\n')}`
+      : 'No references found (may be safe to delete).',
+    '',
+    '### Step 2: User Decision Required',
+    'STOP and ask the user:',
+    '- Option A: Delete (with regression test for the old path)',
+    '- Option B: Backward-compatible (deprecate + keep old signature)',
+    '- Option C: Codemod (auto-migrate callers)',
+    '',
+    '### Step 3: Codemod/Compatibility Plan',
+    publicApiChanged
+      ? 'If keeping backward compatibility:\n1. Add `@deprecated` JSDoc to old signature\n2. Create new signature alongside old\n3. Add a codemod script to migrate callers\n4. Set removal date in deprecation notice'
+      : 'No public API changes — file deletion only. Verify no dynamic imports.',
+    '',
+    '### Step 4: Regression Tests',
+    'Before proceeding:',
+    '- [ ] Old path has at least one test that would fail if deleted',
+    '- [ ] New path has tests covering the replacement behavior',
+    '- [ ] All callers have been updated (or backward-compat shim exists)',
+    '',
+    '**DO NOT proceed until the user confirms their choice and regression tests exist.**',
+  ].join('\n');
+
+  const codemodSuggestion = publicApiChanged
+    ? `// Codemod suggestion for ${filePath}:\n// 1. Find all import sites: grep -r "from.*${filePath.replace(/\.(ts|js)$/, '')}" --include="*.ts" --include="*.js"\n// 2. Update each import to use new signature\n// 3. Run: pnpm test to verify no breakage`
+    : '';
+
+  return {
+    isDestructive: true,
+    step: 1,
+    totalSteps: 4,
+    instructions,
+    referenceGraph: refGraph,
+    codemodSuggestion,
+    diagnostics: result.diagnostics,
+  };
+}

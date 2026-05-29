@@ -1,10 +1,16 @@
 ---
 name: code-review
 description: Review code changes for correctness, test coverage, security, performance, and maintainability
-version: '1.0.0'
+version: '1.1.0'
 risk: low
 permissions:
   - read_files
+verify_commands: []
+file_boundaries:
+  read_files:
+    - '**/*'
+  write_files: []  # Review is strictly read-only
+lessons_required: true
 when_to_use: |
   Use after implementing a change, before merging a PR, or whenever you need
   an independent quality assessment of code changes.
@@ -18,6 +24,12 @@ when_not_to_use: |
 Perform a structured review of code changes against quality dimensions.
 
 ## Workflow
+
+0. **Check lessons (MANDATORY)**
+   - Read `.goalrun/lessons.json` for matching failure patterns
+   - Search for lessons matching the changed files, error types, or review dimensions
+   - If matches found, include them as review checkpoints
+   - If no lessons file exists, skip this step
 
 1. **Understand the change**
    - Read the goal specification and implementation strategy

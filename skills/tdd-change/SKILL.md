@@ -1,12 +1,29 @@
 ---
 name: tdd-change
 description: Implement changes using strict test-driven development — red, green, refactor
-version: '1.0.0'
+version: '1.1.0'
 risk: medium
 permissions:
   - read_files
   - write_files
   - run_tests
+verify_commands: []  # Inherited from goal verification.commands at runtime
+file_boundaries:
+  read_files:
+    - 'src/**'
+    - 'lib/**'
+    - 'test/**'
+    - '__tests__/**'
+    - 'packages/*/src/**'
+    - 'packages/*/test/**'
+  write_files:
+    - 'src/**'
+    - 'lib/**'
+    - 'test/**'
+    - '__tests__/**'
+    - 'packages/*/src/**'
+    - 'packages/*/test/**'
+lessons_required: true
 when_to_use: |
   Use for bug fixes, features, and behavior-changing refactors where confidence
   in correctness is critical. Required when the goal specifies regression tests.
@@ -20,6 +37,12 @@ when_not_to_use: |
 Implement code changes using the test-driven development cycle: Red, Green, Refactor.
 
 ## Workflow
+
+0. **Check lessons (MANDATORY)**
+   - Read `.goalrun/lessons.json` for matching failure patterns
+   - Search for lessons matching the current skill, file paths, or error types
+   - If matches found, review them BEFORE writing any code
+   - If no lessons file exists, skip this step
 
 1. **Understand the change**
    - Read the goal specification and implementation strategy (if provided)
