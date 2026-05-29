@@ -14,7 +14,7 @@ GoalRun validates goals, checks skills, blocks dangerous commands, generates AI-
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-318_passing-brightgreen" alt="318 tests">
+  <img src="https://img.shields.io/badge/tests-383_passing-brightgreen" alt="383 tests">
 </p>
 
 ---
@@ -82,17 +82,18 @@ goalrun run .goalrun/goals/sdd-tdd-workflow.yaml --loop --isolated
 
 ## How It Works
 
-GoalRun enforces the SDD+TDD pipeline through **5 harnesses** and a **semi-autonomous state machine**:
+GoalRun enforces the SDD+TDD pipeline through **6 harnesses** and a **semi-autonomous state machine**:
 
-### The 5 Harnesses
+### The 6 Harnesses
 
-| Harness      | What It Checks                                                                            |
-| ------------ | ----------------------------------------------------------------------------------------- |
-| **Static**   | Skill quality — schema, permissions, secrets, blocked commands, prompt injection          |
-| **Goal**     | Goal completeness — skill references, budget sanity, criteria quality, dangerous patterns |
-| **Policy**   | Safety gates — blocked commands, approval requirements, skill permissions                 |
-| **Criteria** | Criteria quality — vague language detection, unverifiable checks, missing error paths     |
-| **Report**   | Plan generation — structured agent prompts, risk summaries, verification checklists       |
+| Harness       | What It Checks                                                                            |
+| ------------- | ----------------------------------------------------------------------------------------- |
+| **Static**    | Skill quality — schema, permissions, secrets, blocked commands, prompt injection          |
+| **Goal**      | Goal completeness — skill references, budget sanity, criteria quality, dangerous patterns |
+| **Policy**    | Safety gates — blocked commands, approval requirements, skill permissions                 |
+| **Criteria**  | Criteria quality — vague language detection, unverifiable checks, missing error paths     |
+| **Ecosystem** | Ecosystem compatibility — checks if goal skills need superpowers/omc/openspec/gstack/ecc  |
+| **Report**    | Plan generation — structured agent prompts, risk summaries, verification checklists       |
 
 ### The Semi-Autonomous Loop
 
@@ -131,10 +132,16 @@ GoalRun ships with 3 skills covering the full SDD+TDD pipeline:
 # Project setup
 goalrun init                          # Scaffold .goalrun/, AGENTS.md, policy, example goal
 goalrun skill install <skills>        # Install skills with SHA-256 integrity verification
-goalrun doctor                        # Health check
+goalrun doctor                        # Health check (includes ecosystem + CONTEXT.md)
+goalrun intel-scan                    # Scan existing project, generate CONTEXT.md + ARCHITECTURE.md
+
+# Ecosystem management
+goalrun ecosystem status              # Show ecosystem component status
+goalrun ecosystem detect              # Detect which components are installed
+goalrun ecosystem bootstrap           # Generate installation instructions for missing components
 
 # SDD phase — spec & design
-goalrun verify <goal>                 # Run all 5 harnesses on a goal
+goalrun verify <goal>                 # Run all 6 harnesses on a goal (including ecosystem)
 goalrun verify <goal> --format sarif  # Output as SARIF v2.1.0 (GitHub Code Scanning)
 goalrun verify <goal> --format junit  # Output as JUnit XML (GitLab CI, Jenkins)
 goalrun plan <goal>                   # Generate execution plan + AI prompt
@@ -142,17 +149,19 @@ goalrun from-issue <url>              # Convert GitHub issue → goal.yaml
 
 # TDD phase — supervised execution
 goalrun run <goal> --loop --isolated  # Create checkpointed run with worktree isolation
-goalrun advance <run-id>              # Semi-auto advance — stops only at human gates
+goalrun advance <run-id>              # Semi-auto advance — TDD evidence blocking + breaking change protocol
+goalrun advance <run-id> --force      # Skip TDD/breaking change blocks (use with caution)
 goalrun resume <run-id> --to <status> # Manual single-step state transition
 goalrun status [run-id]               # View run state and criteria
 goalrun stop <run-id>                 # Stop the run
 goalrun report [run-id]               # Detailed run report
 goalrun rollback <run-id>             # Discard changes (worktree remove or git reset)
+goalrun archive <run-id>              # Archive run + nominate lessons learned
 
 # CI/CD phase — verification & release
 goalrun audit <run-id>                # PR-ready audit report
 goalrun compare <run-a> <run-b>       # Diff two runs
-goalrun handoff <goal> --target <t>   # Runtime-specific prompt (claude/codex/cursor/opencode)
+goalrun handoff <goal> --target <t>   # Runtime-specific prompt with ecosystem + CONTEXT.md + lessons
 ```
 
 ---
@@ -197,6 +206,10 @@ verification:
 - **Secret detection**: 12 regex patterns — matched content never printed
 - **Prompt injection detection**: 8 patterns for instruction override / jailbreak
 - **Lockfile integrity**: SHA-256 hashes verify installed skills haven't been tampered with
+- **TDD evidence blocking**: Advance is blocked if TDD skill is used but no red-phase evidence exists
+- **Breaking change protocol**: Destructive changes (>= 5 deleted lines) trigger a 4-step protocol
+- **Role boundary enforcement**: Each pipeline stage has defined file operation permissions
+- **LESSONS.md learning**: Failed patterns are captured and checked before future dev tasks
 - **Offline**: All tests pass without network access
 
 ---
@@ -207,7 +220,7 @@ verification:
 git clone https://github.com/strings77wzq/goal-run.git
 cd goal-run
 pnpm install
-pnpm test        # 318 tests passing
+pnpm test        # 383 tests passing
 pnpm typecheck   # TypeScript strict
 pnpm lint        # ESLint
 pnpm build       # All 5 packages
@@ -221,7 +234,7 @@ GoalRun is in **alpha** (0.1.0-alpha.7).
 
 | Capability                                              | Status       |
 | ------------------------------------------------------- | ------------ |
-| Goal spec validation + 5 harnesses                      | ✅ Alpha     |
+| Goal spec validation + 6 harnesses (incl. ecosystem)    | ✅ Alpha     |
 | Skill installation + integrity verification             | ✅ Alpha     |
 | Security scanning (secrets, prompt injection, URLs)     | ✅ Alpha     |
 | Supervised checkpoint loop (advance/resume/status/stop) | ✅ Alpha     |
@@ -229,6 +242,12 @@ GoalRun is in **alpha** (0.1.0-alpha.7).
 | Multi-runtime handoff (Claude/Codex/Cursor/OpenCode)    | ✅ Alpha     |
 | OpenSpec SDD pipeline integration                       | ✅ Alpha     |
 | CI/CD output: SARIF v2.1.0 + JUnit XML                  | ✅ Alpha     |
+| Ecosystem auto-detection + bootstrap guidance           | ✅ Alpha     |
+| TDD evidence blocking + breaking change protocol        | ✅ Alpha     |
+| LESSONS.md cross-task failure learning                  | ✅ Alpha     |
+| Role boundary enforcement per pipeline stage            | ✅ Alpha     |
+| Context window reset protocol + PROGRESS.md             | ✅ Alpha     |
+| Brownfield support (intel-scan + CONTEXT.md)            | ✅ Alpha     |
 | npm install -g goalrun@alpha                            | ✅ Available |
 | OpenSpec proposal → GoalRun goal bridge                 | 🔲 Planned   |
 

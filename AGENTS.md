@@ -27,7 +27,7 @@ GoalRun is a **verification harness for AI-assisted engineering** that enforces 
 
 ```bash
 pnpm install         # Install all dependencies
-pnpm test            # Run all tests (Vitest) — 297 tests, 29 files
+pnpm test            # Run all tests (Vitest) — 383 tests, 37 files
 pnpm lint            # ESLint — max-warnings=0
 pnpm typecheck       # TypeScript type checking — tsc --build 5 packages
 pnpm build           # Build all packages — tsup ESM bundles
@@ -99,7 +99,7 @@ Run `goalrun verify .goalrun/goals/sdd-tdd-workflow.yaml` to check compliance.
 All of these must pass:
 
 - [ ] pnpm install
-- [ ] pnpm test (297 tests, 29 files)
+- [ ] pnpm test (383 tests, 37 files)
 - [ ] pnpm lint (0 warnings)
 - [ ] pnpm typecheck
 - [ ] pnpm build (5 packages)

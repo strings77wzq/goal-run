@@ -14,7 +14,7 @@ GoalRun 验证目标、检查技能、阻止危险命令、生成 AI 可读的�
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-318_passing-brightgreen" alt="318 tests">
+  <img src="https://img.shields.io/badge/tests-383_passing-brightgreen" alt="383 tests">
 </p>
 
 ---
@@ -82,17 +82,18 @@ goalrun run .goalrun/goals/sdd-tdd-workflow.yaml --loop --isolated
 
 ## 工作原理
 
-GoalRun 通过 **5 个 harness** 和一个**半自动状态机**来执行 SDD+TDD 流程：
+GoalRun 通过 **6 个 harness** 和一个**半自动状态机**来执行 SDD+TDD 流程：
 
-### 5 个 Harness
+### 6 个 Harness
 
-| Harness      | 检查内容                                                  |
-| ------------ | --------------------------------------------------------- |
-| **Static**   | 技能质量 — schema、权限、密钥泄露、危险命令、注入攻击     |
-| **Goal**     | 目标完整性 — 技能引用、预算合理性、验收标准质量、危险模式 |
-| **Policy**   | 安全门禁 — 阻止的命令、审批要求、技能权限                 |
-| **Criteria** | 验收标准质量 — 模糊表述检测、不可验证项、缺少错误路径     |
-| **Report**   | 计划生成 — 结构化 Agent prompt、风险摘要、验证清单        |
+| Harness       | 检查内容                                                              |
+| ------------- | --------------------------------------------------------------------- |
+| **Static**    | 技能质量 — schema、权限、密钥泄露、危险命令、注入攻击                 |
+| **Goal**      | 目标完整性 — 技能引用、预算合理性、验收标准质量、危险模式             |
+| **Policy**    | 安全门禁 — 阻止的命令、审批要求、技能权限                             |
+| **Criteria**  | 验收标准质量 — 模糊表述检测、不可验证项、缺少错误路径                 |
+| **Ecosystem** | 生态兼容性 — 检查目标技能是否需要 superpowers/omc/openspec/gstack/ecc |
+| **Report**    | 计划生成 — 结构化 Agent prompt、风险摘要、验证清单                    |
 
 ### 半自动状态循环
 
@@ -131,10 +132,16 @@ GoalRun 内置 3 个技能，覆盖 SDD+TDD 全流程：
 # 项目初始化
 goalrun init                          # 创建 .goalrun/、AGENTS.md、策略配置、示例目标
 goalrun skill install <skill...>      # 安装技能（带 SHA-256 完整性校验）
-goalrun doctor                        # 环境健康检查
+goalrun doctor                        # 环境健康检查（含生态组件 + CONTEXT.md）
+goalrun intel-scan                    # 扫描已有项目，生成 CONTEXT.md + ARCHITECTURE.md
+
+# 生态组件管理
+goalrun ecosystem status              # 显示生态组件安装状态
+goalrun ecosystem detect              # 检测已安装的组件
+goalrun ecosystem bootstrap           # 生成缺失组件的安装指引
 
 # SDD 阶段 — 规约与设计
-goalrun verify <goal>                 # 对目标运行全部 5 个 harness
+goalrun verify <goal>                 # 对目标运行全部 6 个 harness（含生态检查）
 goalrun verify <goal> --format sarif  # 输出 SARIF v2.1.0 格式 (GitHub Code Scanning)
 goalrun verify <goal> --format junit  # 输出 JUnit XML 格式 (GitLab CI, Jenkins)
 goalrun plan <goal>                   # 生成执行计划 + AI prompt
@@ -142,17 +149,19 @@ goalrun from-issue <url>              # 从 GitHub issue 生成 goal.yaml
 
 # TDD 阶段 — 受监督执行
 goalrun run <goal> --loop --isolated  # 创建可检查点的受监督运行（worktree 隔离）
-goalrun advance <run-id>              # 半自动推进 — 只在人类决策点停下
+goalrun advance <run-id>              # 半自动推进 — TDD 证据阻断 + 破坏性变更协议
+goalrun advance <run-id> --force      # 跳过 TDD/破坏性变更阻断（谨慎使用）
 goalrun resume <run-id> --to <状态>   # 手动推进到指定状态
 goalrun status [run-id]               # 查看运行状态和验收标准
 goalrun stop <run-id>                 # 停止运行
 goalrun report [run-id]               # 详细运行报告
 goalrun rollback <run-id>             # 回滚变更（删除 worktree 或 git reset）
+goalrun archive <run-id>              # 归档运行 + 提名失败经验到 LESSONS.md
 
 # CI/CD 阶段 — 验证与发布
 goalrun audit <run-id>                # 生成 PR-ready 审计报告
 goalrun compare <run-a> <run-b>       # 对比两次运行差异
-goalrun handoff <goal> --target <t>   # 生成指定运行时（claude/codex/cursor/opencode）的 prompt
+goalrun handoff <goal> --target <t>   # 生成含生态+CONTEXT.md+lessons 的运行时 prompt
 ```
 
 ---
@@ -197,6 +206,10 @@ verification:
 - **密钥检测**：12 种正则模式，匹配到的内容绝不打印
 - **注入检测**：8 种模式检测指令覆盖 / jailbreak
 - **Lockfile 完整性**：SHA-256 哈希验证已安装技能未被篡改
+- **TDD 证据阻断**：使用 TDD 技能时，缺少红阶段证据将阻止 advance
+- **破坏性变更协议**：删除 >= 5 行代码触发完整 4 步协议（grep 引用图 → 用户确认 → codemod → 回归测试）
+- **角色边界检查**：每个 pipeline stage 定义允许的文件操作权限
+- **LESSONS.md 学习**：捕获失败模式，在未来开发任务前自动检查
 - **离线可用**：所有测试不依赖网络
 
 ---
@@ -207,7 +220,7 @@ verification:
 git clone https://github.com/strings77wzq/goal-run.git
 cd goal-run
 pnpm install
-pnpm test        # 318 个测试全部通过
+pnpm test        # 383 个测试全部通过
 pnpm typecheck   # TypeScript 严格模式
 pnpm lint        # ESLint
 pnpm build       # 5 个包全部构建
@@ -221,7 +234,7 @@ GoalRun 处于 **alpha** 阶段（0.1.0-alpha.7）。
 
 | 能力                                             | 状态      |
 | ------------------------------------------------ | --------- |
-| Goal 规范验证 + 5 个 harness                     | ✅ Alpha  |
+| Goal 规范验证 + 6 个 harness（含生态检查）       | ✅ Alpha  |
 | 技能安装 + 完整性校验                            | ✅ Alpha  |
 | 安全扫描（密钥、注入、URL）                      | ✅ Alpha  |
 | 受监督检查点循环（advance/resume/status/stop）   | ✅ Alpha  |
@@ -229,6 +242,12 @@ GoalRun 处于 **alpha** 阶段（0.1.0-alpha.7）。
 | 多运行时 handoff（Claude/Codex/Cursor/OpenCode） | ✅ Alpha  |
 | OpenSpec SDD 流程集成                            | ✅ Alpha  |
 | CI/CD 输出格式: SARIF v2.1.0 + JUnit XML         | ✅ Alpha  |
+| 生态组件自动检测 + 引导安装                      | ✅ Alpha  |
+| TDD 证据阻断 + 破坏性变更完整协议                | ✅ Alpha  |
+| LESSONS.md 跨任务失败学习                        | ✅ Alpha  |
+| 角色边界检查（按 pipeline stage 限制操作）       | ✅ Alpha  |
+| 上下文窗口重置协议 + PROGRESS.md                 | ✅ Alpha  |
+| Brownfield 支持（intel-scan + CONTEXT.md）       | ✅ Alpha  |
 | npm install -g goalrun@alpha                     | ✅ 可用   |
 | OpenSpec proposal → GoalRun goal 桥接            | 🔲 计划中 |
 
