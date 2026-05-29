@@ -3,7 +3,17 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import pc from 'picocolors';
 import { loadConfig } from '../utils/config.js';
 import { resolveRunDir } from '../utils/run-dir.js';
-import { autoAdvance, isTerminal, captureFullDiff, type RunState } from 'goalrun-core';
+import {
+  autoAdvance,
+  isTerminal,
+  captureFullDiff,
+  verifyDiffBoundaries,
+  verifyCriteriaAutomatically,
+  verifyEvidenceExists,
+  checkDestructiveChange,
+  getChangedFiles,
+  type RunState,
+} from 'goalrun-core';
 
 export async function advanceCommand(runId: string, opts: { json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
@@ -40,7 +50,107 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
   const diffRoot =
     state.isolated && state.worktree_path ? resolve(repoRoot, state.worktree_path) : repoRoot;
 
-  // Semi-autonomous advance
+  // ── Real Verification Before Advancing ──
+
+  const verificationResults: { name: string; passed: boolean; detail: string }[] = [];
+  let verificationBlocked = false;
+
+  // 1. Diff boundary check (if allowed_write_files defined)
+  if (state.allowed_write_files && state.allowed_write_files.length > 0) {
+    const boundaryResult = verifyDiffBoundaries(repoRoot, state.allowed_write_files, state.goal_id);
+    verificationResults.push({
+      name: 'diff_boundary',
+      passed: boundaryResult.success,
+      detail: boundaryResult.success
+        ? 'All changes within declared boundaries'
+        : boundaryResult.diagnostics.map((d) => d.message).join('; '),
+    });
+    if (!boundaryResult.success) {
+      verificationBlocked = true;
+    }
+  }
+
+  // 2. Destructive change check
+  const changedFiles = getChangedFiles(repoRoot);
+  for (const file of changedFiles.slice(0, 10)) {
+    const destructiveResult = checkDestructiveChange(repoRoot, file);
+    if (destructiveResult.isDestructive) {
+      verificationResults.push({
+        name: `destructive:${file}`,
+        passed: false,
+        detail: `Destructive change detected: ${destructiveResult.details.deletedLines} deleted lines, public API changed: ${destructiveResult.details.publicApiChanged}`,
+      });
+      verificationBlocked = true;
+    }
+  }
+
+  // 3. TDD evidence check
+  const verificationDir = resolve(runDir, 'verification');
+  if (existsSync(verificationDir)) {
+    const requiredEvidence = ['red-phase.txt'];
+    const evidenceResult = verifyEvidenceExists(verificationDir, requiredEvidence);
+    verificationResults.push({
+      name: 'tdd_evidence',
+      passed: evidenceResult.success,
+      detail: evidenceResult.success
+        ? 'TDD evidence captured'
+        : evidenceResult.diagnostics.map((d) => d.message).join('; '),
+    });
+    // Don't block on missing evidence, just warn
+  }
+
+  // 4. Auto-verify criteria by running verification commands
+  const verificationChecklistPath = resolve(runDir, 'verification-checklist.json');
+  if (existsSync(verificationChecklistPath)) {
+    try {
+      const commands = JSON.parse(readFileSync(verificationChecklistPath, 'utf-8')) as string[];
+      if (commands.length > 0) {
+        const autoResult = verifyCriteriaAutomatically(repoRoot, commands);
+        verificationResults.push({
+          name: 'auto_verification',
+          passed: autoResult.success,
+          detail: autoResult.success
+            ? 'All verification commands passed'
+            : autoResult.diagnostics.map((d) => d.message).join('; '),
+        });
+        if (!autoResult.success) {
+          verificationBlocked = true;
+        }
+      }
+    } catch {
+      // Failed to parse verification checklist
+    }
+  }
+
+  // If verification blocked, do not advance
+  if (verificationBlocked) {
+    console.log(pc.red('Verification failed — advance blocked.'));
+    console.log('');
+    for (const r of verificationResults) {
+      const icon = r.passed ? pc.green('✓') : pc.red('✗');
+      console.log(`  ${icon} ${r.name}: ${r.detail}`);
+    }
+    console.log('');
+    console.log(pc.dim('Fix the issues above and run advance again.'));
+    if (opts.json) {
+      console.log(
+        JSON.stringify(
+          {
+            run_id: runId,
+            status: state.status,
+            verification_blocked: true,
+            results: verificationResults,
+          },
+          null,
+          2,
+        ),
+      );
+    }
+    return;
+  }
+
+  // ── Semi-autonomous advance ──
+
   const result = autoAdvance(state);
 
   // Save all checkpoints with diff capture
@@ -55,6 +165,23 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
       writeFileSync(resolve(cpDir, 'diff.patch'), diffResult.diff, 'utf-8');
     }
   }
+
+  // Save verification results
+  const verificationOutputPath = resolve(runDir, 'verification', 'advance-results.json');
+  mkdirSync(resolve(runDir, 'verification'), { recursive: true });
+  writeFileSync(
+    verificationOutputPath,
+    JSON.stringify(
+      {
+        timestamp: new Date().toISOString(),
+        results: verificationResults,
+        blocked: verificationBlocked,
+      },
+      null,
+      2,
+    ),
+    'utf-8',
+  );
 
   // Save updated state
   const updatedState = {
@@ -71,12 +198,23 @@ export async function advanceCommand(runId: string, opts: { json?: boolean }): P
           status: result.state.status,
           checkpoints: result.checkpoints.map((c) => c.id),
           stopped_at_gate: result.stopped_at_gate,
+          verification: verificationResults,
         },
         null,
         2,
       ),
     );
   } else {
+    // Show verification results
+    if (verificationResults.length > 0) {
+      console.log(pc.bold('Verification:'));
+      for (const r of verificationResults) {
+        const icon = r.passed ? pc.green('✓') : pc.yellow('⚠');
+        console.log(`  ${icon} ${r.name}: ${r.detail}`);
+      }
+      console.log('');
+    }
+
     // Show transitions
     for (const cp of result.checkpoints) {
       console.log(pc.dim(`  ${cp.id} → ${cp.status}${cp.summary ? ` — ${cp.summary}` : ''}`));

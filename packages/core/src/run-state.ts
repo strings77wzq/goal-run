@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import type { PipelineStage } from './goal-schema.js';
+import { PIPELINE_STAGES } from './goal-schema.js';
 
 export const RUN_STATUSES = [
   'planned',
@@ -52,6 +54,30 @@ export const RunStateSchema = z.object({
   isolated: z.boolean().optional(),
   worktree_path: z.string().optional(),
   branch_name: z.string().optional(),
+  // Pipeline tracking
+  pipeline_stage: z.string().optional(),
+  pipeline_progress: z
+    .object({
+      change: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+      requirement: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+      design: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+      task: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+      dev: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+      test: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+      review: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+      integration: z.enum(['pending', 'in_progress', 'completed', 'skipped']).optional(),
+    })
+    .optional(),
+  // Diff boundary tracking
+  allowed_write_files: z.array(z.string()).optional(),
+  // TDD evidence
+  tdd_evidence: z
+    .object({
+      red_phase_captured: z.boolean().optional(),
+      green_phase_captured: z.boolean().optional(),
+      refactor_phase_captured: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export type RunState = z.infer<typeof RunStateSchema>;
@@ -85,7 +111,25 @@ export function createRunState(
   criteria: string[],
   budget: { max_iterations: number; max_changed_files: number; max_runtime_minutes: number },
   policyGates: string[],
+  pipelineStage?: PipelineStage,
+  allowedWriteFiles?: string[],
 ): RunState {
+  // Initialize pipeline progress based on starting stage
+  const pipelineProgress: Record<string, 'pending' | 'in_progress' | 'completed' | 'skipped'> = {};
+  if (pipelineStage) {
+    let reached = false;
+    for (const stage of PIPELINE_STAGES) {
+      if (stage === pipelineStage) {
+        pipelineProgress[stage] = 'in_progress';
+        reached = true;
+      } else if (!reached) {
+        pipelineProgress[stage] = 'completed';
+      } else {
+        pipelineProgress[stage] = 'pending';
+      }
+    }
+  }
+
   return {
     run_id: runId,
     goal_id: goalId,
@@ -98,6 +142,14 @@ export function createRunState(
     checkpoints: [],
     budget,
     policy_gates: policyGates,
+    pipeline_stage: pipelineStage,
+    pipeline_progress: pipelineStage ? pipelineProgress : undefined,
+    allowed_write_files: allowedWriteFiles,
+    tdd_evidence: {
+      red_phase_captured: false,
+      green_phase_captured: false,
+      refactor_phase_captured: false,
+    },
   };
 }
 

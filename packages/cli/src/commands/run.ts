@@ -87,6 +87,16 @@ export async function runCommand(
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
   const runDir = resolve(repoRoot, config.runs_dir, timestamp);
 
+  // Collect file boundaries from tasks
+  const allowedWriteFiles: string[] = [];
+  if (spec.tasks) {
+    for (const task of spec.tasks) {
+      if (task.file_boundaries?.write_files) {
+        allowedWriteFiles.push(...task.file_boundaries.write_files);
+      }
+    }
+  }
+
   // Create RunState first
   const runState = createRunState(
     timestamp,
@@ -95,6 +105,8 @@ export async function runCommand(
     spec.criteria,
     spec.budget,
     spec.policy.require_approval_for,
+    spec.pipeline_stage,
+    allowedWriteFiles.length > 0 ? allowedWriteFiles : undefined,
   );
 
   // Worktree isolation path (actual creation happens after dry-run handling)

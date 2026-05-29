@@ -173,7 +173,7 @@ Describe the skill's purpose, workflow, required outputs, and safety notes.
 const TDD_CHANGE_MD = `---
 name: tdd-change
 description: Implement changes using strict test-driven development — red, green, refactor
-version: '1.0.0'
+version: '2.0.0'
 risk: medium
 permissions:
   - read_files
@@ -185,11 +185,39 @@ when_to_use: |
 when_not_to_use: |
   Do not use for documentation-only changes, formatting-only changes, or changes
   where the existing test suite already provides complete coverage of the change.
+verify_commands:
+  - "{{test_command}}"
+  - "{{typecheck_command}}"
+  - "{{lint_command}}"
+file_boundaries:
+  write_files:
+    - "src/**/*.ts"
+    - "test/**/*.ts"
+lessons:
+  - pattern: "Skipping RED phase"
+    lesson: "ALWAYS confirm the test fails first. Running a test that passes without code changes means the test is wrong or the behavior already exists."
+    severity: error
+  - pattern: "Modifying tests to match broken code"
+    lesson: "Fix the code, not the test. If a test fails, the implementation is wrong — do not change the test to make it pass."
+    severity: error
+  - pattern: "Refactoring unrelated code"
+    lesson: "Keep changes minimal. Do not refactor code outside the task scope. If you see refactoring opportunities, note them for a separate task."
+    severity: warning
+  - pattern: "Not capturing failing test output"
+    lesson: "Save the failing test output to verification/red-phase.txt before implementing. This is required evidence for the TDD cycle."
+    severity: error
 ---
 
 # TDD Change
 
 Implement code changes using the test-driven development cycle: Red, Green, Refactor.
+
+## Context Control Protocol
+
+Before starting, establish context boundaries:
+1. Read ONLY the files listed in file_boundaries.read_files (or the goal's affected files)
+2. Do NOT explore unrelated modules
+3. If context window exceeds 70%, stop and report — do not continue with degraded context
 
 ## Workflow
 
@@ -197,41 +225,48 @@ Implement code changes using the test-driven development cycle: Red, Green, Refa
    - Read the goal specification and implementation strategy (if provided)
    - Identify the specific behavior that needs to change
    - Understand the current behavior and expected new behavior
+   - **CHECK**: grep for existing abstractions before writing new code
 
 2. **Locate related tests**
    - Find existing tests that cover the affected code
    - Run the existing test suite to establish a baseline
    - If no tests exist for the affected behavior, note this as a test gap
+   - **SAVE** baseline test output to verification/baseline.txt
 
 3. **Write a failing test (RED)**
    - Write a test that describes the expected new behavior
    - If tests don't exist, write a test for the current behavior first, then modify it
    - Run the test to confirm it FAILS for the right reason
    - DO NOT proceed if the test passes without code changes
+   - **SAVE** failing test output to verification/red-phase.txt
 
 4. **Implement the minimal fix (GREEN)**
    - Write the smallest amount of code needed to make the failing test pass
    - Do not refactor during this step — just make it work
    - Run the specific test to confirm it passes
    - Run the broader test suite to check for regressions
+   - **SAVE** passing test output to verification/green-phase.txt
 
 5. **Refactor (REFACTOR)**
    - Clean up the implementation without changing behavior
    - Remove duplication, improve naming, simplify logic
    - Run all tests after each refactoring step
    - If tests fail, revert the last refactoring step
+   - **SAVE** final test output to verification/refactor-phase.txt
 
 6. **Verify**
    - Run ALL tests, not just the targeted ones
    - Run goal verification commands (typecheck, lint)
    - Confirm no regression in unrelated tests
+   - **CHECK**: git diff --name-only against file_boundaries.write_files — no out-of-bounds changes
 
 ## Required Outputs
 
-- The failing test (before implementation)
+- verification/red-phase.txt — failing test output (BEFORE implementation)
+- verification/green-phase.txt — passing test output (AFTER implementation)
+- verification/refactor-phase.txt — final test output (AFTER refactoring)
 - The minimal implementation
 - The refactored implementation (if applicable)
-- Verification results: test output showing all tests pass
 
 ## Verification Expectations
 
@@ -239,6 +274,7 @@ Implement code changes using the test-driven development cycle: Red, Green, Refa
 - All existing tests continue to pass (no regressions)
 - Goal verification commands all pass
 - Diff is focused: no unrelated changes
+- All changes within declared file boundaries
 
 ## Safety Notes
 
@@ -247,12 +283,14 @@ Implement code changes using the test-driven development cycle: Red, Green, Refa
 - If a test starts passing without code changes, investigate. Something is wrong.
 - Keep changes minimal. Do not refactor unrelated code.
 - Stop if you cannot make the test pass within the goal's budget.max_iterations.
+- If you need to change files outside boundaries, STOP and request approval.
+- Capture evidence at each phase — no evidence = no proof of TDD compliance.
 `;
 
 const CODE_REVIEW_MD = `---
 name: code-review
 description: Review code changes for correctness, test coverage, security, performance, and maintainability
-version: '1.0.0'
+version: '2.0.0'
 risk: low
 permissions:
   - read_files
@@ -262,11 +300,47 @@ when_to_use: |
 when_not_to_use: |
   Do not use as a replacement for human code review on critical paths.
   Do not use for changes that have not been tested.
+lessons:
+  - pattern: "Approving without checking diff boundaries"
+    lesson: "ALWAYS verify git diff --name-only against the task's file_boundaries before approving. Out-of-bounds changes require separate review."
+    severity: error
+  - pattern: "Missing destructive change check"
+    lesson: "If the diff deletes >= 5 non-empty lines or removes public API exports, flag as BLOCKED and require explicit user approval."
+    severity: error
+  - pattern: "Not checking for existing abstractions"
+    lesson: "Before approving new code, grep for similar function/class names in utils/helpers/lib/shared. Existing abstractions should be imported, not duplicated."
+    severity: warning
+  - pattern: "Skipping anti-hallucination check"
+    lesson: "Verify all import statements reference real packages. Check that method chains use methods that actually exist on the target type."
+    severity: warning
 ---
 
 # Code Review
 
 Perform a structured review of code changes against quality dimensions.
+
+## Pre-Review Checks (MANDATORY)
+
+Before reviewing code quality, verify these safety gates:
+
+1. **Diff Boundary Check**
+   - Run: git diff --name-only HEAD
+   - Compare against task's file_boundaries.write_files
+   - If any files are out of bounds: BLOCKED
+
+2. **Destructive Change Check**
+   - Count deleted non-empty lines in each changed file
+   - If >= 5 lines deleted: require explicit user approval
+   - Check for removed public API exports (function/class/interface/type)
+
+3. **Abstraction Reuse Check**
+   - For new functions/classes: grep for similar names in utils/helpers/lib/shared
+   - If existing implementation found: CHANGES REQUESTED (import, don't duplicate)
+
+4. **Anti-Hallucination Check**
+   - Verify all import paths reference real packages (check node_modules or package.json)
+   - Verify method chains use methods that exist on the target type
+   - Flag any console.log/debug statements
 
 ## Workflow
 
@@ -274,6 +348,7 @@ Perform a structured review of code changes against quality dimensions.
    - Read the goal specification and implementation strategy
    - Review the diff to understand what changed and why
    - Run the test suite to confirm tests pass
+   - Verify TDD evidence exists (red-phase.txt, green-phase.txt)
 
 2. **Review dimensions**
 
@@ -325,6 +400,7 @@ Perform a structured review of code changes against quality dimensions.
 - Review report with all dimensions assessed
 - An overall verdict: APPROVED, CHANGES REQUESTED, or BLOCKED
 - For each finding: severity, location, and recommendation
+- Pre-review safety gate results (diff boundary, destructive change, abstraction reuse)
 
 ## Verification Expectations
 
@@ -332,6 +408,7 @@ Perform a structured review of code changes against quality dimensions.
 - BLOCKED verdict requires at least one error-level finding
 - APPROVED verdict means no error-level findings
 - Security findings are always at least warning severity
+- All pre-review safety gates must pass for APPROVED verdict
 
 ## Safety Notes
 
@@ -339,12 +416,14 @@ Perform a structured review of code changes against quality dimensions.
 - If a security vulnerability is found, mark it as error severity.
 - Do not approve changes that delete or weaken existing tests.
 - If tests are missing for the changed behavior, request changes.
+- If diff boundaries are violated, BLOCK until user approves.
+- If destructive changes detected, BLOCK until user approves.
 `;
 
 const IMPLEMENTATION_STRATEGY_MD = `---
 name: implementation-strategy
 description: Plan implementation strategy for medium-to-high risk changes before writing code
-version: '1.0.0'
+version: '2.0.0'
 risk: low
 permissions:
   - read_files
@@ -355,11 +434,32 @@ when_to_use: |
 when_not_to_use: |
   Do not use for trivial changes like typo fixes, documentation-only updates,
   or changes where the implementation is already clearly specified and low-risk.
+lessons:
+  - pattern: "Not checking existing abstractions"
+    lesson: "ALWAYS grep for similar function/class names in utils/helpers/lib/shared/services before designing new code. Existing abstractions should be imported, not duplicated."
+    severity: error
+  - pattern: "Missing brownfield alignment"
+    lesson: "For existing projects, read CONTEXT.md and ARCHITECTURE.md before designing. New code must align with existing patterns and conventions."
+    severity: error
+  - pattern: "Hallucinating API behavior"
+    lesson: "When referencing external APIs/libraries, verify the method exists by checking documentation or node_modules. Do not assume methods exist."
+    severity: error
+  - pattern: "Missing ADR for significant decisions"
+    lesson: "If the design involves choosing between 2+ architectural approaches, document the decision as an ADR (Architecture Decision Record)."
+    severity: warning
 ---
 
 # Implementation Strategy
 
 Analyze a proposed change and produce a structured implementation plan before writing code.
+
+## Context Control Protocol
+
+Before starting, gather context efficiently:
+1. Read the goal specification, criteria, and budget
+2. If CONTEXT.md exists: read it for project conventions
+3. If ARCHITECTURE.md exists: read it for module structure
+4. Do NOT explore more than 20 files — if you need more, report and ask for guidance
 
 ## Workflow
 
@@ -368,30 +468,41 @@ Analyze a proposed change and produce a structured implementation plan before wr
    - Identify what problem is being solved and why
    - Note any constraints from policy or verification requirements
 
-2. **Scope the impact**
+2. **Brownfield alignment** (skip for greenfield)
+   - Read CONTEXT.md for tech stack, naming conventions, existing abstractions
+   - Read ARCHITECTURE.md for module diagrams and dependency rules
+   - Verify new code will align with existing patterns
+   - **CHECK**: grep for existing abstractions that could be reused
+
+3. **Scope the impact**
    - Identify all files likely to be affected
    - Identify public API surfaces that may change
    - Check for existing tests related to the affected areas
    - Map dependencies between components
+   - **CHECK**: estimate file count against goal budget.max_changed_files
 
-3. **Design the approach**
+4. **Design the approach**
    - Enumerate at least two possible approaches with trade-offs
    - Select the approach with the best balance of correctness, safety, and maintainability
    - Design the test strategy: what tests need to be added or updated
    - Plan the rollback strategy: how to revert if something goes wrong
+   - **If 2+ approaches are viable**: create an ADR (Architecture Decision Record)
 
-4. **Write the strategy document**
+5. **Write the strategy document**
    - Summary of the problem and proposed solution
-   - List of affected files (estimated)
-   - Test strategy
+   - List of affected files (estimated) with file_boundaries
+   - Test strategy with specific verify commands
    - Rollback plan
    - Risk assessment (low/medium/high per component)
+   - ADRs for significant decisions
 
 ## Required Outputs
 
 - A strategy document (markdown) with all sections above
 - Estimated changed file count (compare against goal budget.max_changed_files)
-- Test coverage plan
+- Test coverage plan with specific verify commands
+- File boundary declarations (read_files / write_files per task)
+- ADRs for any significant architectural decisions
 
 ## Verification Expectations
 
@@ -399,12 +510,15 @@ Analyze a proposed change and produce a structured implementation plan before wr
 - Estimated file count MUST NOT exceed goal budget.max_changed_files
 - All identified public API changes MUST be flagged for approval
 - No implementation code should be written during this phase
+- All new code must reference existing abstractions where available
 
 ## Safety Notes
 
 - This skill only reads files and produces a plan. It does not modify code.
 - If the strategy identifies risks that cannot be mitigated, stop and escalate.
 - Do not proceed to implementation if the strategy is incomplete.
+- Always check for existing abstractions before designing new ones.
+- For external API references: verify the API exists before including in the plan.
 `;
 
 // ──── Public API ────

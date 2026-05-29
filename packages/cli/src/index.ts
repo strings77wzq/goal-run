@@ -19,6 +19,8 @@ import { fromIssueCommand } from './commands/from-issue.js';
 import { compareCommand } from './commands/compare.js';
 import { rollbackCommand } from './commands/rollback.js';
 import { advanceCommand } from './commands/advance.js';
+import { intelScanCommand } from './commands/intel-scan.js';
+import { ecosystemCommand } from './commands/ecosystem.js';
 
 const program = new Command();
 
@@ -207,6 +209,34 @@ program
   .option('--json', 'Output as JSON')
   .action(async (a: string, b: string, opts) => {
     await compareCommand(a, b, { json: opts.json });
+  });
+
+program
+  .command('intel-scan')
+  .description('Scan existing project and generate CONTEXT.md + ARCHITECTURE.md for brownfield support')
+  .option('--output <path>', 'Output directory (default: .goalrun/)')
+  .option('--json', 'Output as JSON')
+  .action(async (opts) => {
+    await intelScanCommand({ output: opts.output, json: opts.json });
+  });
+
+const ecosystemCmd = program.command('ecosystem').description('Manage ecosystem integrations');
+
+ecosystemCmd
+  .command('detect')
+  .description('Detect which ecosystem components are installed')
+  .option('--json', 'Output as JSON')
+  .action(async (opts) => {
+    await ecosystemCommand('detect', { json: opts.json });
+  });
+
+ecosystemCmd
+  .command('bootstrap')
+  .description('Generate bootstrap plan for missing ecosystem components')
+  .option('--json', 'Output as JSON')
+  .option('--force', 'Overwrite existing bootstrap instructions')
+  .action(async (opts) => {
+    await ecosystemCommand('bootstrap', { json: opts.json, force: opts.force });
   });
 
 program.parseAsync().catch((err) => {

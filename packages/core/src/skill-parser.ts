@@ -13,6 +13,23 @@ export const SkillMetadataSchema = z.object({
   permissions: z.array(z.string()).min(1),
   when_to_use: z.string().optional(),
   when_not_to_use: z.string().optional(),
+  // New fields for enhanced skill system
+  verify_commands: z.array(z.string()).optional(),
+  file_boundaries: z
+    .object({
+      read_files: z.array(z.string()).optional(),
+      write_files: z.array(z.string()).optional(),
+    })
+    .optional(),
+  lessons: z
+    .array(
+      z.object({
+        pattern: z.string().min(1),
+        lesson: z.string().min(1),
+        severity: z.enum(['info', 'warning', 'error']).optional(),
+      }),
+    )
+    .optional(),
 });
 
 export type SkillMetadata = z.infer<typeof SkillMetadataSchema>;

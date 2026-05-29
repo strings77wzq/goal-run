@@ -16,6 +16,13 @@ export {
   BudgetSchema,
   PolicyGateSchema,
   VerificationSchema,
+  PipelineStageSchema,
+  PIPELINE_STAGES,
+  TaskSpecSchema,
+  ADRSchema,
+  AcceptanceCriterionSchema,
+  FileBoundarySchema,
+  EcosystemSchema,
   parseGoalSpec,
 } from './goal-schema.js';
 export type {
@@ -23,6 +30,12 @@ export type {
   GoalParseSuccess,
   GoalParseFailure,
   GoalParseResult,
+  PipelineStage,
+  TaskSpec,
+  ADR,
+  AcceptanceCriterion,
+  FileBoundary,
+  EcosystemConfig,
 } from './goal-schema.js';
 export {
   PolicyConfigSchema,
@@ -73,6 +86,27 @@ export type {
   CriterionStatus,
   AutoAdvanceResult,
 } from './run-state.js';
+export {
+  verifyDiffBoundaries,
+  verifyCriteriaAutomatically,
+  verifyEvidenceExists,
+} from './verification.js';
+export type { VerificationResult } from './verification.js';
+export {
+  checkDestructiveChange,
+  checkAbstractionReuse,
+} from './destructive-change.js';
+export type { DestructiveChangeResult } from './destructive-change.js';
+export {
+  detectExternalApiReference,
+  checkAntiHallucination,
+} from './anti-hallucination.js';
+export type { AntiHallucinationResult } from './anti-hallucination.js';
+export {
+  detectEcosystem,
+  generateBootstrapPlan,
+} from './ecosystem.js';
+export type { EcosystemDetection, BootstrapPlan } from './ecosystem.js';
 export { generateHandoff, TARGETS } from './adapter.js';
 export type { HandoffTarget, HandoffPlan } from './adapter.js';
 export { compareRuns } from './compare.js';
