@@ -213,7 +213,9 @@ program
 
 program
   .command('intel-scan')
-  .description('Scan existing project and generate CONTEXT.md + ARCHITECTURE.md for brownfield support')
+  .description(
+    'Scan existing project and generate CONTEXT.md + ARCHITECTURE.md for brownfield support',
+  )
   .option('--output <path>', 'Output directory (default: .goalrun/)')
   .option('--json', 'Output as JSON')
   .action(async (opts) => {

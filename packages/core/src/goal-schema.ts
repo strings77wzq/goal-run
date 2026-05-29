@@ -6,14 +6,14 @@ import { createError } from './diagnostic.js';
 // ── 8-Stage SDD Pipeline ──
 
 export const PIPELINE_STAGES = [
-  'change',       // Clarify vague idea into change proposal
-  'requirement',  // Transform proposal into executable requirements with AC
-  'design',       // Technical design with ADRs and risk analysis
-  'task',         // Break design into atomic tasks with verify commands
-  'dev',          // Execute tasks with TDD Red-Green-Refactor
-  'test',         // Derive test matrix from AC, run UAT
-  'review',       // Multi-round review (spec compliance + code quality)
-  'integration',  // UAT, failure diagnosis, lessons learned, archival
+  'change', // Clarify vague idea into change proposal
+  'requirement', // Transform proposal into executable requirements with AC
+  'design', // Technical design with ADRs and risk analysis
+  'task', // Break design into atomic tasks with verify commands
+  'dev', // Execute tasks with TDD Red-Green-Refactor
+  'test', // Derive test matrix from AC, run UAT
+  'review', // Multi-round review (spec compliance + code quality)
+  'integration', // UAT, failure diagnosis, lessons learned, archival
 ] as const;
 
 export type PipelineStage = (typeof PIPELINE_STAGES)[number];

@@ -42,9 +42,7 @@ export function verifyDiffBoundaries(
     for (const file of changedFiles) {
       const withinBoundary = writeFiles.some((pattern) => {
         // Simple glob matching: support * wildcard
-        const regex = new RegExp(
-          '^' + pattern.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$',
-        );
+        const regex = new RegExp('^' + pattern.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
         return regex.test(file);
       });
       if (!withinBoundary) {
@@ -115,13 +113,9 @@ export function verifyCriteriaAutomatically(
   if (failed.length > 0) {
     for (const f of failed) {
       diagnostics.push(
-        createError(
-          'VERIFY_COMMAND_FAILED',
-          `Verification command failed: ${f.command}`,
-          {
-            hint: `Exit code: ${f.exitCode}. Output: ${f.output}`,
-          },
-        ),
+        createError('VERIFY_COMMAND_FAILED', `Verification command failed: ${f.command}`, {
+          hint: `Exit code: ${f.exitCode}. Output: ${f.output}`,
+        }),
       );
     }
     return { success: false, diagnostics, evidence };
@@ -153,13 +147,9 @@ export function verifyEvidenceExists(
 
   if (missing.length > 0) {
     diagnostics.push(
-      createWarning(
-        'EVIDENCE_MISSING',
-        `Missing TDD evidence files: ${missing.join(', ')}`,
-        {
-          hint: 'The agent must capture failing test output before implementing. Save evidence to the verification/ directory.',
-        },
-      ),
+      createWarning('EVIDENCE_MISSING', `Missing TDD evidence files: ${missing.join(', ')}`, {
+        hint: 'The agent must capture failing test output before implementing. Save evidence to the verification/ directory.',
+      }),
     );
     return { success: false, diagnostics, evidence };
   }

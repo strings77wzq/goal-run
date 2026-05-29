@@ -13,10 +13,7 @@ interface ScanResult {
   diagnostics: { severity: string; message: string }[];
 }
 
-export async function intelScanCommand(opts: {
-  output?: string;
-  json?: boolean;
-}): Promise<void> {
+export async function intelScanCommand(opts: { output?: string; json?: boolean }): Promise<void> {
   const repoRoot = process.cwd();
 
   console.log(pc.cyan('Scanning project...'));
@@ -69,7 +66,9 @@ export async function intelScanCommand(opts: {
     }
     console.log('');
     console.log(pc.dim('Next: goalrun plan .goalrun/goals/<goal>.yaml'));
-    console.log(pc.dim('The AI agent will read CONTEXT.md and ARCHITECTURE.md for project context.'));
+    console.log(
+      pc.dim('The AI agent will read CONTEXT.md and ARCHITECTURE.md for project context.'),
+    );
   }
 }
 
@@ -96,7 +95,10 @@ function scanProject(repoRoot: string): ScanResult {
     result.packageManager = 'cargo';
   } else if (existsSync(resolve(repoRoot, 'go.mod'))) {
     result.packageManager = 'go';
-  } else if (existsSync(resolve(repoRoot, 'requirements.txt')) || existsSync(resolve(repoRoot, 'pyproject.toml'))) {
+  } else if (
+    existsSync(resolve(repoRoot, 'requirements.txt')) ||
+    existsSync(resolve(repoRoot, 'pyproject.toml'))
+  ) {
     result.packageManager = 'pip';
   }
 
@@ -151,7 +153,16 @@ function scanProject(repoRoot: string): ScanResult {
   }
 
   // Find existing abstractions (utils, helpers, services, shared)
-  const abstractionDirs = ['src/utils', 'src/helpers', 'src/lib', 'src/shared', 'src/common', 'src/services', 'lib/utils', 'utils'];
+  const abstractionDirs = [
+    'src/utils',
+    'src/helpers',
+    'src/lib',
+    'src/shared',
+    'src/common',
+    'src/services',
+    'lib/utils',
+    'utils',
+  ];
   for (const dir of abstractionDirs) {
     const dirPath = resolve(repoRoot, dir);
     if (existsSync(dirPath)) {
@@ -235,9 +246,7 @@ function findAbstractions(
   return abstractions;
 }
 
-function detectNamingConventions(
-  repoRoot: string,
-): { pattern: string; example: string }[] {
+function detectNamingConventions(repoRoot: string): { pattern: string; example: string }[] {
   const conventions: { pattern: string; example: string }[] = [];
 
   // Check for common patterns
@@ -249,9 +258,21 @@ function detectNamingConventions(
       const hasCamel = files.some((f) => /^[a-z][a-zA-Z]*\./.test(f));
       const hasPascal = files.some((f) => /^[A-Z][a-zA-Z]*\./.test(f));
 
-      if (hasKebab) conventions.push({ pattern: 'kebab-case files', example: files.find((f) => f.includes('-')) ?? '' });
-      if (hasCamel) conventions.push({ pattern: 'camelCase files', example: files.find((f) => /^[a-z][a-zA-Z]*\./.test(f)) ?? '' });
-      if (hasPascal) conventions.push({ pattern: 'PascalCase files', example: files.find((f) => /^[A-Z][a-zA-Z]*\./.test(f)) ?? '' });
+      if (hasKebab)
+        conventions.push({
+          pattern: 'kebab-case files',
+          example: files.find((f) => f.includes('-')) ?? '',
+        });
+      if (hasCamel)
+        conventions.push({
+          pattern: 'camelCase files',
+          example: files.find((f) => /^[a-z][a-zA-Z]*\./.test(f)) ?? '',
+        });
+      if (hasPascal)
+        conventions.push({
+          pattern: 'PascalCase files',
+          example: files.find((f) => /^[A-Z][a-zA-Z]*\./.test(f)) ?? '',
+        });
     } catch {
       // Permission denied
     }
@@ -329,7 +350,9 @@ function generateArchitectureMd(scan: ScanResult, _repoRoot: string): string {
   ];
 
   // Build a simple tree
-  const topLevel = scan.moduleStructure.filter((m) => !m.path.includes('/', m.path.indexOf('/') + 1));
+  const topLevel = scan.moduleStructure.filter(
+    (m) => !m.path.includes('/', m.path.indexOf('/') + 1),
+  );
   for (const mod of topLevel) {
     lines.push(`- \`${mod.path}/\` — ${mod.description}`);
     const children = scan.moduleStructure.filter(

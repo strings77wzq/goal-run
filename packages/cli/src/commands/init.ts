@@ -93,7 +93,9 @@ export async function initCommand(opts: InitOptions): Promise<void> {
   console.log('');
   console.log(pc.dim('\nNext steps:'));
   console.log(pc.dim('  goalrun skill install tdd-change code-review implementation-strategy'));
-  console.log(pc.dim('  goalrun intel-scan                    # scan existing project (brownfield)'));
+  console.log(
+    pc.dim('  goalrun intel-scan                    # scan existing project (brownfield)'),
+  );
   console.log(pc.dim('  goalrun ecosystem detect              # check ecosystem components'));
   console.log(pc.dim('  goalrun plan .goalrun/goals/example-fix-bug.yaml'));
 }

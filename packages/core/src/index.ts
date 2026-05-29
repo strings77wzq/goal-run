@@ -92,20 +92,11 @@ export {
   verifyEvidenceExists,
 } from './verification.js';
 export type { VerificationResult } from './verification.js';
-export {
-  checkDestructiveChange,
-  checkAbstractionReuse,
-} from './destructive-change.js';
+export { checkDestructiveChange, checkAbstractionReuse } from './destructive-change.js';
 export type { DestructiveChangeResult } from './destructive-change.js';
-export {
-  detectExternalApiReference,
-  checkAntiHallucination,
-} from './anti-hallucination.js';
+export { detectExternalApiReference, checkAntiHallucination } from './anti-hallucination.js';
 export type { AntiHallucinationResult } from './anti-hallucination.js';
-export {
-  detectEcosystem,
-  generateBootstrapPlan,
-} from './ecosystem.js';
+export { detectEcosystem, generateBootstrapPlan } from './ecosystem.js';
 export type { EcosystemDetection, BootstrapPlan } from './ecosystem.js';
 export { generateHandoff, TARGETS } from './adapter.js';
 export type { HandoffTarget, HandoffPlan } from './adapter.js';

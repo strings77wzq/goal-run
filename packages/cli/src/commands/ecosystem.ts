@@ -23,10 +23,7 @@ export async function ecosystemCommand(
   }
 }
 
-async function detectSubcommand(
-  repoRoot: string,
-  opts: { json?: boolean },
-): Promise<void> {
+async function detectSubcommand(repoRoot: string, opts: { json?: boolean }): Promise<void> {
   const detection = detectEcosystem(repoRoot);
 
   if (opts.json) {
@@ -38,10 +35,22 @@ async function detectSubcommand(
   console.log('');
 
   const components = [
-    { name: 'Superpowers', installed: detection.superpowers, desc: 'TDD, verification, code-review skills' },
-    { name: 'OMC (Oh-My-ClaudeCode)', installed: detection.omc, desc: 'ralph, ultrawork, team execution modes' },
+    {
+      name: 'Superpowers',
+      installed: detection.superpowers,
+      desc: 'TDD, verification, code-review skills',
+    },
+    {
+      name: 'OMC (Oh-My-ClaudeCode)',
+      installed: detection.omc,
+      desc: 'ralph, ultrawork, team execution modes',
+    },
     { name: 'OpenSpec', installed: detection.openspec, desc: 'Change lifecycle tracking' },
-    { name: 'gstack', installed: detection.gstack, desc: 'Role-based review (/ship, /review, /qa, /cso)' },
+    {
+      name: 'gstack',
+      installed: detection.gstack,
+      desc: 'Role-based review (/ship, /review, /qa, /cso)',
+    },
     { name: 'ECC', installed: detection.ecc, desc: 'Language-specific rules, hooks, and agents' },
   ];
 

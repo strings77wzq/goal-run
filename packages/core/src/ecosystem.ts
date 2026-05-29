@@ -176,7 +176,8 @@ export function generateBootstrapPlan(detection: EcosystemDetection): BootstrapP
     missing.push('openspec');
     actions.push({
       component: 'openspec',
-      description: 'Install OpenSpec for change lifecycle tracking (explore → propose → apply → archive)',
+      description:
+        'Install OpenSpec for change lifecycle tracking (explore → propose → apply → archive)',
       command: 'mkdir -p openspec && goalrun init --openspec',
       priority: 'recommended',
     });

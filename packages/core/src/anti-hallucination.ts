@@ -32,7 +32,8 @@ export function detectExternalApiReference(
   const allImports = [...importMatches, ...requireMatches];
 
   for (const imp of allImports) {
-    const pkgMatch = /from\s+['"]([^'"]+)['"]/.exec(imp) ?? /require\s*\(\s*['"]([^'"]+)['"]\s*\)/.exec(imp);
+    const pkgMatch =
+      /from\s+['"]([^'"]+)['"]/.exec(imp) ?? /require\s*\(\s*['"]([^'"]+)['"]\s*\)/.exec(imp);
     if (!pkgMatch) continue;
 
     const pkgName = pkgMatch[1];
@@ -62,9 +63,7 @@ export function detectExternalApiReference(
           encoding: 'utf-8',
           timeout: 5000,
         });
-        const hasInPkgJson =
-          pkgJson.includes(`"${basePkg}"`) ||
-          pkgJson.includes(`'${basePkg}'`);
+        const hasInPkgJson = pkgJson.includes(`"${basePkg}"`) || pkgJson.includes(`'${basePkg}'`);
 
         if (hasInPkgJson) {
           checks.push({

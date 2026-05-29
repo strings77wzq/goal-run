@@ -33,8 +33,9 @@ export function checkDestructiveChange(
     // Count deleted non-empty lines
     const deletedLines = diff
       .split('\n')
-      .filter((line) => line.startsWith('-') && !line.startsWith('---') && line.trim().length > 1)
-      .length;
+      .filter(
+        (line) => line.startsWith('-') && !line.startsWith('---') && line.trim().length > 1,
+      ).length;
 
     details.deletedLines = deletedLines;
 
@@ -65,20 +66,20 @@ export function checkDestructiveChange(
     if (removedExports.length > 0) {
       details.publicApiChanged = true;
       diagnostics.push(
-        createWarning(
-          'PUBLIC_API_REMOVED',
-          `Public API exports removed in "${filePath}"`,
-          {
-            file: filePath,
-            hint: `Removed exports: ${removedExports.map((l) => l.slice(1).trim()).join('; ')}. Verify no callers depend on these.`,
-          },
-        ),
+        createWarning('PUBLIC_API_REMOVED', `Public API exports removed in "${filePath}"`, {
+          file: filePath,
+          hint: `Removed exports: ${removedExports.map((l) => l.slice(1).trim()).join('; ')}. Verify no callers depend on these.`,
+        }),
       );
     }
 
     // Find files that reference this file
     try {
-      const basename = filePath.split('/').pop()?.replace(/\.(ts|js|tsx|jsx)$/, '') ?? '';
+      const basename =
+        filePath
+          .split('/')
+          .pop()
+          ?.replace(/\.(ts|js|tsx|jsx)$/, '') ?? '';
       if (basename) {
         const grepResult = execSync(
           `grep -rl "${basename}" --include="*.ts" --include="*.js" --include="*.tsx" --include="*.jsx" . 2>/dev/null | head -20 || true`,
