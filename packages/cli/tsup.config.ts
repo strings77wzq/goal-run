@@ -3,7 +3,8 @@ import { defineConfig } from 'tsup';
 export default defineConfig({
   entry: ['src/index.ts'],
   format: ['esm'],
-  external: ['fast-glob'],
-  noExternal: [/goalrun-/, 'gray-matter'],
+  platform: 'node',
+  external: ['fast-glob', 'gray-matter'],
+  noExternal: [/goalrun-/],
   clean: true,
 });
