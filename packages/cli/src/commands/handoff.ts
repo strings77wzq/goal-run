@@ -9,6 +9,8 @@ import {
   generateHandoff,
   TARGETS,
   resolveSafe,
+  detectEcosystem,
+  loadLessons,
 } from 'goalrun-core';
 import type { HandoffTarget } from 'goalrun-core';
 
@@ -67,6 +69,14 @@ export async function handoffCommand(
     allDiagnostics,
   );
 
+  // Load ecosystem, context, and lessons for enriched handoff
+  const ecosystem = detectEcosystem(repoRoot);
+  const contextPath = resolve(repoRoot, '.goalrun', 'CONTEXT.md');
+  const contextMd = existsSync(contextPath) ? readFileSync(contextPath, 'utf-8') : undefined;
+  const archPath = resolve(repoRoot, '.goalrun', 'ARCHITECTURE.md');
+  const architectureMd = existsSync(archPath) ? readFileSync(archPath, 'utf-8') : undefined;
+  const { lessons } = loadLessons(repoRoot);
+
   const handoff = generateHandoff(
     {
       goalId: spec.id,
@@ -80,6 +90,20 @@ export async function handoffCommand(
         severity: d.severity,
         message: d.message,
         hint: d.hint,
+      })),
+      ecosystem: {
+        superpowers: ecosystem.superpowers,
+        omc: ecosystem.omc,
+        openspec: ecosystem.openspec,
+        gstack: ecosystem.gstack,
+        ecc: ecosystem.ecc,
+      },
+      contextMd,
+      architectureMd,
+      lessons: lessons.map((l) => ({
+        pattern: l.pattern,
+        lesson: l.lesson,
+        severity: l.severity,
       })),
     },
     target,
