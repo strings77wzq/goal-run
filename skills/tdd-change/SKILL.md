@@ -7,7 +7,7 @@ permissions:
   - read_files
   - write_files
   - run_tests
-verify_commands: []  # Inherited from goal verification.commands at runtime
+verify_commands: [] # Inherited from goal verification.commands at runtime
 file_boundaries:
   read_files:
     - 'src/**'

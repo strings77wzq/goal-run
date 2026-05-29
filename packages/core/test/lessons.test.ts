@@ -1,12 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdirSync, writeFileSync, rmSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import {
-  loadLessons,
-  searchLessons,
-  addLesson,
-  nominateFromRun,
-} from '../src/lessons.js';
+import { loadLessons, searchLessons, addLesson, nominateFromRun } from '../src/lessons.js';
 import type { Lesson } from '../src/lessons.js';
 
 const TEST_DIR = resolve('/tmp', `goalrun-lessons-test-${Date.now()}`);
@@ -67,10 +62,23 @@ describe('loadLessons', () => {
   it('prefers JSON over markdown', () => {
     const lessons = {
       version: 1,
-      lessons: [{ id: 'json', pattern: 'from_json', lesson: 'JSON lesson', severity: 'info', source_run: 'test', timestamp: '2026-01-01T00:00:00Z', tags: [] }],
+      lessons: [
+        {
+          id: 'json',
+          pattern: 'from_json',
+          lesson: 'JSON lesson',
+          severity: 'info',
+          source_run: 'test',
+          timestamp: '2026-01-01T00:00:00Z',
+          tags: [],
+        },
+      ],
     };
     writeFileSync(resolve(TEST_DIR, '.goalrun', 'lessons.json'), JSON.stringify(lessons));
-    writeFileSync(resolve(TEST_DIR, '.goalrun', 'lessons.md'), '## LESSON-001: from_md\n**Lesson**: MD lesson\n**Severity**: info\n');
+    writeFileSync(
+      resolve(TEST_DIR, '.goalrun', 'lessons.md'),
+      '## LESSON-001: from_md\n**Lesson**: MD lesson\n**Severity**: info\n',
+    );
 
     const result = loadLessons(TEST_DIR);
     expect(result.lessons[0]?.pattern).toBe('from_json');
@@ -79,9 +87,33 @@ describe('loadLessons', () => {
 
 describe('searchLessons', () => {
   const lessons: Lesson[] = [
-    { id: '1', pattern: 'tdd_skip', lesson: 'Always write failing test first', severity: 'warning', source_run: 'test', timestamp: '', tags: ['tdd'] },
-    { id: '2', pattern: 'boundary_violation', lesson: 'Stay within file boundaries', severity: 'error', source_run: 'test', timestamp: '', tags: ['boundary'] },
-    { id: '3', pattern: 'security_scan', lesson: 'Run security scan before commit', severity: 'warning', source_run: 'test', timestamp: '', tags: ['security'] },
+    {
+      id: '1',
+      pattern: 'tdd_skip',
+      lesson: 'Always write failing test first',
+      severity: 'warning',
+      source_run: 'test',
+      timestamp: '',
+      tags: ['tdd'],
+    },
+    {
+      id: '2',
+      pattern: 'boundary_violation',
+      lesson: 'Stay within file boundaries',
+      severity: 'error',
+      source_run: 'test',
+      timestamp: '',
+      tags: ['boundary'],
+    },
+    {
+      id: '3',
+      pattern: 'security_scan',
+      lesson: 'Run security scan before commit',
+      severity: 'warning',
+      source_run: 'test',
+      timestamp: '',
+      tags: ['security'],
+    },
   ];
 
   it('finds lessons by pattern keyword', () => {
@@ -128,8 +160,20 @@ describe('addLesson', () => {
   });
 
   it('appends to existing lessons.json', () => {
-    addLesson(TEST_DIR, { pattern: 'first', lesson: 'first lesson', severity: 'info', source_run: 'test', tags: [] });
-    addLesson(TEST_DIR, { pattern: 'second', lesson: 'second lesson', severity: 'warning', source_run: 'test', tags: [] });
+    addLesson(TEST_DIR, {
+      pattern: 'first',
+      lesson: 'first lesson',
+      severity: 'info',
+      source_run: 'test',
+      tags: [],
+    });
+    addLesson(TEST_DIR, {
+      pattern: 'second',
+      lesson: 'second lesson',
+      severity: 'warning',
+      source_run: 'test',
+      tags: [],
+    });
 
     const result = loadLessons(TEST_DIR);
     expect(result.lessons).toHaveLength(2);
@@ -150,13 +194,16 @@ describe('nominateFromRun', () => {
     const verDir = resolve(runDir, 'verification');
     mkdirSync(verDir, { recursive: true });
 
-    writeFileSync(resolve(verDir, 'advance-results.json'), JSON.stringify({
-      results: [
-        { name: 'tdd_evidence', passed: false, detail: 'Missing red-phase.txt' },
-        { name: 'auto_verification', passed: true, detail: 'All passed' },
-        { name: 'destructive:src/foo.ts', passed: false, detail: '10 lines deleted' },
-      ],
-    }));
+    writeFileSync(
+      resolve(verDir, 'advance-results.json'),
+      JSON.stringify({
+        results: [
+          { name: 'tdd_evidence', passed: false, detail: 'Missing red-phase.txt' },
+          { name: 'auto_verification', passed: true, detail: 'All passed' },
+          { name: 'destructive:src/foo.ts', passed: false, detail: '10 lines deleted' },
+        ],
+      }),
+    );
 
     const result = nominateFromRun(TEST_DIR, runDir);
     expect(result.nominated).toHaveLength(2);

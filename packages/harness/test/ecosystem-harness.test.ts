@@ -43,7 +43,9 @@ describe('runEcosystemHarness', () => {
       goalSpec: makeGoalSpec({ skills: ['tdd-change'] }),
       ecosystem: makeEcosystem({ superpowers: false }),
     });
-    expect(result.diagnostics.some((d) => d.code === 'ECOSYSTEM_SKILL_RECOMMENDS_COMPONENT')).toBe(true);
+    expect(result.diagnostics.some((d) => d.code === 'ECOSYSTEM_SKILL_RECOMMENDS_COMPONENT')).toBe(
+      true,
+    );
     expect(result.recommendations.some((r) => r.component === 'superpowers')).toBe(true);
   });
 
@@ -52,7 +54,9 @@ describe('runEcosystemHarness', () => {
       goalSpec: makeGoalSpec({ ecosystem: { omc: true } }),
       ecosystem: makeEcosystem({ omc: false }),
     });
-    expect(result.diagnostics.some((d) => d.code === 'ECOSYSTEM_GOAL_REQUIRES_COMPONENT')).toBe(true);
+    expect(result.diagnostics.some((d) => d.code === 'ECOSYSTEM_GOAL_REQUIRES_COMPONENT')).toBe(
+      true,
+    );
   });
 
   it('passes when goal requires installed component', () => {
@@ -95,7 +99,13 @@ describe('runEcosystemHarness', () => {
   it('returns success true when no warnings or errors', () => {
     const result = runEcosystemHarness({
       goalSpec: makeGoalSpec(),
-      ecosystem: makeEcosystem({ superpowers: true, omc: true, openspec: true, gstack: true, ecc: true }),
+      ecosystem: makeEcosystem({
+        superpowers: true,
+        omc: true,
+        openspec: true,
+        gstack: true,
+        ecc: true,
+      }),
     });
     expect(result.success).toBe(true);
   });

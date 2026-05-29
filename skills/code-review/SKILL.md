@@ -9,7 +9,7 @@ verify_commands: []
 file_boundaries:
   read_files:
     - '**/*'
-  write_files: []  # Review is strictly read-only
+  write_files: [] # Review is strictly read-only
 lessons_required: true
 when_to_use: |
   Use after implementing a change, before merging a PR, or whenever you need
