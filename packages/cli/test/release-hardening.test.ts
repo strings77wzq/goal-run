@@ -41,6 +41,7 @@ describe('release/install hardening', () => {
       'packages/cli',
       'packages/core',
       'packages/harness',
+      'packages/mcp',
       'packages/reporter',
       'packages/security',
     ]);
