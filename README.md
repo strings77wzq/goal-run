@@ -14,7 +14,7 @@ GoalRun validates goals, checks skills, blocks dangerous commands, generates AI-
   <img src="https://img.shields.io/badge/pnpm-%3E%3D9-blue" alt="pnpm >= 9">
   <img src="https://img.shields.io/badge/TypeScript-5.7-blue" alt="TypeScript">
   <img src="https://img.shields.io/badge/license-MIT-green" alt="MIT">
-  <img src="https://img.shields.io/badge/tests-383_passing-brightgreen" alt="383 tests">
+  <img src="https://img.shields.io/badge/tests-394_passing-brightgreen" alt="394 tests">
 </p>
 
 ---
